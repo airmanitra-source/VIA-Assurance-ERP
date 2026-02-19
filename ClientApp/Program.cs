@@ -27,6 +27,7 @@ using Sinister.Module;
 using CompanyDocuments.Module.Data.Providers;
 using CompanyDocuments.Module;
 using CompanyDocuments.Module.Business;
+using ClientApp.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -90,6 +91,8 @@ builder.Services.AddScoped<AuthenticationService>();
 builder.Services.AddScoped<UserManagementService>();
 builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<CustomAuthenticationStateProvider>());
+// UI Controllers - handle mapping and non-business logic for Razor components
+builder.Services.AddScoped<EmployeeController>();
 // Add localization services
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddHttpContextAccessor();
@@ -108,6 +111,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddControllers();
+builder.Services.AddScoped<EmployeeController>();
 
 var app = builder.Build();
 

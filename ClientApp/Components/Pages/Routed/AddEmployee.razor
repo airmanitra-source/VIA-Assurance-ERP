@@ -45,7 +45,7 @@
                 <span>@Localizer["Enterprise"]: <strong>@currentCompany.RaisonSocial</strong></span>
             </div>
 
-            <EditForm Model="@employeeModel" OnValidSubmit="@HandleSubmit" class="employee-form">
+            <EditForm Model="@employeeModel" OnValidSubmit="@HandleSubmitAsync" class="employee-form">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
                 
