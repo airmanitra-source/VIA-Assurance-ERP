@@ -1,6 +1,8 @@
 using ClientApp.Models;
 using Company.Fleet.Module;
 using Company.Fleet.Module.Business;
+using CompanyDocuments.Module;
+using CompanyDocuments.Module.Business;
 using Microsoft.AspNetCore.Components;
 
 namespace ClientApp.Controllers
@@ -8,10 +10,12 @@ namespace ClientApp.Controllers
     public class FleetController
     {
         private readonly ICompanyFleetModule _fleetModule;
+        private readonly ICompanyDocumentModule _documentModule;
 
-        public FleetController(ICompanyFleetModule fleetModule)
+        public FleetController(ICompanyFleetModule fleetModule, ICompanyDocumentModule documentModule)
         {
             _fleetModule = fleetModule;
+            _documentModule = documentModule;
         }
 
         /// <summary>
@@ -36,22 +40,53 @@ namespace ClientApp.Controllers
         /// <summary>
         /// REST: Store - Create or Update fleet item
         /// </summary>
-        public async Task<StoreResult> Store(EntrepriseFleetViewModel viewModel, long enterpriseId)
+        public async Task<StoreResult> Store(EntrepriseFleetViewModel viewModel, long enterpriseId, string? companyRaisonSocial = null)
         {
             var result = new StoreResult();
             try
             {
                 var businessModel = MapViewModelToBusinessModel(viewModel, enterpriseId);
+                long fleetId;
                 if (viewModel.Id > 0)
                 {
                     await _fleetModule.SetFleetItemAsync(businessModel);
+                    fleetId = viewModel.Id;
                     result.Message = "Fleet updated successfully!";
                 }
                 else
                 {
-                    await _fleetModule.AddFleetItemAsync(businessModel);
+                    fleetId = await _fleetModule.AddFleetItemAsync(businessModel);
                     result.Message = "Fleet added successfully!";
                 }
+
+                if (viewModel.WantsInsurance && !viewModel.IsInsured)
+                {
+                    var policyNumber = "FLT-" + fleetId + "-" + DateTime.Now.Ticks.ToString().Substring(12);
+
+                    var policyData = new PolicyPdfModel
+                    {
+                        PolicyNumber = policyNumber,
+                        StartDate = DateTime.Now,
+                        EndDate = DateTime.Now.AddYears(1),
+                        InsuredName = companyRaisonSocial ?? "Company",
+                        Address = "N/A",
+                        VehicleDescription = $"{viewModel.Make} {viewModel.Model} ({viewModel.Year}) {viewModel.Type}",
+                        VIN = "N/A",
+                        VehicleCoverages = new List<CoverageModel>
+                        {
+                            new CoverageModel { Description = "Comprehensive Coverage", Deductible = 500, Amount = 0 }
+                        }
+                    };
+
+                    await _documentModule.GenerateAndLinkPolicyConfirmationAsync(enterpriseId, "Fleet", policyData, fleetId);
+
+                    // Mark as insured
+                    businessModel.Id = fleetId;
+                    businessModel.IsInsured = true;
+                    businessModel.PolicyNumber = policyNumber;
+                    await _fleetModule.SetFleetItemAsync(businessModel);
+                }
+
                 result.Success = true;
             }
             catch (Exception ex)
@@ -79,21 +114,21 @@ namespace ClientApp.Controllers
         }
 
         #region Mapping
-        private EntrepriseFleetViewModel MapBusinessModelToViewModel(EntrepriseFleetBusinessModel business)
+        private EntrepriseFleetViewModel MapBusinessModelToViewModel(EntrepriseFleetBusinessModel b)
         {
             return new EntrepriseFleetViewModel
             {
-                Id = business.Id,
-                EntrepriseId = business.EntrepriseId,
-                IsInsured = business.IsInsured,
-                IsWorking = business.IsWorking,
-                Make = business.Make,
-                Mileage = business.Mileage,
-                Model = business.Model,
-                Type = business.Type,
-                WantsInsurance = business.WantsInsurance,
-                Year = business.Year,
-                PolicyNumber = business.PolicyNumber
+                Id = b.Id,
+                EntrepriseId = b.EntrepriseId,
+                IsInsured = b.IsInsured,
+                IsWorking = b.IsWorking,
+                Make = b.Make,
+                Mileage = b.Mileage,
+                Model = b.Model,
+                PolicyNumber = b.PolicyNumber,
+                Type = b.Type,
+                WantsInsurance = b.WantsInsurance,
+                Year = b.Year
             };
         }
 
@@ -108,10 +143,10 @@ namespace ClientApp.Controllers
                 Make = vm.Make,
                 Mileage = vm.Mileage,
                 Model = vm.Model,
+                PolicyNumber = vm.PolicyNumber,
                 Type = vm.Type,
                 WantsInsurance = vm.WantsInsurance,
-                Year = vm.Year,
-                PolicyNumber = vm.PolicyNumber
+                Year = vm.Year
             };
         }
         #endregion

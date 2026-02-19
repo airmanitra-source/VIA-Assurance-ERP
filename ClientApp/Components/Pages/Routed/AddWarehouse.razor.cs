@@ -1,54 +1,34 @@
+using ClientApp.Components.Shared;
+using ClientApp.Controllers;
 using ClientApp.Models;
-using ClientApp.Services;
-using Company.Module;
-using Company.Warehouse.Module;
-using Company.Warehouse.Module.Data.Models;
-using Company.Warehouse.Module.Business;
-using CompanyDocuments.Module.Business;
 using Microsoft.AspNetCore.Components;
 
 namespace ClientApp.Components.Pages.Routed
 {
-    public partial class AddWarehouse: ComponentBase
+    public partial class AddWarehouse : AuthenticatedComponentBase
     {
-        [Parameter]
-        [SupplyParameterFromQuery] 
-        public long? Id { get; set; }
+        // --- Parameters ---
+        [Parameter][SupplyParameterFromQuery] public long? Id { get; set; }
 
-        [Inject]
-        protected NavigationManager Navigation { get; set; } = default!;
+        // --- Injections ---
+        [Inject] protected WarehouseController Controller { get; set; } = default!;
 
-        [Inject]
-        protected AuthenticationService AuthService { get; set; } = default!;
-
-        [Inject]
-        protected ICompanyWarehouseModule WarehouseModule { get; set; } = default!;
-
-        [Inject]
-        protected ICompanyModule CompanyModule { get; set; } = default!;
-
-        [Inject]
-        protected global::CompanyDocuments.Module.ICompanyDocumentModule DocumentModule { get; set; } = default!;
-
-        protected WarehouseViewModel warehouseModel = new();
-        protected WarehouseMaterialViewModel newMaterial = new();
-        protected List<WarehouseMaterialViewModel> managedMaterials = new();
+        // --- State (alphabetically sorted, ID first if any) ---
         protected EntrepriseViewModel? currentCompany;
+        protected List<string> errors = new();
         protected bool isLoadingCompany = true;
         protected bool isLoadingItem = false;
         protected bool isSubmitting = false;
-        protected List<string> errors = new();
+        protected List<WarehouseMaterialViewModel> managedMaterials = new();
+        protected WarehouseMaterialViewModel newMaterial = new();
         protected string successMessage = string.Empty;
+        protected WarehouseViewModel warehouseModel = new();
 
-        protected override async Task OnInitializedAsync()
+        protected override async Task OnInitializedAuthenticatedAsync()
         {
-            if (!AuthService.IsAuthenticated())
-            {
-                Navigation.NavigateTo("/login");
-                return;
-            }
-
-            await LoadCurrentCompany();
+            var company = await GetOrLoadCurrentCompanyAsync();
+            currentCompany = EntrepriseViewModel.FromBusinessModel(company);
+            isLoadingCompany = false;
 
             if (Id.HasValue && currentCompany != null)
             {
@@ -56,57 +36,17 @@ namespace ClientApp.Components.Pages.Routed
             }
         }
 
-        #region
-        private async Task LoadCurrentCompany()
-        {
-            isLoadingCompany = true;
-            try
-            {
-                var entrepriseId = AuthService.GetCurrentEntrepriseId();
-                if (entrepriseId.HasValue)
-                {
-                    var currentCompanyBusinessModel = await CompanyModule.GetCompanyByIdAsync(entrepriseId.Value);
-                    currentCompany = EntrepriseViewModel.FromBusinessModel(currentCompanyBusinessModel);
-                }
-            }
-            catch (Exception ex)
-            {
-                errors.Add($"Error loading company data: {ex.Message}");
-            }
-            finally
-            {
-                isLoadingCompany = false;
-            }
-        }
-
+        #region Private
         private async Task LoadWarehouseItem(long id)
         {
             isLoadingItem = true;
             try
             {
-                var item = await WarehouseModule.GetWarehouseAsync(id);
+                var item = await Controller.Show(id, currentCompany?.Id ?? 0);
                 if (item != null)
                 {
-                    warehouseModel = new WarehouseViewModel
-                    {
-                        Name = item.Name,
-                        SizeM2 = item.SizeM2,
-                        ContentsDescription = item.ContentsDescription,
-                        Address = item.Address,
-                        WantsInsurance = item.WantsInsurance,
-                        IsInsured = item.IsInsured,
-                        PolicyNumber = item.PolicyNumber
-                    };
-
-                    var materials = await WarehouseModule.GetWarehouseMaterialsAsync(id);
-                    managedMaterials = materials.Select(m => new WarehouseMaterialViewModel
-                    {
-                        Id = m.Id,
-                        Description = m.Description,
-                        ApproximateValue = m.ApproximateValue,
-                        WantsInsurance = m.WantsInsurance,
-                        IsInsured = m.IsInsured
-                    }).ToList();
+                    warehouseModel = item;
+                    managedMaterials = await Controller.GetMaterials(id);
                 }
                 else
                 {
@@ -152,94 +92,35 @@ namespace ClientApp.Components.Pages.Routed
 
             try
             {
-                var businessModel = new EntrepriseWarehouseBusinessModel
-                {
-                    Id = Id ?? 0,
-                    EntrepriseId = currentCompany.Id,
-                    Name = warehouseModel.Name,
-                    SizeM2 = warehouseModel.SizeM2,
-                    ContentsDescription = warehouseModel.ContentsDescription,
-                    Address = warehouseModel.Address,
-                    WantsInsurance = warehouseModel.WantsInsurance,
-                    IsInsured = warehouseModel.IsInsured,
-                    PolicyNumber = warehouseModel.PolicyNumber
-                };
+                var result = await Controller.Store(
+                    warehouseModel,
+                    currentCompany.Id,
+                    managedMaterials,
+                    currentCompany.RaisonSocial);
 
-                long warehouseId = Id ?? 0;
-                if (Id.HasValue)
+                if (result.Success)
                 {
-                    await WarehouseModule.SetWarehouseAsync(businessModel);
+                    successMessage = result.Message;
+                    if (!Id.HasValue)
+                    {
+                        warehouseModel = new WarehouseViewModel();
+                        managedMaterials.Clear();
+                    }
+                    else
+                    {
+                        // Refresh data to show isInsured status or insurance policy number
+                        await LoadWarehouseItem(Id.Value);
+                    }
                 }
                 else
                 {
-                    warehouseId = await WarehouseModule.AddWarehouseAsync(businessModel);
+                    errors.AddRange(result.Errors);
                 }
 
-                // Simple strategy for materials in this integrated form:
-                // Since we don't have a complex diffing, and materials are small,
-                // we'll delete existing ones and re-add if we're in a "save everything" mode.
-                // OR we can just add the new ones.
-                // For a better UX, let's just save the materials that don't have an ID yet, 
-                // and assume existing ones were managed via the separate page or we just focus on adding.
-                // BUT the requirement is "user should also be able to add WareHouseMaterials" in AddWarehouse.
-
-                foreach (var m in managedMaterials)
+                _ = Task.Delay(3000).ContinueWith(_ =>
                 {
-                    if (m.Id == 0) // New material added in this form
+                    InvokeAsync(() =>
                     {
-                        await WarehouseModule.AddMaterialAsync(new EntrepriseWarehouseMaterialBusinessModel
-                        {
-                            WarehouseId = warehouseId,
-                            Description = m.Description,
-                            ApproximateValue = m.ApproximateValue,
-                            WantsInsurance = m.WantsInsurance
-                        });
-                    }
-                    // We could also handle updates if we wanted, but the prompt emphasizes adding.
-                }
-
-                if (warehouseModel.WantsInsurance && !warehouseModel.IsInsured)
-                {
-                    warehouseModel.PolicyNumber = "WHS-" + warehouseId + "-" + DateTime.Now.Ticks.ToString().Substring(12);
-
-                    var policyData = new PolicyPdfModel
-                    {
-                        PolicyNumber = warehouseModel.PolicyNumber,
-                        StartDate = DateTime.Now,
-                        EndDate = DateTime.Now.AddYears(1),
-                        InsuredName = currentCompany.RaisonSocial,
-                        Address = warehouseModel.Address,
-                        VehicleDescription = $"Warehouse: {warehouseModel.Name} ({warehouseModel.SizeM2} m²)",
-                        VIN = "N/A",
-                        Coverages = managedMaterials.Where(m => m.WantsInsurance).Select(m => new CoverageModel
-                        {
-                            Description = m.Description,
-                            Deductible = 0,
-                            Amount = m.ApproximateValue
-                        }).ToList()
-                    };
-
-                    await DocumentModule.GenerateAndLinkPolicyConfirmationAsync(currentCompany.Id, "Warehouse", policyData, warehouseId);
-                    
-                    // Update database to mark as insured
-                    businessModel.Id = warehouseId;
-                    businessModel.IsInsured = true;
-                    businessModel.PolicyNumber = warehouseModel.PolicyNumber;
-                    await WarehouseModule.SetWarehouseAsync(businessModel);
-                    
-                    warehouseModel.IsInsured = true;
-                }
-
-                successMessage = Id.HasValue ? "Warehouse updated successfully!" : "Warehouse and materials added successfully!";
-
-                if (!Id.HasValue)
-                {
-                    warehouseModel = new WarehouseViewModel();
-                    managedMaterials.Clear();
-                }
-
-                _ = Task.Delay(3000).ContinueWith(_ => {
-                    InvokeAsync(() => {
                         successMessage = string.Empty;
                         StateHasChanged();
                     });

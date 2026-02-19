@@ -1,10 +1,8 @@
 @page "/add-warehouse"
+@inherits AuthenticatedComponentBase
 @rendermode InteractiveServer
 @using ClientApp.Models
 @using ClientApp.Services
-@using Company.Warehouse.Module
-@using Company.Warehouse.Module.Data.Models
-@using Company.Module
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Forms
 @inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> Localizer

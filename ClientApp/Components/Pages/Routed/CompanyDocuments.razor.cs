@@ -1,38 +1,33 @@
 using ClientApp.Components.Shared;
 using ClientApp.Models;
 using ClientApp.Services;
-using CompanyDocuments.Module;
-using CompanyDocuments.Module.Business;
+using ClientApp.Controllers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 
 namespace ClientApp.Components.Pages.Routed
 {
-    public partial class CompanyDocuments : ComponentBase
+    public partial class CompanyDocuments : AuthenticatedComponentBase
     {
-        [Inject] protected ICompanyDocumentModule DocumentModule { get; set; } = default!;
-        [Inject] protected AuthenticationService AuthService { get; set; } = default!;
-        [Inject] protected NavigationManager Navigation { get; set; } = default!;
+        // --- Parameters ---
 
-        protected List<CompanyDocumentViewModel> documents = new();
-        protected CompanyDocumentViewModel? selectedNode;
-        protected SignaturePad? signaturePad;
+        // --- Injections ---
+        [Inject] protected CompanyDocumentsController Controller { get; set; } = default!;
+
+        // --- State (alphabetically sorted, ID first if any, but streamId is in viewmodel) ---
         protected string activeTab = "preview";
-        protected bool isLoading = true;
+        protected List<CompanyDocumentViewModel> documents = new();
         protected bool isGenerating = false;
+        protected bool isLoading = true;
         protected bool isSigning = false;
-        protected bool showSignaturePad = false;
         protected long selectedEntrepriseId;
+        protected CompanyDocumentViewModel? selectedNode;
+        protected bool showSignaturePad = false;
+        protected SignaturePad? signaturePad;
 
-        protected override async Task OnInitializedAsync()
+        protected override async Task OnInitializedAuthenticatedAsync()
         {
-            if (!AuthService.IsAuthenticated())
-            {
-                Navigation.NavigateTo("/login");
-                return;
-            }
-
-            var entrepriseId = AuthService.GetCurrentEntrepriseId();
+            var entrepriseId = CurrentEnterpriseId;
             if (entrepriseId.HasValue)
             {
                 selectedEntrepriseId = entrepriseId.Value;
@@ -49,8 +44,7 @@ namespace ClientApp.Components.Pages.Routed
             isLoading = true;
             try
             {
-                var businessDocs = await DocumentModule.GetDocumentsByEntrepriseIdAsync(selectedEntrepriseId);
-                documents = businessDocs.Select(MapToViewModel).ToList();
+                documents = await Controller.Index(selectedEntrepriseId);
             }
             catch (Exception ex)
             {
@@ -82,9 +76,9 @@ namespace ClientApp.Components.Pages.Routed
             try
             {
                 var signatureDataUrl = await signaturePad.GetSignatureDataUrlAsync();
-                var signerName = AuthService.GetCurrentUserEmail() ?? "System User";
+                var signerName = CurrentUserEmail ?? "System User";
                 
-                await DocumentModule.SignDocumentAsync(selectedEntrepriseId, selectedNode.StreamId, signerName, signatureDataUrl);
+                await Controller.Sign(selectedEntrepriseId, selectedNode.StreamId, signerName, signatureDataUrl);
                 
                 showSignaturePad = false;
                 await LoadDocumentsAsync();
@@ -100,23 +94,6 @@ namespace ClientApp.Components.Pages.Routed
             {
                 isSigning = false;
             }
-        }
-
-        private CompanyDocumentViewModel MapToViewModel(CompanyDocumentBusinessModel m)
-        {
-            return new CompanyDocumentViewModel
-            {
-                StreamId = m.StreamId,
-                Name = m.Name,
-                FileType = m.FileType,
-                CachedFileSize = m.CachedFileSize,
-                CreationTime = m.CreationTime,
-                LastWriteTime = m.LastWriteTime,
-                IsDirectory = m.IsDirectory,
-                TypeDocument = m.TypeDocument,
-                IsSigned = m.IsSigned,
-                SignedDate = m.SignedDate
-            };
         }
     }
 }

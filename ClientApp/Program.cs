@@ -93,13 +93,13 @@ builder.Services.AddScoped<FleetController>();
 builder.Services.AddScoped<TransportationController>();
 builder.Services.AddScoped<WarehouseController>();
 builder.Services.AddScoped<SubscriptionController>();
+builder.Services.AddScoped<CompanyDocumentsController>();
+builder.Services.AddScoped<EmployeeDocumentsController>();
 // Authentication service - registered as Scoped to isolate auth state per user session
 builder.Services.AddScoped<AuthenticationService>();
 builder.Services.AddScoped<UserManagementService>();
 builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<CustomAuthenticationStateProvider>());
-// UI Controllers - handle mapping and non-business logic for Razor components
-builder.Services.AddScoped<EmployeeController>();
 // Add localization services
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddHttpContextAccessor();
@@ -118,7 +118,6 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddControllers();
-builder.Services.AddScoped<EmployeeController>();
 
 var app = builder.Build();
 

@@ -1,4 +1,5 @@
 @page "/company-documents"
+@inherits AuthenticatedComponentBase
 @using Microsoft.AspNetCore.Authorization
 @using ClientApp.Models
 @attribute [Authorize(Roles = "directeur,RH,auditeur,admin,developer")]
@@ -10,10 +11,7 @@
     <div class="header">
         <div class="header-left">
             <h1>🏢 @Localizer["CompanyDocumentsTitle"]</h1>
-            @if (AuthService.IsAuthenticated())
-            {
-                <span class="user-badge">👤 @AuthService.GetCurrentUserEmail()</span>
-            }
+            <span class="user-badge">👤 @CurrentUserEmail</span>
         </div>
         <div class="header-actions">
             <button class="btn btn-secondary" @onclick="LoadDocumentsAsync">

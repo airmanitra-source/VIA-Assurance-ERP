@@ -1,35 +1,32 @@
 using ClientApp.Components.Shared;
-using ClientApp.Models;
-using Company.Fleet.Module.Business;
-using Company.Module.Business;
-using Microsoft.AspNetCore.Components;
-using CompanyDocuments.Module.Business;
-using Company.Fleet.Module;
-using Company.Module;
-using CompanyDocuments.Module;
-using ClientApp.Services;
 using ClientApp.Controllers;
+using ClientApp.Models;
+using Microsoft.AspNetCore.Components;
 
 namespace ClientApp.Components.Pages.Routed
 {
     public partial class AddFleet : AuthenticatedComponentBase
     {
-        [Inject] protected ICompanyDocumentModule DocumentModule { get; set; } = default!;
-        [Inject] protected FleetController FleetController { get; set; } = default!;
-
+        // --- Parameters ---
         [Parameter][SupplyParameterFromQuery] public long? Id { get; set; }
 
+        // --- Injections ---
+        [Inject] protected FleetController FleetController { get; set; } = default!;
+
+        // --- State (alphabetically sorted, ID first if any) ---
+        protected EntrepriseViewModel? currentCompany;
+        protected List<string> errors = new();
         protected EntrepriseFleetViewModel fleetModel = new();
-        protected EntrepriseBusinessModel? currentCompany;
         protected bool isLoadingCompany = true;
         protected bool isLoadingItem = false;
         protected bool isSubmitting = false;
-        protected List<string> errors = new();
         protected string successMessage = string.Empty;
 
         protected override async Task OnInitializedAuthenticatedAsync()
         {
-            await LoadCurrentCompany();
+            var company = await GetOrLoadCurrentCompanyAsync();
+            currentCompany = EntrepriseViewModel.FromBusinessModel(company);
+            isLoadingCompany = false;
 
             if (Id.HasValue && currentCompany != null)
             {
@@ -38,23 +35,6 @@ namespace ClientApp.Components.Pages.Routed
         }
 
         #region "Private"
-        private async Task LoadCurrentCompany()
-        {
-            isLoadingCompany = true;
-            try
-            {
-                currentCompany = await GetOrLoadCurrentCompanyAsync();
-            }
-            catch (Exception ex)
-            {
-                errors.Add($"Error loading company data: {ex.Message}");
-            }
-            finally
-            {
-                isLoadingCompany = false;
-            }
-        }
-
         private async Task LoadFleetItem(long id)
         {
             isLoadingItem = true;
@@ -91,13 +71,18 @@ namespace ClientApp.Components.Pages.Routed
 
             try
             {
-                var result = await FleetController.Store(fleetModel, currentCompany.Id);
+                var result = await FleetController.Store(fleetModel, currentCompany.Id, currentCompany.RaisonSocial);
                 if (result.Success)
                 {
                     successMessage = result.Message;
                     if (!Id.HasValue)
                     {
                         fleetModel = new EntrepriseFleetViewModel();
+                    }
+                    else
+                    {
+                        // Refresh data to show isInsured status or insurance policy number
+                        await LoadFleetItem(Id.Value);
                     }
                 }
                 else

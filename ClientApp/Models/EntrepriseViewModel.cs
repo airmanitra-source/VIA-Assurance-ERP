@@ -1,4 +1,3 @@
-
 using Company.Module.Business;
 
 namespace ClientApp.Models
@@ -6,14 +5,22 @@ namespace ClientApp.Models
     public class EntrepriseViewModel
     {
         public long Id { get; set; }
-        public string? RaisonSocial { get; set; }
-        public string? StatutJuridique { get; set; }
-        public int? Taille { get; set; }
-        public int? NombreEmployes { get; set; }
+
         public string? Adresse { get; set; }
+
         public DateTime? AnneeCreation { get; set; }
-        public string? NifStat { get; set; }
+
         public string? Email { get; set; }
+
+        public string? NifStat { get; set; }
+
+        public int? NombreEmployes { get; set; }
+
+        public string? RaisonSocial { get; set; }
+
+        public string? StatutJuridique { get; set; }
+
+        public int? Taille { get; set; }
 
         internal static EntrepriseViewModel? FromBusinessModel(EntrepriseBusinessModel? companyBusinessModel)
         {
@@ -21,14 +28,14 @@ namespace ClientApp.Models
             return new EntrepriseViewModel
             {
                 Id = companyBusinessModel.Id,
-                RaisonSocial = companyBusinessModel.RaisonSocial,
-                StatutJuridique  = companyBusinessModel.StatutJuridique,
-                Taille = companyBusinessModel.Taille,
-                NombreEmployes = companyBusinessModel.NombreEmployes,
                 Adresse = companyBusinessModel.Adresse,
                 AnneeCreation = companyBusinessModel.AnneeCreation,
+                Email = companyBusinessModel.Email,
                 NifStat = companyBusinessModel.NifStat,
-                Email = companyBusinessModel.Email
+                NombreEmployes = companyBusinessModel.NombreEmployes,
+                RaisonSocial = companyBusinessModel.RaisonSocial,
+                StatutJuridique = companyBusinessModel.StatutJuridique,
+                Taille = companyBusinessModel.Taille
             };
         }
     }

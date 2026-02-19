@@ -1,52 +1,32 @@
+using ClientApp.Components.Shared;
+using ClientApp.Controllers;
 using ClientApp.Models;
-using ClientApp.Services;
-using Company.Module;
-using Company.Transportation.Module;
-using Company.Transportation.Module.Data.Models;
-using Company.Transportation.Module.Business;
-using CompanyDocuments.Module.Business;
 using Microsoft.AspNetCore.Components;
 
 namespace ClientApp.Components.Pages.Routed
 {
-    public partial class AddTransportation: ComponentBase
+    public partial class AddTransportation : AuthenticatedComponentBase
     {
-        [Parameter]
-        [SupplyParameterFromQuery]
-        public long? Id { get; set; }
+        // --- Parameters ---
+        [Parameter][SupplyParameterFromQuery] public long? Id { get; set; }
 
-        [Inject]
-        protected NavigationManager Navigation { get; set; } = default!;
+        // --- Injections ---
+        [Inject] protected TransportationController Controller { get; set; } = default!;
 
-        [Inject]
-        protected AuthenticationService AuthService { get; set; } = default!;
-
-        [Inject]
-        protected ICompanyTransportationModule TransportationModule { get; set; } = default!;
-
-        [Inject]
-        protected ICompanyModule CompanyModule { get; set; } = default!;
-
-        [Inject]
-        protected global::CompanyDocuments.Module.ICompanyDocumentModule DocumentModule { get; set; } = default!;
-
-        protected TransportationViewModel model = new();
+        // --- State (alphabetically sorted, ID first if any) ---
         protected EntrepriseViewModel? currentCompany;
+        protected List<string> errors = new();
         protected bool isLoadingCompany = true;
         protected bool isLoadingItem = false;
         protected bool isSubmitting = false;
-        protected List<string> errors = new();
+        protected TransportationViewModel model = new();
         protected string successMessage = string.Empty;
 
-        protected override async Task OnInitializedAsync()
+        protected override async Task OnInitializedAuthenticatedAsync()
         {
-            if (!AuthService.IsAuthenticated())
-            {
-                Navigation.NavigateTo("/login");
-                return;
-            }
-
-            await LoadCurrentCompany();
+            var company = await GetOrLoadCurrentCompanyAsync();
+            currentCompany = EntrepriseViewModel.FromBusinessModel(company);
+            isLoadingCompany = false;
 
             if (Id.HasValue && currentCompany != null)
             {
@@ -55,50 +35,19 @@ namespace ClientApp.Components.Pages.Routed
         }
 
         #region Private
-        private async Task LoadCurrentCompany()
-        {
-            isLoadingCompany = true;
-            try
-            {
-                var entrepriseId = AuthService.GetCurrentEntrepriseId();
-                if (entrepriseId.HasValue)
-                {
-                    var currentCompanyBusinessModel = await CompanyModule.GetCompanyByIdAsync(entrepriseId.Value);
-                    currentCompany = EntrepriseViewModel.FromBusinessModel(currentCompanyBusinessModel);
-                }
-            }
-            catch (Exception ex)
-            {
-                errors.Add($"Error: {ex.Message}");
-            }
-            finally
-            {
-                isLoadingCompany = false;
-            }
-        }
-
         private async Task LoadItem(long id)
         {
             isLoadingItem = true;
             try
             {
-                var item = await TransportationModule.GetTransportationAsync(id);
+                var item = await Controller.Show(id, currentCompany?.Id ?? 0);
                 if (item != null)
                 {
-                    model = new TransportationViewModel
-                    {
-                        Id = item.Id,
-                        Description = item.Description,
-                        Value = item.Value,
-                        DepartureDate = item.DepartureDate,
-                        ArrivalDate = item.ArrivalDate,
-                        Origin = item.Origin,
-                        Destination = item.Destination,
-                        Frequency = item.Frequency,
-                        WantsInsurance = item.WantsInsurance,
-                        IsInsured = item.IsInsured,
-                        PolicyNumber = item.PolicyNumber
-                    };
+                    model = item;
+                }
+                else
+                {
+                    errors.Add("Transportation item not found.");
                 }
             }
             catch (Exception ex)
@@ -121,61 +70,24 @@ namespace ClientApp.Components.Pages.Routed
 
             try
             {
-                var businessModel = new EntrepriseMerchandiseTransportationBusinessModel
-                {
-                    Id = Id ?? 0,
-                    EntrepriseId = currentCompany.Id,
-                    Description = model.Description,
-                    Value = model.Value,
-                    DepartureDate = model.DepartureDate,
-                    ArrivalDate = model.ArrivalDate,
-                    Origin = model.Origin,
-                    Destination = model.Destination,
-                    Frequency = model.Frequency,
-                    WantsInsurance = model.WantsInsurance,
-                    IsInsured = model.IsInsured,
-                    PolicyNumber = model.PolicyNumber
-                };
+                var result = await Controller.Store(model, currentCompany.Id, currentCompany.RaisonSocial);
 
-                long transId = Id ?? 0;
-                if (Id.HasValue)
+                if (result.Success)
                 {
-                    await TransportationModule.SetTransportationAsync(businessModel);
-                    successMessage = "Transportation updated successfully!";
+                    successMessage = result.Message;
+                    if (!Id.HasValue)
+                    {
+                        model = new TransportationViewModel();
+                    }
+                    else
+                    {
+                        // Refresh data to show isInsured status or insurance policy number
+                        await LoadItem(Id.Value);
+                    }
                 }
                 else
                 {
-                    transId = await TransportationModule.AddTransportationAsync(businessModel);
-                    successMessage = "Transportation added successfully!";
-                }
-
-                if (model.WantsInsurance && !model.IsInsured)
-                {
-                    model.PolicyNumber = "TRN-" + transId + "-" + DateTime.Now.Ticks.ToString().Substring(12);
-
-                    var policyData = new PolicyPdfModel
-                    {
-                        PolicyNumber = model.PolicyNumber,
-                        StartDate = model.DepartureDate,
-                        EndDate = model.ArrivalDate,
-                        InsuredName = currentCompany.RaisonSocial,
-                        Address = "N/A",
-                        VehicleDescription = $"Transportation: {model.Description} (from {model.Origin} to {model.Destination})",
-                        VIN = "N/A",
-                        Coverages = new List<CoverageModel>
-                        {
-                            new CoverageModel { Description = "Cargo Insurance", Deductible = 0, Amount = model.Value }
-                        }
-                    };
-                    await DocumentModule.GenerateAndLinkPolicyConfirmationAsync(currentCompany.Id, "Transportation", policyData, transId);
-
-                    // Mark as insured
-                    businessModel.Id = transId;
-                    businessModel.IsInsured = true;
-                    businessModel.PolicyNumber = model.PolicyNumber;
-                    await TransportationModule.SetTransportationAsync(businessModel);
-                    
-                    model.IsInsured = true;
+                    errors.AddRange(result.Errors);
                 }
 
                 _ = Task.Delay(2000).ContinueWith(_ => Navigation.NavigateTo("/transportation-list"));

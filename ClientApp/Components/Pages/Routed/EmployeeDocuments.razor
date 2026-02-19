@@ -1,4 +1,5 @@
 @page "/employee-documents"
+@inherits AuthenticatedComponentBase
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "directeur,RH,auditeur,admin,developer")]
 @rendermode InteractiveServer
@@ -14,10 +15,7 @@
     <div class="header">
         <div class="header-left">
             <h1>🛡️ @Localizer["DocumentsTitle"]</h1>
-            @if (AuthService.IsAuthenticated())
-            {
-                <span class="user-badge">👤 @AuthService.GetCurrentUserEmail()</span>
-            }
+            <span class="user-badge">👤 @CurrentUserEmail</span>
         </div>
         <div class="header-actions">
             <button class="btn btn-primary" @onclick="RefreshTreeAsync">

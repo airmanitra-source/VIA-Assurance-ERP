@@ -14,6 +14,12 @@ namespace ClientApp.Components.Shared
         protected long? CurrentEnterpriseId => AuthService.GetCurrentEntrepriseId();
         protected string? CurrentUserEmail => AuthService.GetCurrentUserEmail();
 
+        protected async Task HandleLogoutAsync()
+        {
+            await AuthService.LogoutAsync();
+            Navigation.NavigateTo("/login", forceLoad: true);
+        }
+
         protected override async Task OnInitializedAsync()
         {
             if (!AuthService.IsAuthenticated())
