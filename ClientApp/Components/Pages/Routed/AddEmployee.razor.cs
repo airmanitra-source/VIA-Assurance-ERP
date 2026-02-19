@@ -10,7 +10,7 @@ namespace ClientApp.Components.Pages.Routed
 {
     public partial class AddEmployee : AuthenticatedComponentBase
     {
-        [Parameter][SupplyParameterFromQuery] public long? Id { set; }
+        [Parameter][SupplyParameterFromQuery] public long? Id { get;  set; }
 
         // --- Injections ---
         [Inject] protected IEmployeeModule EmployeeModule { get; set; } = default!;
