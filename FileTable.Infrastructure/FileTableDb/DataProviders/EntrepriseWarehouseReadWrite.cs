@@ -17,8 +17,8 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         {
             using var connection = _dbContext.CreateConnection();
             var sql = @"
-                INSERT INTO [documentdb].[dbo].[EntrepriseWarehouse] (EntrepriseId, Name, SizeM2, ContentsDescription, Address, WantsInsurance, IsInsured, PolicyNumber)
-                VALUES (@EntrepriseId, @Name, @SizeM2, @ContentsDescription, @Address, @WantsInsurance, @IsInsured, @PolicyNumber);
+                INSERT INTO [documentdb].[dbo].[EntrepriseWarehouse] (Address, ContentsDescription, EntrepriseId, InsuranceEndDate, InsuranceStartDate, IsInsured, Name, PolicyNumber, SizeM2, WantsInsurance)
+                VALUES (@Address, @ContentsDescription, @EntrepriseId, @InsuranceEndDate, @InsuranceStartDate, @IsInsured, @Name, @PolicyNumber, @SizeM2, @WantsInsurance);
                 SELECT CAST(SCOPE_IDENTITY() as bigint);";
 
             return await connection.ExecuteScalarAsync<long>(sql, warehouse);
@@ -29,13 +29,16 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
             using var connection = _dbContext.CreateConnection();
             var sql = @"
                 UPDATE [documentdb].[dbo].[EntrepriseWarehouse]
-                SET Name = @Name,
-                    SizeM2 = @SizeM2,
+                SET Address = @Address,
                     ContentsDescription = @ContentsDescription,
-                    Address = @Address,
-                    WantsInsurance = @WantsInsurance,
+                    EntrepriseId = @EntrepriseId,
+                    InsuranceEndDate = @InsuranceEndDate,
+                    InsuranceStartDate = @InsuranceStartDate,
                     IsInsured = @IsInsured,
-                    PolicyNumber = @PolicyNumber
+                    Name = @Name,
+                    PolicyNumber = @PolicyNumber,
+                    SizeM2 = @SizeM2,
+                    WantsInsurance = @WantsInsurance
                 WHERE Id = @Id";
 
             await connection.ExecuteAsync(sql, warehouse);

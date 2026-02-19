@@ -2,13 +2,17 @@ namespace FileTable.Infrastructure.FileTableDb.Entities
 {
     public class EntrepriseWarehouseEntity
     {
-        public long Id { get; set; }
-
         public string? Address { get; set; }
 
         public string? ContentsDescription { get; set; }
 
         public long EntrepriseId { get; set; }
+
+        public long Id { get; set; }
+
+        public DateTime? InsuranceEndDate { get; set; }
+
+        public DateTime? InsuranceStartDate { get; set; }
 
         public bool IsInsured { get; set; }
 

@@ -2,8 +2,6 @@ namespace FileTable.Infrastructure.FileTableDb.Entities
 {
     public class EntrepriseMerchandiseTransportationEntity
     {
-        public long Id { get; set; }
-
         public DateTime ArrivalDate { get; set; }
 
         public DateTime DepartureDate { get; set; }
@@ -15,6 +13,12 @@ namespace FileTable.Infrastructure.FileTableDb.Entities
         public long EntrepriseId { get; set; }
 
         public string Frequency { get; set; } = "OneTime";
+
+        public long Id { get; set; }
+
+        public DateTime? InsuranceEndDate { get; set; }
+
+        public DateTime? InsuranceStartDate { get; set; }
 
         public bool IsInsured { get; set; }
 

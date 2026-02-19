@@ -66,8 +66,8 @@ namespace ClientApp.Controllers
                     var policyData = new PolicyPdfModel
                     {
                         PolicyNumber = policyNumber,
-                        StartDate = viewModel.DepartureDate,
-                        EndDate = viewModel.ArrivalDate,
+                        StartDate = viewModel.InsuranceStartDate ?? viewModel.DepartureDate,
+                        EndDate = viewModel.InsuranceEndDate ?? viewModel.ArrivalDate,
                         InsuredName = companyRaisonSocial ?? "Company",
                         Address = "N/A",
                         VehicleDescription = $"Transportation: {viewModel.Description} (from {viewModel.Origin} to {viewModel.Destination})",
@@ -118,13 +118,15 @@ namespace ClientApp.Controllers
         {
             return new TransportationViewModel
             {
-                Id = b.Id,
                 ArrivalDate = b.ArrivalDate,
                 DepartureDate = b.DepartureDate,
                 Description = b.Description,
                 Destination = b.Destination,
                 EntrepriseId = b.EntrepriseId,
                 Frequency = b.Frequency ?? "OneTime",
+                Id = b.Id,
+                InsuranceEndDate = b.InsuranceEndDate,
+                InsuranceStartDate = b.InsuranceStartDate,
                 IsInsured = b.IsInsured,
                 Origin = b.Origin,
                 PolicyNumber = b.PolicyNumber,
@@ -137,13 +139,15 @@ namespace ClientApp.Controllers
         {
             return new EntrepriseMerchandiseTransportationBusinessModel
             {
-                Id = vm.Id,
                 ArrivalDate = vm.ArrivalDate,
                 DepartureDate = vm.DepartureDate,
                 Description = vm.Description,
                 Destination = vm.Destination,
                 EntrepriseId = enterpriseId,
                 Frequency = vm.Frequency,
+                Id = vm.Id,
+                InsuranceEndDate = vm.InsuranceEndDate,
+                InsuranceStartDate = vm.InsuranceStartDate,
                 IsInsured = vm.IsInsured,
                 Origin = vm.Origin,
                 PolicyNumber = vm.PolicyNumber,

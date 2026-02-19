@@ -4,8 +4,6 @@ namespace Company.Transportation.Module.Business
 {
     public class EntrepriseMerchandiseTransportationBusinessModel
     {
-        public long Id { get; set; }
-
         public DateTime ArrivalDate { get; set; }
 
         public DateTime DepartureDate { get; set; }
@@ -17,6 +15,12 @@ namespace Company.Transportation.Module.Business
         public long EntrepriseId { get; set; }
 
         public string Frequency { get; set; } = "OneTime";
+
+        public long Id { get; set; }
+
+        public DateTime? InsuranceEndDate { get; set; }
+
+        public DateTime? InsuranceStartDate { get; set; }
 
         public bool IsInsured { get; set; }
 
@@ -33,13 +37,15 @@ namespace Company.Transportation.Module.Business
             if (dataModel == null) return null;
             return new EntrepriseMerchandiseTransportationBusinessModel
             {
-                Id = dataModel.Id,
                 ArrivalDate = dataModel.ArrivalDate,
                 DepartureDate = dataModel.DepartureDate,
                 Description = dataModel.Description,
                 Destination = dataModel.Destination,
                 EntrepriseId = dataModel.EntrepriseId,
                 Frequency = dataModel.Frequency,
+                Id = dataModel.Id,
+                InsuranceEndDate = dataModel.InsuranceEndDate,
+                InsuranceStartDate = dataModel.InsuranceStartDate,
                 IsInsured = dataModel.IsInsured,
                 Origin = dataModel.Origin,
                 PolicyNumber = dataModel.PolicyNumber,
@@ -52,13 +58,15 @@ namespace Company.Transportation.Module.Business
         {
             return new EntrepriseMerchandiseTransportationDataModel
             {
-                Id = Id,
                 ArrivalDate = ArrivalDate,
                 DepartureDate = DepartureDate,
                 Description = Description,
                 Destination = Destination,
                 EntrepriseId = EntrepriseId,
                 Frequency = Frequency,
+                Id = Id,
+                InsuranceEndDate = InsuranceEndDate,
+                InsuranceStartDate = InsuranceStartDate,
                 IsInsured = IsInsured,
                 Origin = Origin,
                 PolicyNumber = PolicyNumber,

@@ -50,14 +50,16 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         {
             return new EntrepriseWarehouseDataModel
             {
-                Id = entity.Id,
+                Address = entity.Address,
+                ContentsDescription = entity.ContentsDescription,
                 EntrepriseId = entity.EntrepriseId,
+                Id = entity.Id,
+                InsuranceEndDate = entity.InsuranceEndDate,
+                InsuranceStartDate = entity.InsuranceStartDate,
+                IsInsured = entity.IsInsured,
                 Name = entity.Name,
                 SizeM2 = entity.SizeM2,
-                ContentsDescription = entity.ContentsDescription,
-                Address = entity.Address,
-                WantsInsurance = entity.WantsInsurance,
-                IsInsured = entity.IsInsured
+                WantsInsurance = entity.WantsInsurance
             };
         }
 

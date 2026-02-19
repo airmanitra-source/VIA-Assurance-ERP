@@ -5,9 +5,15 @@ namespace Company.Fleet.Module.Business
 {
     public class EntrepriseFleetBusinessModel
     {
+        public long EntrepriseId { get; set; }
+
+        public int? FiscalPower { get; set; }
+
         public long Id { get; set; }
 
-        public long EntrepriseId { get; set; }
+        public DateTime? InsuranceEndDate { get; set; }
+
+        public DateTime? InsuranceStartDate { get; set; }
 
         public bool IsInsured { get; set; }
 
@@ -21,6 +27,8 @@ namespace Company.Fleet.Module.Business
 
         public string? PolicyNumber { get; set; }
 
+        public int? Power { get; set; }
+
         public string Type { get; set; } = string.Empty; // 'Auto' or 'Moto'
 
         public bool WantsInsurance { get; set; }
@@ -32,14 +40,18 @@ namespace Company.Fleet.Module.Business
             if (fleetDataModel == null) return new();
             return new EntrepriseFleetBusinessModel
             {
-                Id = fleetDataModel.Id,
                 EntrepriseId = fleetDataModel.EntrepriseId,
+                FiscalPower = fleetDataModel.FiscalPower,
+                Id = fleetDataModel.Id,
+                InsuranceEndDate = fleetDataModel.InsuranceEndDate,
+                InsuranceStartDate = fleetDataModel.InsuranceStartDate,
                 IsInsured = fleetDataModel.IsInsured,
                 IsWorking = fleetDataModel.IsWorking,
                 Make = fleetDataModel.Make,
                 Mileage = fleetDataModel.Mileage,
                 Model = fleetDataModel.Model,
                 PolicyNumber = fleetDataModel.PolicyNumber,
+                Power = fleetDataModel.Power,
                 Type = fleetDataModel.Type,
                 WantsInsurance = fleetDataModel.WantsInsurance,
                 Year = fleetDataModel.Year
@@ -50,14 +62,18 @@ namespace Company.Fleet.Module.Business
         {
             return new EntrepriseFleetDataModel
             {
-                Id = Id,
                 EntrepriseId = EntrepriseId,
+                FiscalPower = FiscalPower,
+                Id = Id,
+                InsuranceEndDate = InsuranceEndDate,
+                InsuranceStartDate = InsuranceStartDate,
                 IsInsured = IsInsured,
                 IsWorking = IsWorking,
                 Make = Make,
                 Mileage = Mileage,
                 Model = Model,
                 PolicyNumber = PolicyNumber,
+                Power = Power,
                 Type = Type,
                 WantsInsurance = WantsInsurance,
                 Year = Year

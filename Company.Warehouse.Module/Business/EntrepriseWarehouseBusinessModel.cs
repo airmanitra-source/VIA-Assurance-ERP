@@ -4,13 +4,17 @@ namespace Company.Warehouse.Module.Business
 {
     public class EntrepriseWarehouseBusinessModel
     {
-        public long Id { get; set; }
-
         public string? Address { get; set; }
 
         public string? ContentsDescription { get; set; }
 
         public long EntrepriseId { get; set; }
+
+        public long Id { get; set; }
+
+        public DateTime? InsuranceEndDate { get; set; }
+
+        public DateTime? InsuranceStartDate { get; set; }
 
         public bool IsInsured { get; set; }
 
@@ -27,10 +31,12 @@ namespace Company.Warehouse.Module.Business
             if (dataModel == null) return null;
             return new EntrepriseWarehouseBusinessModel
             {
-                Id = dataModel.Id,
                 Address = dataModel.Address,
                 ContentsDescription = dataModel.ContentsDescription,
                 EntrepriseId = dataModel.EntrepriseId,
+                Id = dataModel.Id,
+                InsuranceEndDate = dataModel.InsuranceEndDate,
+                InsuranceStartDate = dataModel.InsuranceStartDate,
                 IsInsured = dataModel.IsInsured,
                 Name = dataModel.Name,
                 PolicyNumber = dataModel.PolicyNumber,
@@ -43,10 +49,12 @@ namespace Company.Warehouse.Module.Business
         {
             return new EntrepriseWarehouseDataModel
             {
-                Id = Id,
                 Address = Address,
                 ContentsDescription = ContentsDescription,
                 EntrepriseId = EntrepriseId,
+                Id = Id,
+                InsuranceEndDate = InsuranceEndDate,
+                InsuranceStartDate = InsuranceStartDate,
                 IsInsured = IsInsured,
                 Name = Name,
                 PolicyNumber = PolicyNumber,

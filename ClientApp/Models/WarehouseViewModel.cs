@@ -4,14 +4,18 @@ namespace ClientApp.Models
 {
     public class WarehouseViewModel
     {
-        public long Id { get; set; }
-
         [StringLength(250, ErrorMessage = "Address is too long")]
         public string? Address { get; set; }
 
         public string? ContentsDescription { get; set; }
 
         public long EntrepriseId { get; set; }
+
+        public long Id { get; set; }
+
+        public DateTime? InsuranceEndDate { get; set; }
+
+        public DateTime? InsuranceStartDate { get; set; }
 
         public bool IsInsured { get; set; }
 

@@ -96,6 +96,20 @@
                             </div>
                         </label>
                     </div>
+
+                    @if (model.WantsInsurance)
+                    {
+                        <div class="form-row subscription-period animated-fade-in">
+                            <div class="form-group">
+                                <label>@Localizer["StartDate"]</label>
+                                <InputDate @bind-Value="model.InsuranceStartDate" class="form-input" />
+                            </div>
+                            <div class="form-group">
+                                <label>@Localizer["EndDate"]</label>
+                                <InputDate @bind-Value="model.InsuranceEndDate" class="form-input" />
+                            </div>
+                        </div>
+                    }
                 </div>
 
                 @if (errors.Any())

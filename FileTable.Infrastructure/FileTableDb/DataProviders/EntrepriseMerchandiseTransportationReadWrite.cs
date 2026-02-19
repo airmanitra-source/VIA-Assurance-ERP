@@ -17,8 +17,8 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         {
             using var connection = _dbContext.CreateConnection();
             var sql = @"
-                INSERT INTO [documentdb].[dbo].[EntrepriseMerchandiseTransportation] (EntrepriseId, Description, Value, DepartureDate, ArrivalDate, Origin, Destination, Frequency, WantsInsurance, IsInsured, PolicyNumber)
-                VALUES (@EntrepriseId, @Description, @Value, @DepartureDate, @ArrivalDate, @Origin, @Destination, @Frequency, @WantsInsurance, @IsInsured, @PolicyNumber);
+                INSERT INTO [documentdb].[dbo].[EntrepriseMerchandiseTransportation] (ArrivalDate, DepartureDate, Description, Destination, EntrepriseId, Frequency, InsuranceEndDate, InsuranceStartDate, IsInsured, Origin, PolicyNumber, Value, WantsInsurance)
+                VALUES (@ArrivalDate, @DepartureDate, @Description, @Destination, @EntrepriseId, @Frequency, @InsuranceEndDate, @InsuranceStartDate, @IsInsured, @Origin, @PolicyNumber, @Value, @WantsInsurance);
                 SELECT CAST(SCOPE_IDENTITY() as bigint);";
 
             return await connection.ExecuteScalarAsync<long>(sql, transportation);
@@ -29,16 +29,19 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
             using var connection = _dbContext.CreateConnection();
             var sql = @"
                 UPDATE [documentdb].[dbo].[EntrepriseMerchandiseTransportation]
-                SET Description = @Description,
-                    Value = @Value,
+                SET ArrivalDate = @ArrivalDate,
                     DepartureDate = @DepartureDate,
-                    ArrivalDate = @ArrivalDate,
-                    Origin = @Origin,
+                    Description = @Description,
                     Destination = @Destination,
+                    EntrepriseId = @EntrepriseId,
                     Frequency = @Frequency,
-                    WantsInsurance = @WantsInsurance,
+                    InsuranceEndDate = @InsuranceEndDate,
+                    InsuranceStartDate = @InsuranceStartDate,
                     IsInsured = @IsInsured,
-                    PolicyNumber = @PolicyNumber
+                    Origin = @Origin,
+                    PolicyNumber = @PolicyNumber,
+                    Value = @Value,
+                    WantsInsurance = @WantsInsurance
                 WHERE Id = @Id";
 
             await connection.ExecuteAsync(sql, transportation);

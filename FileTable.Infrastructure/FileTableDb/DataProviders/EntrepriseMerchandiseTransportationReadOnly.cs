@@ -34,17 +34,19 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         {
             return new EntrepriseMerchandiseTransportationDataModel
             {
-                Id = entity.Id,
-                EntrepriseId = entity.EntrepriseId,
-                Description = entity.Description,
-                Value = entity.Value,
-                DepartureDate = entity.DepartureDate,
                 ArrivalDate = entity.ArrivalDate,
-                Origin = entity.Origin,
+                DepartureDate = entity.DepartureDate,
+                Description = entity.Description,
                 Destination = entity.Destination,
+                EntrepriseId = entity.EntrepriseId,
                 Frequency = entity.Frequency,
-                WantsInsurance = entity.WantsInsurance,
-                IsInsured = entity.IsInsured
+                Id = entity.Id,
+                InsuranceEndDate = entity.InsuranceEndDate,
+                InsuranceStartDate = entity.InsuranceStartDate,
+                IsInsured = entity.IsInsured,
+                Origin = entity.Origin,
+                Value = entity.Value,
+                WantsInsurance = entity.WantsInsurance
             };
         }
     }

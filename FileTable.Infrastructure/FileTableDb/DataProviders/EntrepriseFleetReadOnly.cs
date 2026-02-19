@@ -34,16 +34,20 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         {
             return new EntrepriseFleetDataModel
             {
-                Id = entity.Id,
                 EntrepriseId = entity.EntrepriseId,
-                Type = entity.Type,
-                Year = entity.Year,
+                FiscalPower = entity.FiscalPower,
+                Id = entity.Id,
+                InsuranceEndDate = entity.InsuranceEndDate,
+                InsuranceStartDate = entity.InsuranceStartDate,
+                IsInsured = entity.IsInsured,
                 IsWorking = entity.IsWorking,
-                Mileage = entity.Mileage,
                 Make = entity.Make,
+                Mileage = entity.Mileage,
                 Model = entity.Model,
+                Power = entity.Power,
+                Type = entity.Type,
                 WantsInsurance = entity.WantsInsurance,
-                IsInsured = entity.IsInsured
+                Year = entity.Year
             };
         }
     }

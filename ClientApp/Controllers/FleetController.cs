@@ -66,8 +66,8 @@ namespace ClientApp.Controllers
                     var policyData = new PolicyPdfModel
                     {
                         PolicyNumber = policyNumber,
-                        StartDate = DateTime.Now,
-                        EndDate = DateTime.Now.AddYears(1),
+                        StartDate = viewModel.InsuranceStartDate ?? DateTime.Now,
+                        EndDate = viewModel.InsuranceEndDate ?? DateTime.Now.AddYears(1),
                         InsuredName = companyRaisonSocial ?? "Company",
                         Address = "N/A",
                         VehicleDescription = $"{viewModel.Make} {viewModel.Model} ({viewModel.Year}) {viewModel.Type}",
@@ -118,14 +118,18 @@ namespace ClientApp.Controllers
         {
             return new EntrepriseFleetViewModel
             {
-                Id = b.Id,
                 EntrepriseId = b.EntrepriseId,
+                FiscalPower = b.FiscalPower,
+                Id = b.Id,
+                InsuranceEndDate = b.InsuranceEndDate,
+                InsuranceStartDate = b.InsuranceStartDate,
                 IsInsured = b.IsInsured,
                 IsWorking = b.IsWorking,
                 Make = b.Make,
                 Mileage = b.Mileage,
                 Model = b.Model,
                 PolicyNumber = b.PolicyNumber,
+                Power = b.Power,
                 Type = b.Type,
                 WantsInsurance = b.WantsInsurance,
                 Year = b.Year
@@ -136,14 +140,18 @@ namespace ClientApp.Controllers
         {
             return new EntrepriseFleetBusinessModel
             {
-                Id = vm.Id,
                 EntrepriseId = enterpriseId,
+                FiscalPower = vm.FiscalPower,
+                Id = vm.Id,
+                InsuranceEndDate = vm.InsuranceEndDate,
+                InsuranceStartDate = vm.InsuranceStartDate,
                 IsInsured = vm.IsInsured,
                 IsWorking = vm.IsWorking,
                 Make = vm.Make,
                 Mileage = vm.Mileage,
                 Model = vm.Model,
                 PolicyNumber = vm.PolicyNumber,
+                Power = vm.Power,
                 Type = vm.Type,
                 WantsInsurance = vm.WantsInsurance,
                 Year = vm.Year

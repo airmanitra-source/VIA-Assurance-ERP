@@ -17,8 +17,8 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         {
             using var connection = _dbContext.CreateConnection();
             var sql = @"
-                INSERT INTO [documentdb].[dbo].[EntrepriseFleet] (EntrepriseId, Type, Year, IsWorking, Mileage, Make, Model, WantsInsurance, IsInsured, PolicyNumber)
-                VALUES (@EntrepriseId, @Type, @Year, @IsWorking, @Mileage, @Make, @Model, @WantsInsurance, @IsInsured, @PolicyNumber);
+                INSERT INTO [documentdb].[dbo].[EntrepriseFleet] (EntrepriseId, FiscalPower, InsuranceEndDate, InsuranceStartDate, IsInsured, IsWorking, Make, Mileage, Model, PolicyNumber, Power, Type, WantsInsurance, Year)
+                VALUES (@EntrepriseId, @FiscalPower, @InsuranceEndDate, @InsuranceStartDate, @IsInsured, @IsWorking, @Make, @Mileage, @Model, @PolicyNumber, @Power, @Type, @WantsInsurance, @Year);
                 SELECT CAST(SCOPE_IDENTITY() as bigint);";
 
             return await connection.ExecuteScalarAsync<long>(sql, fleetItem);
@@ -29,15 +29,20 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
             using var connection = _dbContext.CreateConnection();
             var sql = @"
                 UPDATE [documentdb].[dbo].[EntrepriseFleet]
-                SET Type = @Type,
-                    Year = @Year,
-                    IsWorking = @IsWorking,
-                    Mileage = @Mileage,
-                    Make = @Make,
-                    Model = @Model,
-                    WantsInsurance = @WantsInsurance,
+                SET EntrepriseId = @EntrepriseId,
+                    FiscalPower = @FiscalPower,
+                    InsuranceEndDate = @InsuranceEndDate,
+                    InsuranceStartDate = @InsuranceStartDate,
                     IsInsured = @IsInsured,
-                    PolicyNumber = @PolicyNumber
+                    IsWorking = @IsWorking,
+                    Make = @Make,
+                    Mileage = @Mileage,
+                    Model = @Model,
+                    PolicyNumber = @PolicyNumber,
+                    Power = @Power,
+                    Type = @Type,
+                    WantsInsurance = @WantsInsurance,
+                    Year = @Year
                 WHERE Id = @Id";
 
             await connection.ExecuteAsync(sql, fleetItem);

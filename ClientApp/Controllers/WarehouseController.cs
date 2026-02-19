@@ -89,8 +89,8 @@ namespace ClientApp.Controllers
                     var policyData = new PolicyPdfModel
                     {
                         PolicyNumber = policyNumber,
-                        StartDate = DateTime.Now,
-                        EndDate = DateTime.Now.AddYears(1),
+                        StartDate = viewModel.InsuranceStartDate ?? DateTime.Now,
+                        EndDate = viewModel.InsuranceEndDate ?? DateTime.Now.AddYears(1),
                         InsuredName = companyRaisonSocial ?? "Company",
                         Address = viewModel.Address,
                         VehicleDescription = $"Warehouse: {viewModel.Name} ({viewModel.SizeM2} m²)",
@@ -158,10 +158,12 @@ namespace ClientApp.Controllers
         {
             return new WarehouseViewModel
             {
-                Id = b.Id,
                 Address = b.Address,
                 ContentsDescription = b.ContentsDescription,
                 EntrepriseId = b.EntrepriseId,
+                Id = b.Id,
+                InsuranceEndDate = b.InsuranceEndDate,
+                InsuranceStartDate = b.InsuranceStartDate,
                 IsInsured = b.IsInsured,
                 Name = b.Name,
                 PolicyNumber = b.PolicyNumber,
@@ -174,10 +176,12 @@ namespace ClientApp.Controllers
         {
             return new EntrepriseWarehouseBusinessModel
             {
-                Id = vm.Id,
                 Address = vm.Address,
                 ContentsDescription = vm.ContentsDescription,
                 EntrepriseId = enterpriseId,
+                Id = vm.Id,
+                InsuranceEndDate = vm.InsuranceEndDate,
+                InsuranceStartDate = vm.InsuranceStartDate,
                 IsInsured = vm.IsInsured,
                 Name = vm.Name,
                 PolicyNumber = vm.PolicyNumber,

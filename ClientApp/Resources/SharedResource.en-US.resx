@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -310,7 +310,7 @@
     <value>Attached Documents</value>
   </data>
   <data name="AddEmployee" xml:space="preserve">
-    <value>Add  employee</value>
+    <value>Add employee</value>
   </data>
   <data name="UpdateEmployee" xml:space="preserve">
     <value>Update  employee</value>
@@ -325,7 +325,7 @@
     <value>Souscriptions</value>
   </data>
   <data name="LoadingSubscriptions" xml:space="preserve">
-    <value>Loading  subscriptions...</value>
+    <value>Loading subscriptions...</value>
   </data>
   <data name="BackToEmployeeList" xml:space="preserve">
     <value>Back to employee's list</value>
@@ -337,7 +337,7 @@
     <value>Year</value>
   </data>
   <data name="ListOfEmployees" xml:space="preserve">
-    <value>List of employees</value>
+    <value>List  of employees</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>
@@ -364,7 +364,7 @@
     <value>Last Name</value>
   </data>
   <data name="First Name" xml:space="preserve">
-    <value>First Name</value>
+    <value>FirstName</value>
   </data>
   <data name="Functions" xml:space="preserve">
     <value>Functions</value>
@@ -388,13 +388,13 @@
     <value>months</value>
   </data>
   <data name="DeactivateEmployee" xml:space="preserve">
-    <value>DeactivateEmployee</value>
+    <value>Deactivate Employee</value>
   </data>
   <data name="DeactivationDate" xml:space="preserve">
-    <value>DeactivationDate</value>
+    <value>Deactivation Date</value>
   </data>
   <data name="ConfirmDeactivation" xml:space="preserve">
-    <value>ConfirmDeactivation</value>
+    <value>Confirm Deactivation</value>
   </data>
   <data name="InsurancesTitle" xml:space="preserve">
     <value>Manage your Insurances</value>
@@ -412,7 +412,7 @@
     <value>View Insurance Policy</value>
   </data>
   <data name="FillClaim" xml:space="preserve">
-    <value>Fill Claim</value>
+    <value>Fill disaster claim</value>
   </data>
   <data name="ManageFleet" xml:space="preserve">
     <value>Manage Fleet</value>
@@ -478,7 +478,7 @@
     <value>Subscribe to Insurance</value>
   </data>
   <data name="EligibleForInsurance" xml:space="preserve">
-    <value>This vehicle is eligible for insurance</value>
+    <value>This vehicle is eligible for insurance.</value>
   </data>
   <data name="IneligibleForInsurance" xml:space="preserve">
     <value>This vehicle is not eligible for insurance.</value>
@@ -595,7 +595,7 @@
     <value>Origin</value>
   </data>
   <data name="Destination" xml:space="preserve">
-    <value>Destionation</value>
+    <value>Destination</value>
   </data>
   <data name="TransportationPeriod" xml:space="preserve">
     <value>Transportation Period</value>
@@ -712,9 +712,30 @@
     <value>Confirm signature</value>
   </data>
   <data name="SignNow" xml:space="preserve">
-    <value>SignNow</value>
+    <value>Sign Now</value>
   </data>
   <data name="DownloadFile" xml:space="preserve">
     <value>Download file</value>
+  </data>
+  <data name="Power" xml:space="preserve">
+    <value>Power</value>
+  </data>
+  <data name="FiscalPower" xml:space="preserve">
+    <value>Fiscal Power</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Start Date</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>End Date</value>
+  </data>
+  <data name="InsuranceStartDate" xml:space="preserve">
+    <value>Insurance Start Date</value>
+  </data>
+  <data name="InsuranceEndDate" xml:space="preserve">
+    <value>Insurance End Date</value>
+  </data>
+  <data name="InsurancePeriod" xml:space="preserve">
+    <value>Insurance Period</value>
   </data>
 </root>

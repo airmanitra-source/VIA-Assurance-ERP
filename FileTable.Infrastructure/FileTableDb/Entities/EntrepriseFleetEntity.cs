@@ -2,9 +2,15 @@ namespace FileTable.Infrastructure.FileTableDb.Entities
 {
     public class EntrepriseFleetEntity
     {
+        public long EntrepriseId { get; set; }
+
+        public int? FiscalPower { get; set; }
+
         public long Id { get; set; }
 
-        public long EntrepriseId { get; set; }
+        public DateTime? InsuranceEndDate { get; set; }
+
+        public DateTime? InsuranceStartDate { get; set; }
 
         public bool IsInsured { get; set; }
 
@@ -15,6 +21,8 @@ namespace FileTable.Infrastructure.FileTableDb.Entities
         public int Mileage { get; set; }
 
         public string Model { get; set; } = string.Empty;
+
+        public int? Power { get; set; }
 
         public string Type { get; set; } = string.Empty;
 

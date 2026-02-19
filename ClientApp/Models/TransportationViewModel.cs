@@ -4,8 +4,6 @@ namespace ClientApp.Models
 {
     public class TransportationViewModel
     {
-        public long Id { get; set; }
-
         [Required(ErrorMessage = "Arrival date is required")]
         public DateTime ArrivalDate { get; set; } = DateTime.Today.AddDays(7);
 
@@ -23,6 +21,12 @@ namespace ClientApp.Models
 
         [Required(ErrorMessage = "Frequency is required")]
         public string Frequency { get; set; } = "OneTime";
+
+        public long Id { get; set; }
+
+        public DateTime? InsuranceEndDate { get; set; }
+
+        public DateTime? InsuranceStartDate { get; set; }
 
         public bool IsInsured { get; set; }
 

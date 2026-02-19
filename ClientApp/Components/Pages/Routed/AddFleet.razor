@@ -85,9 +85,23 @@
                     </div>
                 </div>
 
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="power">@Localizer["Power"] (HP/kW)</label>
+                        <InputNumber id="power" @bind-Value="fleetModel.Power" class="form-input" />
+                        <ValidationMessage For="@(() => fleetModel.Power)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fiscalPower">@Localizer["FiscalPower"] (CV)</label>
+                        <InputNumber id="fiscalPower" @bind-Value="fleetModel.FiscalPower" class="form-input" />
+                        <ValidationMessage For="@(() => fleetModel.FiscalPower)" />
+                    </div>
+                </div>
+
                 <div class="insurance-section @(fleetModel.IsEligibleForInsurance ? "eligible" : "ineligible")">
                     <h3>🛡️ @Localizer["Insurance"]</h3>
-                    
+
                     @if (fleetModel.IsEligibleForInsurance)
                     {
                         <div class="form-group subscription-toggle">
@@ -99,6 +113,21 @@
                                 </div>
                             </label>
                         </div>
+
+                        @if (fleetModel.WantsInsurance)
+                        {
+                            <div class="form-row subscription-period animated-fade-in">
+                                <div class="form-group">
+                                    <label>@Localizer["StartDate"]</label>
+                                    <InputDate @bind-Value="fleetModel.InsuranceStartDate" class="form-input" />
+                                </div>
+                                <div class="form-group">
+                                    <label>@Localizer["EndDate"]</label>
+                                    <InputDate @bind-Value="fleetModel.InsuranceEndDate" class="form-input" />
+                                </div>
+                            </div>
+                        }
+
                         <p class="eligibility-hint">✅ @Localizer["EligibleForInsurance"]</p>
                     }
                     else

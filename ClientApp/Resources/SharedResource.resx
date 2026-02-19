@@ -717,4 +717,25 @@
   <data name="DownloadFile" xml:space="preserve">
     <value>Download file</value>
   </data>
+  <data name="Power" xml:space="preserve">
+    <value>Power</value>
+  </data>
+  <data name="FiscalPower" xml:space="preserve">
+    <value>Fiscal Power</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Start Date</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>End Date</value>
+  </data>
+  <data name="InsuranceStartDate" xml:space="preserve">
+    <value>Insurance Start Date</value>
+  </data>
+  <data name="InsuranceEndDate" xml:space="preserve">
+    <value>Insurance End Date</value>
+  </data>
+  <data name="InsurancePeriod" xml:space="preserve">
+    <value>Insurance Period</value>
+  </data>
 </root>

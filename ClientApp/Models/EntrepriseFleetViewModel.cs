@@ -5,11 +5,17 @@ namespace ClientApp.Models
 {
     public class EntrepriseFleetViewModel
     {
-        public long Id { get; set; }
-
         public long EntrepriseId { get; set; }
 
+        public int? FiscalPower { get; set; }
+
+        public long Id { get; set; }
+
         public string Immatriculation { get; set; } = string.Empty;
+
+        public DateTime? InsuranceEndDate { get; set; }
+
+        public DateTime? InsuranceStartDate { get; set; }
 
         public bool IsEligibleForInsurance => IsWorking && Year >= (DateTime.Now.Year - 20);
 
@@ -28,6 +34,8 @@ namespace ClientApp.Models
 
         public string? PolicyNumber { get; set; }
 
+        public int? Power { get; set; }
+
         [Required(ErrorMessage = "Type is required")]
         public string Type { get; set; } = "Auto"; // 'Auto' or 'Moto'
 
@@ -41,16 +49,20 @@ namespace ClientApp.Models
         {
            return entrepriseFleetBusinessModels.Select(x => new EntrepriseFleetViewModel
            {
-               Id = x.Id,
                EntrepriseId = x.EntrepriseId,
-               Type = x.Type,
-               Year = x.Year,
+               FiscalPower = x.FiscalPower,
+               Id = x.Id,
+               InsuranceEndDate = x.InsuranceEndDate,
+               InsuranceStartDate = x.InsuranceStartDate,
+               IsInsured = x.IsInsured,
                IsWorking = x.IsWorking,
-               Mileage = x.Mileage,
                Make = x.Make,
+               Mileage = x.Mileage,
                Model = x.Model,
+               Power = x.Power,
+               Type = x.Type,
                WantsInsurance = x.WantsInsurance,
-               IsInsured = x.IsInsured
+               Year = x.Year
            }).ToList();
         }
     }
