@@ -1,0 +1,30 @@
+@inject IJSRuntime JSRuntime
+
+<div class="signature-container">
+    <canvas id="@CanvasId" width="400" height="200" style="border: 1px solid #ccc; cursor: crosshair; background-color: #fff;"></canvas>
+    <div class="signature-actions" style="margin-top: 10px;">
+        <button type="button" class="btn btn-secondary btn-sm" @onclick="ClearAsync">@Localizer["Clear"]</button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string CanvasId { get; set; } = "signature-canvas";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("signaturePad.init", CanvasId);
+        }
+    }
+
+    public async Task ClearAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("signaturePad.clear", CanvasId);
+    }
+
+    public async Task<string?> GetSignatureDataUrlAsync()
+    {
+        return await JSRuntime.InvokeAsync<string?>("signaturePad.getDataUrl", CanvasId);
+    }
+}

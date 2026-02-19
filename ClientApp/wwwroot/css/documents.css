@@ -1,0 +1,376 @@
+.document-explorer {
+    padding: 20px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--via-navy);
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 24px;
+    color: #333;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.btn-primary {
+    background-color: var(--via-navy);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--via-blue);
+}
+
+.explorer-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.tree-panel,
+.details-panel {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px rgba(30, 49, 140, 0.08);
+}
+
+.tree-panel h3,
+.details-panel h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+/* Tree View Styles */
+.tree-view {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.tree-node {
+    margin-left: 0;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.tree-node:hover {
+    background-color: #f8f9fa;
+}
+
+.tree-node.selected {
+    background-color: #e7f1ff;
+    color: #0056b3;
+    font-weight: 600;
+    border-left: 4px solid #007bff;
+}
+
+.tree-item {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.15s;
+    gap: 8px;
+}
+
+.tree-item:hover {
+    background-color: #f0f0f0;
+}
+
+.tree-item.directory {
+    font-weight: 500;
+}
+
+.toggle-icon {
+    display: inline-block;
+    width: 16px;
+    font-size: 12px;
+    color: #666;
+    flex-shrink: 0;
+}
+
+.toggle-icon-spacer {
+    display: inline-block;
+    width: 16px;
+    flex-shrink: 0;
+}
+
+.node-icon {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-size {
+    font-size: 12px;
+    color: #666;
+    margin-left: auto;
+    padding-left: 10px;
+}
+
+.file-type {
+    font-size: 11px;
+    color: #999;
+    background: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: 8px;
+}
+
+.tree-children {
+    margin-left: 20px;
+    border-left: 1px solid #e0e0e0;
+    padding-left: 8px;
+}
+
+/* Details Panel Styles */
+.details-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.detail-group {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 15px;
+    background: #fafafa;
+}
+
+.detail-group h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.details-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.details-table tr {
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.details-table tr:last-child {
+    border-bottom: none;
+}
+
+.details-table td {
+    padding: 8px 0;
+}
+
+.details-table td.label {
+    font-weight: 600;
+    color: #666;
+    width: 140px;
+    vertical-align: top;
+}
+
+.details-table td.value {
+    color: #333;
+    word-break: break-word;
+}
+
+.attributes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background: var(--via-blue);
+    color: white;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Loading and Empty States */
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: #666;
+}
+
+.spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+}
+
+.empty-state p {
+    margin: 0;
+}
+
+/* Tabs */
+.details-tabs {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.tab-button {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    transition: all 0.2s;
+}
+
+.tab-button:hover {
+    color: #333;
+    background: #f8f8f8;
+}
+
+.tab-button.active {
+    color: var(--via-navy);
+    border-bottom-color: var(--via-blue);
+    background: #f8f9fa;
+}
+
+.tab-content {
+    flex: 1;
+    overflow: auto;
+}
+
+/* Preview Styles */
+.preview-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.image-preview {
+    text-align: center;
+    padding: 20px;
+    background: #f8f8f8;
+    border-radius: 6px;
+}
+
+.image-preview img {
+    max-width: 100%;
+    max-height: 600px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pdf-preview {
+    width: 100%;
+    height: 600px;
+}
+
+.pdf-preview embed {
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
+.text-preview {
+    background: #f8f8f8;
+    border-radius: 6px;
+    padding: 15px;
+    max-height: 600px;
+    overflow: auto;
+}
+
+.text-preview pre {
+    margin: 0;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.video-preview,
+.audio-preview {
+    padding: 20px;
+    background: #f8f8f8;
+    border-radius: 6px;
+}
+
+.no-preview {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+.no-preview-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.no-preview p {
+    margin: 10px 0;
+}
+
+.file-info {
+    font-size: 14px;
+    color: #666;
+}
+
+.no-preview .btn {
+    margin-top: 20px;
+}

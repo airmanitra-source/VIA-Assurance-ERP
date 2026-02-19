@@ -1,0 +1,135 @@
+@page "/add-transportation"
+@rendermode InteractiveServer
+@using ClientApp.Models
+@using ClientApp.Services
+@using Company.Transportation.Module
+@using Company.Transportation.Module.Data.Models
+@using Company.Module
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Forms
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> Localizer
+
+<PageTitle>@(Id.HasValue ? Localizer["EditTransportation"] : Localizer["AddTransportation"]) - VIA Assurance</PageTitle>
+
+<div class="add-transportation-container">
+    <div class="add-transportation-card">
+        <div class="header">
+            <h1>@(Id.HasValue ? "✏️ " : "🚚 ") @(Id.HasValue ? Localizer["Edit"] : Localizer["AddNew"]) @Localizer["Transportation"]</h1>
+            <p>@Localizer["ManageTransportationsDescription"]</p>
+        </div>
+
+        @if (isLoadingCompany || isLoadingItem)
+        {
+            <div class="loading-state">
+                <span class="spinner"></span>
+                <p>@Localizer["Loading"]...</p>
+            </div>
+        }
+        else if (currentCompany == null)
+        {
+            <div class="error-list">
+                <div class="error-message">⚠️ @Localizer["CouldNotRetrieveEnterprise"]</div>
+            </div>
+            <button class="btn-back" @onclick='() => Navigation.NavigateTo("/login")'>Back to Login</button>
+        }
+        else
+        {
+            <EditForm Model="@model" OnValidSubmit="@HandleSubmit" class="transportation-form">
+                <DataAnnotationsValidator />
+                
+                <div class="form-group">
+                    <label>@Localizer["Description"]</label>
+                    <InputText @bind-Value="model.Description" class="form-input" placeholder="e.g. Export of textile goods" />
+                    <ValidationMessage For="@(() => model.Description)" />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>@Localizer["Origin"]</label>
+                        <InputText @bind-Value="model.Origin" class="form-input" placeholder="City, Country" />
+                        <ValidationMessage For="@(() => model.Origin)" />
+                    </div>
+                    <div class="form-group">
+                        <label>@Localizer["Destination"]</label>
+                        <InputText @bind-Value="model.Destination" class="form-input" placeholder="City, Country" />
+                        <ValidationMessage For="@(() => model.Destination)" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>@Localizer["DepartureDate"]</label>
+                        <InputDate @bind-Value="model.DepartureDate" class="form-input" />
+                        <ValidationMessage For="@(() => model.DepartureDate)" />
+                    </div>
+                    <div class="form-group">
+                        <label>@Localizer["ArrivalDate"]</label>
+                        <InputDate @bind-Value="model.ArrivalDate" class="form-input" />
+                        <ValidationMessage For="@(() => model.ArrivalDate)" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>@Localizer["MerchandiseValue"]</label>
+                        <InputNumber @bind-Value="model.Value" class="form-input" />
+                        <ValidationMessage For="@(() => model.Value)" />
+                    </div>
+                    <div class="form-group">
+                        <label>@Localizer["Frequency"]</label>
+                        <InputSelect @bind-Value="model.Frequency" class="form-input">
+                            <option value="OneTime">@Localizer["FrequencyOneTime"]</option>
+                            <option value="Weekly">@Localizer["FrequencyWeekly"]</option>
+                            <option value="Monthly">@Localizer["FrequencyMonthly"]</option>
+                            <option value="Casual">@Localizer["FrequencyCasual"]</option>
+                        </InputSelect>
+                        <ValidationMessage For="@(() => model.Frequency)" />
+                    </div>
+                </div>
+
+                <div class="insurance-section eligible">
+                    <h3>🛡️ @Localizer["Insurance"]</h3>
+                    <div class="form-group">
+                        <label class="switch-container">
+                            <span class="switch-label">@Localizer["WantsInsurance"]</span>
+                            <div class="switch">
+                                <InputCheckbox @bind-Value="model.WantsInsurance" />
+                                <span class="slider round"></span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                @if (errors.Any())
+                {
+                    <div class="error-list">
+                        @foreach (var error in errors)
+                        {
+                            <div class="error-message">⚠️ @error</div>
+                        }
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(successMessage))
+                {
+                    <div class="success-message">✅ @successMessage</div>
+                }
+
+                <div class="actions">
+                    <button type="button" class="btn-secondary" @onclick='() => Navigation.NavigateTo("/transportation-list")'>@Localizer["Cancel"]</button>
+                    <button type="submit" class="btn-primary" disabled="@isSubmitting">
+                        @if (isSubmitting)
+                        {
+                            <span class="spinner-small"></span>
+                            <span>@Localizer["Saving"]...</span>
+                        }
+                        else
+                        {
+                            <span>@(Id.HasValue ? Localizer["Update"] : Localizer["Add"])</span>
+                        }
+                    </button>
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>

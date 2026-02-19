@@ -1,0 +1,271 @@
+.add-warehouse-container {
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    background-color: #f8f9fa;
+    min-height: calc(100vh - 60px);
+}
+
+.add-warehouse-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 700px;
+}
+
+.header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--bs-primary);
+}
+
+.header p {
+    color: #6c757d;
+    margin-bottom: 2rem;
+}
+
+.enterprise-info {
+    background: #e7f1ff;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    color: #084298;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-input {
+    padding: 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.form-input:focus {
+    border-color: var(--bs-primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+}
+
+.insurance-section {
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin: 2rem 0;
+}
+
+.insurance-section.eligible {
+    background: #f0fff4;
+    border: 1px solid #c6f6d5;
+}
+
+.insurance-section h3 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+/* Switch styling */
+.switch-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+}
+
+input:checked+.slider {
+    background-color: var(--bs-primary);
+}
+
+input:checked+.slider:before {
+    transform: translateX(26px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.btn-primary,
+.btn-secondary {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-primary {
+    background: var(--bs-primary);
+    color: white;
+}
+
+.btn-secondary {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.error-list {
+    margin-bottom: 1.5rem;
+}
+
+.error-message {
+    color: #dc3545;
+    padding: 0.5rem;
+    background: #fff5f5;
+    border-radius: 4px;
+    border-left: 4px solid #dc3545;
+}
+
+.success-message {
+    color: #198754;
+    padding: 1rem;
+    background: #d1e7dd;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+/* Materials Section Styles */
+.materials-section {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
+}
+
+.materials-section h3 {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    color: var(--bs-primary);
+}
+
+.inline-material-form {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+    margin-bottom: 1.5rem;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
+.form-actions-inline {
+    display: flex;
+    align-items: flex-end;
+    padding-bottom: 1.5rem;
+}
+
+.btn-add-inline {
+    background: var(--bs-primary);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    margin-bottom: 1.5rem;
+}
+
+.managed-materials-list {
+    margin-top: 1rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.materials-mini-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.materials-mini-table th {
+    text-align: left;
+    font-size: 0.85rem;
+    color: #6c757d;
+    padding: 0.5rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.materials-mini-table td {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #eee;
+}
+
+.btn-remove {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.btn-remove:hover {
+    color: #a52834;
+}

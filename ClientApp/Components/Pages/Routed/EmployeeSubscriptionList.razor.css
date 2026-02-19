@@ -1,0 +1,141 @@
+.manage-employees-container {
+    padding: 32px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 32px;
+}
+
+.header-text h1 {
+    font-size: 28px;
+    color: #1a202c;
+    margin: 0 0 8px 0;
+}
+
+.header-text p {
+    color: #718096;
+    margin: 0;
+}
+
+.btn-add {
+    background: linear-gradient(135deg, #1E318C 0%, #1478FF 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 49, 140, 0.3);
+}
+
+.employees-grid {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.employees-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.employees-table th {
+    background: #f8fafc;
+    padding: 16px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4a5568;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #edf2f7;
+}
+
+.employees-table td {
+    padding: 16px;
+    border-bottom: 1px solid #edf2f7;
+    vertical-align: middle;
+}
+
+.employee-name strong {
+    color: #2d3748;
+    font-size: 15px;
+}
+
+.employee-position strong {
+    color: #2d3748;
+    font-size: 15px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-icon {
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-icon:hover {
+    background: #edf2f7;
+    border-color: #cbd5e0;
+}
+
+.btn-icon.delete:hover {
+    background: #fff5f5;
+    border-color: #feb2b2;
+}
+
+.loading-state,
+.empty-state {
+    padding: 64px;
+    text-align: center;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #1E318C;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

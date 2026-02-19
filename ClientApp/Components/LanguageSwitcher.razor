@@ -1,0 +1,29 @@
+@using System.Globalization
+
+<div class="language-selector" style="padding: 10px; text-align: right;">
+    <label>🌐</label>
+    <select id="languageSelect" class="form-select" style="width: auto; display: inline-block;"
+            onchange="window.location.href = '/Culture/Set?culture=' + encodeURIComponent(this.value) + '&redirectUri=' + encodeURIComponent(window.location.pathname + window.location.search)">
+        @foreach (var culture in supportedCultures)
+        {
+            if (currentCulture == culture.Code)
+            {
+                <option value="@culture.Code" selected>@culture.Name</option>
+            }
+            else
+            {
+                <option value="@culture.Code">@culture.Name</option>
+            }
+        }
+    </select>
+</div>
+
+@code {
+    private string currentCulture = CultureInfo.CurrentUICulture.Name;
+
+    private readonly (string Code, string Name)[] supportedCultures = new[]
+    {
+        ("fr-FR", "Français"),
+        ("en-US", "English")
+    };
+}

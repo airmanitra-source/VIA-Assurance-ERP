@@ -1,0 +1,12 @@
+Added SVG data for folder and person-plus icons:
+
+Folder SVG:
+<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-folder-fill' viewBox='0 0 16 16'>
+  <path d='M9.828 4a.5.5 0 0 1 .354.146L11 5h3a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h4.5a1 1 0 0 1 .707.293L7.707 3H9.828z'/>
+</svg>
+
+Person-plus SVG:
+<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-person-plus-fill' viewBox='0 0 16 16'>
+  <path d='M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'/>
+  <path d='M13 6v1h2V8h-2v1h-1V8h-2V7h2V6h1zM1 14s1-1 7-1 7 1 7 1v1H1v-1z'/>
+</svg>

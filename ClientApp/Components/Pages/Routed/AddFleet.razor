@@ -1,0 +1,151 @@
+@page "/add-fleet"
+@inherits AuthenticatedComponentBase
+@rendermode InteractiveServer
+@using ClientApp.Models
+@using ClientApp.Services
+@using Company.Fleet.Module
+@using Company.Fleet.Module.Data.Models
+@using Company.Module
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Forms
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> Localizer
+
+<PageTitle>@(Id.HasValue ? Localizer["EditFleet"] : Localizer["AddFleet"]) - VIA Assurance Dashboard</PageTitle>
+
+<div class="add-fleet-container">
+    <div class="add-fleet-card">
+        <div class="header">
+            <h1>@(Id.HasValue ? "✏️ " + Localizer["Edit"] : "🚗 " + Localizer["AddNew"]) @Localizer["FleetItem"]</h1>
+            <p>@(Id.HasValue ? Localizer["UpdateVehicleInfo"] : Localizer["RegisterNewVehicle"])</p>
+        </div>
+
+        @if (isLoadingCompany || isLoadingItem)
+        {
+            <div class="loading-state">
+                <span class="spinner"></span>
+                <p>@Localizer["Loading"]...</p>
+            </div>
+        }
+        else if (currentCompany == null)
+        {
+            <div class="error-list">
+                <div class="error-message">⚠️ @Localizer["CouldNotRetrieveEnterprise"]</div>
+            </div>
+            <button class="btn-back" @onclick='() => Navigation.NavigateTo("/login")'>Back to Login</button>
+        }
+        else
+        {
+            <div class="enterprise-info">
+                <span>@Localizer["Enterprise"]: <strong>@currentCompany.RaisonSocial</strong></span>
+            </div>
+
+            <EditForm Model="@fleetModel" OnValidSubmit="@HandleSubmit" class="fleet-form">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="type">@Localizer["VehicleType"]</label>
+                        <InputSelect id="type" @bind-Value="fleetModel.Type" class="form-input">
+                            <option value="Auto">Automobile</option>
+                            <option value="Moto">Motorcycle</option>
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="year">@Localizer["Year"]</label>
+                        <InputNumber id="year" @bind-Value="fleetModel.Year" class="form-input" />
+                        <ValidationMessage For="@(() => fleetModel.Year)" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="make">@Localizer["Make"]</label>
+                        <InputText id="make" @bind-Value="fleetModel.Make" class="form-input" placeholder="e.g. Toyota" />
+                        <ValidationMessage For="@(() => fleetModel.Make)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="model">@Localizer["Model"]</label>
+                        <InputText id="model" @bind-Value="fleetModel.Model" class="form-input" placeholder="e.g. Corolla" />
+                        <ValidationMessage For="@(() => fleetModel.Model)" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="mileage">@Localizer["Mileage"] (km)</label>
+                        <InputNumber id="mileage" @bind-Value="fleetModel.Mileage" class="form-input" />
+                        <ValidationMessage For="@(() => fleetModel.Mileage)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <InputCheckbox @bind-Value="fleetModel.IsWorking" />
+                            <span>@Localizer["InWorkingCondition"]</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="insurance-section @(fleetModel.IsEligibleForInsurance ? "eligible" : "ineligible")">
+                    <h3>🛡️ @Localizer["Insurance"]</h3>
+                    
+                    @if (fleetModel.IsEligibleForInsurance)
+                    {
+                        <div class="form-group subscription-toggle">
+                            <label class="switch-container">
+                                <span class="switch-label">@Localizer["WantsInsurance"]</span>
+                                <div class="switch">
+                                    <InputCheckbox @bind-Value="fleetModel.WantsInsurance" />
+                                    <span class="slider round"></span>
+                                </div>
+                            </label>
+                        </div>
+                        <p class="eligibility-hint">✅ @Localizer["EligibleForInsurance"]</p>
+                    }
+                    else
+                    {
+                        <div class="ineligible-notice">
+                            <p>⚠️ @Localizer["IneligibleForInsurance"]</p>
+                            <ul>
+                                @if (!fleetModel.IsWorking) { <li>@Localizer["VehicleMustBeWorking"]</li> }
+                                @if (fleetModel.Year < (DateTime.Now.Year - 20)) { <li>@Localizer["VehicleIsTooOld"]</li> }
+                            </ul>
+                        </div>
+                    }
+                </div>
+
+                @if (errors.Any())
+                {
+                    <div class="error-list">
+                        @foreach (var error in errors)
+                        {
+                            <div class="error-message">⚠️ @error</div>
+                        }
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(successMessage))
+                {
+                    <div class="success-message">✅ @successMessage</div>
+                }
+
+                <div class="actions">
+                    <button type="button" class="btn-secondary" @onclick='() => Navigation.NavigateTo("/fleet-list")'>@Localizer["Cancel"]</button>
+                    <button type="submit" class="btn-primary" disabled="@isSubmitting">
+                        @if (isSubmitting)
+                        {
+                            <span class="spinner-small"></span>
+                            <span>@Localizer["Saving"]...</span>
+                        }
+                        else
+                        {
+                            <span>@(Id.HasValue ? Localizer["Update"] : Localizer["Add"])</span>
+                        }
+                    </button>
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>

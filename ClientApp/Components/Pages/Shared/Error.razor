@@ -1,0 +1,33 @@
+﻿@page "/Error"
+@using System.Diagnostics
+
+<PageTitle>Error</PageTitle>
+
+<h1 class="text-danger">@Localizer["ErrorTitle"]</h1>
+<h2 class="text-danger">@Localizer["ErrorSubtitle"]</h2>
+
+@if (ShowRequestId)
+{
+    <p>
+        <strong>@Localizer["RequestIdLabel"]</strong> <code>@RequestId</code>
+    </p>
+}
+
+<h3>@Localizer["DevelopmentModeTitle"]</h3>
+<p>
+    @((MarkupString)Localizer["DevelopmentModeDescription1"].Value)
+</p>
+<p>
+    @((MarkupString)Localizer["DevelopmentModeDescription2"].Value)
+</p>
+
+@code{
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    private string? RequestId { get; set; }
+    private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+
+    protected override void OnInitialized() =>
+        RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+}

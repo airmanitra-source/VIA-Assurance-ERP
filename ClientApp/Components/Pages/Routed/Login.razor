@@ -1,0 +1,56 @@
+@page "/login"
+
+<PageTitle>@Localizer["Login"] - VIA Assurance Dashboard</PageTitle>
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <h1>🛡️ VIA Assurance</h1>
+            <p>@Localizer["LoginSubtitle"]</p>
+        </div>
+
+        <EditForm Model="@loginModel" OnValidSubmit="@HandleLogin" FormName="login">
+            <DataAnnotationsValidator />
+            
+            <div class="form-group">
+                <label for="username">Username</label>
+                <InputText id="username"
+					   @bind-Value="loginModel.Username"
+					   class="form-input"
+					   placeholder="Enter your username" />
+                <ValidationMessage For="@(() => loginModel.Username)" />
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <InputText id="password" type="password" @bind-Value="loginModel.Password" class="form-input" placeholder="Enter your password" />
+                <ValidationMessage For="@(() => loginModel.Password)" />
+            </div>
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="error-message">
+                    ⚠️ @errorMessage
+                </div>
+            }
+
+            <button type="submit" class="btn-login" disabled="@isLoading">
+                @if (isLoading)
+                {
+                    <span class="spinner-small"></span>
+                    <span>Signing in...</span>
+                }
+                else
+                {
+                    <span>@Localizer["SignIn"]</span>
+                }
+            </button>
+        </EditForm>
+
+        <div class="login-footer">
+            <p class="hint">@Localizer["DontHaveAccount"] <a href="/register">@Localizer["Register"]</a></p>
+        </div>
+    </div>
+</div>
+
+

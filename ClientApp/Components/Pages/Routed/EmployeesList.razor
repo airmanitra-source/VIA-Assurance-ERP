@@ -1,0 +1,118 @@
+@page "/list-employees"
+@inherits AuthenticatedComponentBase
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "directeur,RH,auditeur,admin,developer")]
+
+<PageTitle>@Localizer["ManageEmployees"] - VIA Assurance</PageTitle>
+
+<div class="manage-employees-container">
+    <div class="page-header">
+        <div class="header-text">
+            <h1>👥 @Localizer["ManageEmployeesTitle"]</h1>
+            <p>@Localizer["ManageEmployeesDescription"]</p>
+        </div>
+        <button class="btn-add" @onclick='() => Navigation.NavigateTo("/add-employee")'>
+            <span>+</span> @Localizer["AddEmployee"]
+        </button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="loading-state">
+            <span class="spinner"></span>
+            <p>@Localizer["LoadingEmployees"]</p>
+        </div>
+    }
+    else if (employees == null || !employees.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <h3>@Localizer["NoEmployeesFoundTitle"]</h3>
+            <p>@Localizer["NoEmployeesFoundDescription"]</p>
+        </div>
+    }
+    else
+    {
+        <div class="employees-grid">
+            <table class="employees-table">
+                <thead>
+                    <tr>
+                        <th>@Localizer["Name"]</th>
+                        <th>@Localizer["Position"]</th>
+                        <th>@Localizer["Status"]</th>
+                        <th>@Localizer["State"]</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var emp in employees)
+                    {
+                        <tr class="@(emp.IsActive ? "" : "inactive-row")">
+                            <td>
+                                <div class="employee-name">
+                                    <strong>@emp.Prenom @emp.Nom</strong>
+                                    <span>@emp.Age @Localizer["yearsOld"], @emp.Sexe</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="employee-position">
+                                    <strong>@emp.NomPoste</strong>
+                                    <span>@emp.NombreMoisPoste @Localizer["months"]</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge @(emp.StatutEmploye == "CDI" ? "badge-cdi" : "badge-cdd")">
+                                    @emp.StatutEmploye
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-dot @(emp.IsActive ? "active" : "inactive")"></span>
+                                @(emp.IsActive ? "Active" : "Inactive")
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon" title="Edit" @onclick="() => EditEmployee(emp)">✏️</button>
+                                    <button class="btn-icon" title="Documents" @onclick="() => ManageDocuments(emp)">📄</button>
+                                    <button class="btn-icon @(emp.VouloirSouscrire ? "" : "disabled")" 
+                                            title="@(emp.VouloirSouscrire ? Localizer["Insurance"] : Localizer["NoSubscriptionAccess"])" 
+                                            @onclick="() => ManageInsurance(emp)"
+                                            disabled="@(!emp.VouloirSouscrire)">🛡️</button>
+                                    @if (emp.IsActive)
+                                    {
+                                        <button class="btn-icon delete" title="Deactivate" @onclick="() => ToggleActiveStatusAsync(emp)">🚫</button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn-icon success" title="Activate" @onclick="() => ToggleActiveStatusAsync(emp)">✅</button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@if (showDeactivateModal)
+{
+    <div class="modal-overlay">
+        <div class="modal-content">
+            <h3>🚫 @Localizer["DeactivateEmployee"]</h3>
+            <p>@Localizer["ConfirmDeactivation"] <strong>@employeeToDeactivate?.Prenom @employeeToDeactivate?.Nom</strong>?</p>
+            
+            <div class="form-group">
+                <label>@Localizer["DeactivationDate"]</label>
+                <input type="date" class="form-input" @bind="deactivationDate" />
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-cancel" @onclick="CloseModal">@Localizer["Cancel"]</button>
+                <button class="btn-confirm" @onclick="ConfirmDeactivationAsync">@Localizer["Confirm"]</button>
+            </div>
+        </div>
+    </div>
+}
+

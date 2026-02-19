@@ -1,0 +1,20 @@
+@inherits LayoutComponentBase
+
+<div class="page">
+    <div class="sidebar">
+        <AuthorizeView>
+            <Authorized>
+                <NavMenu @rendermode="InteractiveServer" />
+                <LanguageSwitcher @rendermode="InteractiveServer" />
+            </Authorized>
+            <NotAuthorized>
+                <NavMenu />
+                <LanguageSwitcher />
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+
+    <main>
+        @Body
+    </main>
+</div>

@@ -1,0 +1,56 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="FileTableDb\Migrations\20260204_create_entreprises.sql" />
+    <None Remove="FileTableDb\Migrations\20260206_alter_entreprises.sql" />
+    <None Remove="FileTableDb\Migrations\20260211_alter_Employee.sql" />
+    <None Remove="FileTableDb\Migrations\20260211_create_souscription.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="FileTableDb\Migrations\20260101_initial_script.sql" />
+    <EmbeddedResource Include="FileTableDb\Migrations\20260204_create_entreprises.sql" />
+    <EmbeddedResource Include="FileTableDb\Migrations\20260210_alter_EmployeeDocuments.sql" />
+    <EmbeddedResource Include="FileTableDb\Migrations\20260210_alter_Employee.sql" />
+    <EmbeddedResource Include="FileTableDb\Migrations\20260207_alter_Employee.sql" />
+    <EmbeddedResource Include="FileTableDb\Migrations\20260207_create_EmployeeDocuments.sql" />
+    <EmbeddedResource Include="FileTableDb\Migrations\20260206_create_Employee.sql" />
+    <EmbeddedResource Include="FileTableDb\Migrations\20260206_alter_entreprises.sql" />
+    <EmbeddedResource Include="FileTableDb\Migrations\20260211_alter_Employee.sql" />
+    <EmbeddedResource Include="FileTableDb\Migrations\20260212_alter_souscription.sql" />
+    <EmbeddedResource Include="FileTableDb\Migrations\20260211_create_souscription.sql" />
+    <EmbeddedResource Include="FileTableDb\Migrations\20260217_create_CompanyDocuments.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Identity" Version="1.17.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="10.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="10.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4" />
+    <PackageReference Include="Dapper" Version="2.1.66" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="10.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EmployeeDocuments.Module\EmployeeDocuments.Module.csproj" />
+    <ProjectReference Include="..\FileTable.Module\FileTable.Module.csproj" />
+    <ProjectReference Include="..\Employee.Module\Employee.Module.csproj" />
+    <ProjectReference Include="..\Company.Module\Company.Module.csproj" />
+    <ProjectReference Include="..\Subscription.Module\Subscription.Module.csproj" />
+    <ProjectReference Include="..\Company.Fleet.Module\Company.Fleet.Module.csproj" />
+    <ProjectReference Include="..\Company.Warehouse.Module\Company.Warehouse.Module.csproj" />
+    <ProjectReference Include="..\Company.Transportation.Module\Company.Transportation.Module.csproj" />
+    <ProjectReference Include="..\Sinister.Module\Sinister.Module.csproj" />
+    <ProjectReference Include="..\CompanyDocuments.Module\CompanyDocuments.Module.csproj" />
+  </ItemGroup>
+
+</Project>

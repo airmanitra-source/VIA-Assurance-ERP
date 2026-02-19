@@ -1,0 +1,80 @@
+@page "/"
+@using Microsoft.AspNetCore.Components.Authorization
+@using ClientApp.Services
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<ClientApp.SharedResource> Localizer
+@inject AuthenticationService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>Home - VIA Assurance Madagascar</PageTitle>
+
+<div class="home-container">
+    <div class="hero-section">
+        <h1>@Localizer["WelcomeTitle"]</h1>
+        <p class="subtitle">@Localizer["HomeSubtitle"]</p>
+    </div>
+    
+    <div class="intro-card">
+        <div class="card-header">
+            <h2>📊 @Localizer["MonitoringTitle"]</h2>
+            <p>@Localizer["MonitoringDescription"]</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-item">
+                <span class="feature-icon">🇲🇬</span>
+                <div class="feature-text">
+                    <h3>@Localizer["LocalComplianceTitle"]</h3>
+                    <p>@Localizer["LocalComplianceDescription"]</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">🏢</span>
+                <div class="feature-text">
+                    <h3>@Localizer["PrivateSectorTitle"]</h3>
+                    <p>@Localizer["PrivateSectorDescription"]</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">🛡️</span>
+                <div class="feature-text">
+                    <h3>@Localizer["SocialProtectionTitle"]</h3>
+                    <p>@Localizer["SocialProtectionDescription"]</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">📈</span>
+                <div class="feature-text">
+                    <h3>@Localizer["AnalyticsTitle"]</h3>
+                    <p>@Localizer["AnalyticsDescription"]</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-section">
+            <h3>@Localizer["SecureAccessTitle"]</h3>
+            <p>@Localizer["SecureAccessDescription"]</p>
+            <div class="button-group">
+                <AuthorizeView>
+                    <Authorized>
+                        <a href="/logout" class="btn btn-secondary btn-large">
+                            @Localizer["Logout"]
+                        </a>
+                    </Authorized>
+                    <NotAuthorized>
+                        <a href="/login" class="btn btn-primary btn-large">
+                            @Localizer["Login"] →
+                        </a>
+                        <a href="/register" class="btn btn-outline-secondary btn-large">
+                            @Localizer["Register"]
+                        </a>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+}
+

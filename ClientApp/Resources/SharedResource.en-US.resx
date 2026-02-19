@@ -1,0 +1,720 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Welcome" xml:space="preserve">
+    <value>Welcome</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Register</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Documents" xml:space="preserve">
+    <value>Documents</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="WelcomeTitle" xml:space="preserve">
+    <value>Welcome to VIA Assurance</value>
+  </data>
+  <data name="HomeSubtitle" xml:space="preserve">
+    <value>Insurance your investments seamlessly</value>
+  </data>
+  <data name="MonitoringTitle" xml:space="preserve">
+    <value>Monitoring &amp; Steering</value>
+  </data>
+  <data name="MonitoringDescription" xml:space="preserve">
+    <value>Advanced visualization solutions dedicated to Malagasy companies for optimal subscription management.</value>
+  </data>
+  <data name="LocalComplianceTitle" xml:space="preserve">
+    <value>Local Compliance</value>
+  </data>
+  <data name="LocalComplianceDescription" xml:space="preserve">
+    <value>Adapted to the specificities of the job market and social legislation in Madagascar.</value>
+  </data>
+  <data name="PrivateSectorTitle" xml:space="preserve">
+    <value>Private Sector</value>
+  </data>
+  <data name="PrivateSectorDescription" xml:space="preserve">
+    <value>Designed exclusively to meet the flexibility and security needs of private companies.</value>
+  </data>
+  <data name="SocialProtectionTitle" xml:space="preserve">
+    <value>Digital insurance</value>
+  </data>
+  <data name="SocialProtectionDescription" xml:space="preserve">
+    <value>Real-time monitoring of contributions and employee rights in case of business interruption.</value>
+  </data>
+  <data name="AnalyticsTitle" xml:space="preserve">
+    <value>Analytics</value>
+  </data>
+  <data name="AnalyticsDescription" xml:space="preserve">
+    <value>Dynamic visualization of subscription trends and decision-making reporting for HRDs.</value>
+  </data>
+  <data name="SecureAccessTitle" xml:space="preserve">
+    <value>Secure Access</value>
+  </data>
+  <data name="SecureAccessDescription" xml:space="preserve">
+    <value>Log in to access your company data.</value>
+  </data>
+  <data name="ManageEmployeesTitle" xml:space="preserve">
+    <value>Manage Employees</value>
+  </data>
+  <data name="ManageEmployeesDescription" xml:space="preserve">
+    <value>View and manage information for all employees in your enterprise.</value>
+  </data>
+  <data name="NoEmployeesFoundTitle" xml:space="preserve">
+    <value>No employees found</value>
+  </data>
+  <data name="NoEmployeesFoundDescription" xml:space="preserve">
+    <value>You haven't added any employees yet. Click "Add Employee" to get started.</value>
+  </data>
+  <data name="LoadingEmployees" xml:space="preserve">
+    <value>Loading employees...</value>
+  </data>
+  <data name="LoginSubtitle" xml:space="preserve">
+    <value>Unemployment Insurance Dashboard</value>
+  </data>
+  <data name="DontHaveAccount" xml:space="preserve">
+    <value>Don't have an account?</value>
+  </data>
+  <data name="RegisterSubtitle" xml:space="preserve">
+    <value>Create your dashboard account</value>
+  </data>
+  <data name="AlreadyHaveAccount" xml:space="preserve">
+    <value>Already have an account?</value>
+  </data>
+  <data name="SignIn" xml:space="preserve">
+    <value>Sign In</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="AddNew" xml:space="preserve">
+    <value>Add New</value>
+  </data>
+  <data name="Employee" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="UpdateInfoFor" xml:space="preserve">
+    <value>Update information for</value>
+  </data>
+  <data name="RegisterNewEmployee" xml:space="preserve">
+    <value>Register a new employee for your enterprise</value>
+  </data>
+  <data name="RetrievingEmployeeInfo" xml:space="preserve">
+    <value>Retrieving employee information...</value>
+  </data>
+  <data name="RetrievingEnterpriseInfo" xml:space="preserve">
+    <value>Retrieving enterprise information...</value>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>Error.</value>
+  </data>
+  <data name="ErrorSubtitle" xml:space="preserve">
+    <value>An error occurred while processing your request.</value>
+  </data>
+  <data name="RequestIdLabel" xml:space="preserve">
+    <value>Request ID:</value>
+  </data>
+  <data name="DevelopmentModeTitle" xml:space="preserve">
+    <value>Development Mode</value>
+  </data>
+  <data name="NotFoundTitle" xml:space="preserve">
+    <value>Not Found</value>
+  </data>
+  <data name="NotFoundDescription" xml:space="preserve">
+    <value>Sorry, the content you are looking for does not exist.</value>
+  </data>
+  <data name="NoPreviewAvailable" xml:space="preserve">
+    <value>No preview available for this file type.</value>
+  </data>
+  <data name="FileTypeInfo" xml:space="preserve">
+    <value>File type:</value>
+  </data>
+  <data name="IsDirectory" xml:space="preserve">
+    <value>This is a directory.</value>
+  </data>
+  <data name="ContainsItems" xml:space="preserve">
+    <value>Contains {0} item(s)</value>
+  </data>
+  <data name="SelectFileToPreview" xml:space="preserve">
+    <value>Select a file to preview.</value>
+  </data>
+  <data name="DocumentsTitle" xml:space="preserve">
+    <value>VIA Assurance Documents</value>
+  </data>
+  <data name="DocumentTreeTitle" xml:space="preserve">
+    <value>Document Tree</value>
+  </data>
+  <data name="LoadingDocuments" xml:space="preserve">
+    <value>Loading documents...</value>
+  </data>
+  <data name="NoDocumentsFound" xml:space="preserve">
+    <value>No documents found in the FileTable.</value>
+  </data>
+  <data name="BasicInfoTitle" xml:space="preserve">
+    <value>Basic Information</value>
+  </data>
+  <data name="TimestampsTitle" xml:space="preserve">
+    <value>Timestamps</value>
+  </data>
+  <data name="AttributesTitle" xml:space="preserve">
+    <value>Attributes</value>
+  </data>
+  <data name="TechnicalDetailsTitle" xml:space="preserve">
+    <value>Technical Details</value>
+  </data>
+  <data name="SelectDocumentToView" xml:space="preserve">
+    <value>Select a document or folder to view details.</value>
+  </data>
+  <data name="CouldNotRetrieve" xml:space="preserve">
+    <value>Could not retrieve enterprise information. Please try logging in again.</value>
+  </data>
+  <data name="Enterprise" xml:space="preserve">
+    <value>Enterprise</value>
+  </data>
+  <data name="AttachedDocuments" xml:space="preserve">
+    <value>Attached Documents</value>
+  </data>
+  <data name="AddEmployee" xml:space="preserve">
+    <value>Add  employee</value>
+  </data>
+  <data name="UpdateEmployee" xml:space="preserve">
+    <value>Update  employee</value>
+  </data>
+  <data name="DocumentType" xml:space="preserve">
+    <value>Document Type</value>
+  </data>
+  <data name="EmployeeSubscriptionsTitle" xml:space="preserve">
+    <value>Employee subscription</value>
+  </data>
+  <data name="SubscriptionsFor" xml:space="preserve">
+    <value>Souscriptions</value>
+  </data>
+  <data name="LoadingSubscriptions" xml:space="preserve">
+    <value>Loading  subscriptions...</value>
+  </data>
+  <data name="BackToEmployeeList" xml:space="preserve">
+    <value>Back to employee's list</value>
+  </data>
+  <data name="NoSubscriptionsFoundDescription" xml:space="preserve">
+    <value>No Subscription  Found</value>
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value>Year</value>
+  </data>
+  <data name="ListOfEmployees" xml:space="preserve">
+    <value>List of employees</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Position" xml:space="preserve">
+    <value>Position</value>
+  </data>
+  <data name="Month" xml:space="preserve">
+    <value>Month</value>
+  </data>
+  <data name="Amount" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="State" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="yearsOld" xml:space="preserve">
+    <value>years old</value>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>Last Name</value>
+  </data>
+  <data name="First Name" xml:space="preserve">
+    <value>First Name</value>
+  </data>
+  <data name="Functions" xml:space="preserve">
+    <value>Functions</value>
+  </data>
+  <data name="MonthsinPosition" xml:space="preserve">
+    <value>Months in Position</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>First Name</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="SelectFile" xml:space="preserve">
+    <value>Select File</value>
+  </data>
+  <data name="SubscribeToInsurance" xml:space="preserve">
+    <value>Subscribe to insurance</value>
+  </data>
+  <data name="months" xml:space="preserve">
+    <value>months</value>
+  </data>
+  <data name="DeactivateEmployee" xml:space="preserve">
+    <value>DeactivateEmployee</value>
+  </data>
+  <data name="DeactivationDate" xml:space="preserve">
+    <value>DeactivationDate</value>
+  </data>
+  <data name="ConfirmDeactivation" xml:space="preserve">
+    <value>ConfirmDeactivation</value>
+  </data>
+  <data name="InsurancesTitle" xml:space="preserve">
+    <value>Manage your Insurances</value>
+  </data>
+  <data name="AutomobileFleetInsurance" xml:space="preserve">
+    <value>Automobile Fleet</value>
+  </data>
+  <data name="GoodsTransportInsurance" xml:space="preserve">
+    <value>Goods Transport</value>
+  </data>
+  <data name="WarehouseEquipmentProtection" xml:space="preserve">
+    <value>Warehouse and Equipment</value>
+  </data>
+  <data name="ViewInsurancePolicy" xml:space="preserve">
+    <value>View Insurance Policy</value>
+  </data>
+  <data name="FillClaim" xml:space="preserve">
+    <value>Fill Claim</value>
+  </data>
+  <data name="ManageFleet" xml:space="preserve">
+    <value>Manage Fleet</value>
+  </data>
+  <data name="ManageFleetTitle" xml:space="preserve">
+    <value>Manage Enterprise Fleet</value>
+  </data>
+  <data name="ManageFleetDescription" xml:space="preserve">
+    <value>List and manage your enterprise automobile and motorcycle fleets.</value>
+  </data>
+  <data name="AddFleetItem" xml:space="preserve">
+    <value>Add to Fleet</value>
+  </data>
+  <data name="LoadingFleet" xml:space="preserve">
+    <value>Loading fleet items...</value>
+  </data>
+  <data name="NoFleetItemsFoundTitle" xml:space="preserve">
+    <value>No fleet items found</value>
+  </data>
+  <data name="NoFleetItemsFoundDescription" xml:space="preserve">
+    <value>You haven't added any vehicles to your fleet yet.</value>
+  </data>
+  <data name="Working" xml:space="preserve">
+    <value>Working</value>
+  </data>
+  <data name="OutofOrder" xml:space="preserve">
+    <value>Out of Order</value>
+  </data>
+  <data name="Insured" xml:space="preserve">
+    <value>Insured</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="NotInsured" xml:space="preserve">
+    <value>Not Insured</value>
+  </data>
+  <data name="EditFleet" xml:space="preserve">
+    <value>Edit Fleet Item</value>
+  </data>
+  <data name="AddFleet" xml:space="preserve">
+    <value>Add Fleet Item</value>
+  </data>
+  <data name="FleetItem" xml:space="preserve">
+    <value>Fleet Item</value>
+  </data>
+  <data name="UpdateVehicleInfo" xml:space="preserve">
+    <value>Update vehicle information</value>
+  </data>
+  <data name="RegisterNewVehicle" xml:space="preserve">
+    <value>Register a new vehicle in your fleet</value>
+  </data>
+  <data name="CouldNotRetrieveEnterprise" xml:space="preserve">
+    <value>Could not retrieve enterprise info.</value>
+  </data>
+  <data name="VehicleType" xml:space="preserve">
+    <value>Vehicle Type</value>
+  </data>
+  <data name="InWorkingCondition" xml:space="preserve">
+    <value>In Working Condition</value>
+  </data>
+  <data name="WantsInsurance" xml:space="preserve">
+    <value>Subscribe to Insurance</value>
+  </data>
+  <data name="EligibleForInsurance" xml:space="preserve">
+    <value>This vehicle is eligible for insurance</value>
+  </data>
+  <data name="IneligibleForInsurance" xml:space="preserve">
+    <value>This vehicle is not eligible for insurance.</value>
+  </data>
+  <data name="VehicleMustBeWorking" xml:space="preserve">
+    <value>Vehicle must be in working condition.</value>
+  </data>
+  <data name="VehicleIsTooOld" xml:space="preserve">
+    <value>Vehicle must be less than 20 years old.</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Saving" xml:space="preserve">
+    <value>Saving</value>
+  </data>
+  <data name="ManageWarehouses" xml:space="preserve">
+    <value>Manage Warehouses</value>
+  </data>
+  <data name="ManageWarehousesTitle" xml:space="preserve">
+    <value>Manage Enterprise Warehouses</value>
+  </data>
+  <data name="ManageWarehousesDescription" xml:space="preserve">
+    <value>List and manage your enterprise warehouses and storage facilities.</value>
+  </data>
+  <data name="AddWarehouse" xml:space="preserve">
+    <value>Add Warehouse</value>
+  </data>
+  <data name="LoadingWarehouses" xml:space="preserve">
+    <value>Loading warehouses...</value>
+  </data>
+  <data name="NoWarehousesFoundTitle" xml:space="preserve">
+    <value>No warehouses found</value>
+  </data>
+  <data name="NoWarehousesFoundDescription" xml:space="preserve">
+    <value>You haven't added any warehouses yet.</value>
+  </data>
+  <data name="Warehouse" xml:space="preserve">
+    <value>Warehouse</value>
+  </data>
+  <data name="EditWarehouse" xml:space="preserve">
+    <value>Edit Warehouse</value>
+  </data>
+  <data name="UpdateWarehouseInfo" xml:space="preserve">
+    <value>Update warehouse information</value>
+  </data>
+  <data name="RegisterNewWarehouse" xml:space="preserve">
+    <value>Register a new warehouse for your enterprise</value>
+  </data>
+  <data name="WarehouseName" xml:space="preserve">
+    <value>Warehouse Name</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="ContentsDescription" xml:space="preserve">
+    <value>What is stored inside?</value>
+  </data>
+  <data name="WarehouseMaterials" xml:space="preserve">
+    <value>Warehouse Materials</value>
+  </data>
+  <data name="ManageMaterials" xml:space="preserve">
+    <value>Manage Materials</value>
+  </data>
+  <data name="ManageMaterialsTitle" xml:space="preserve">
+    <value>Manage Materials for {0}</value>
+  </data>
+  <data name="ManageMaterialsDescription" xml:space="preserve">
+    <value>List and manage materials stored in this warehouse. Define approximate values and insurance preference.</value>
+  </data>
+  <data name="AddMaterial" xml:space="preserve">
+    <value>Add Material</value>
+  </data>
+  <data name="LoadingMaterials" xml:space="preserve">
+    <value>Loading materials...</value>
+  </data>
+  <data name="NoMaterialsFoundTitle" xml:space="preserve">
+    <value>No materials found</value>
+  </data>
+  <data name="NoMaterialsFoundDescription" xml:space="preserve">
+    <value>No materials have been recorded for this warehouse yet.</value>
+  </data>
+  <data name="ApproximateValue" xml:space="preserve">
+    <value>Approximate Value</value>
+  </data>
+  <data name="Materials" xml:space="preserve">
+    <value>Materials</value>
+  </data>
+  <data name="BackToWarehouses" xml:space="preserve">
+    <value>Back to Warehouses</value>
+  </data>
+  <data name="Transportation" xml:space="preserve">
+    <value>Transportation</value>
+  </data>
+  <data name="MerchandiseTransportation" xml:space="preserve">
+    <value>Merchandise Transportation</value>
+  </data>
+  <data name="AddTransportation" xml:space="preserve">
+    <value>Add Transportation</value>
+  </data>
+  <data name="EditTransportation" xml:space="preserve">
+    <value>Edit Transportation</value>
+  </data>
+  <data name="DepartureDate" xml:space="preserve">
+    <value>Departure Date</value>
+  </data>
+  <data name="ArrivalDate" xml:space="preserve">
+    <value>Arrival Date</value>
+  </data>
+  <data name="Origin" xml:space="preserve">
+    <value>Origin</value>
+  </data>
+  <data name="Destination" xml:space="preserve">
+    <value>Destionation</value>
+  </data>
+  <data name="TransportationPeriod" xml:space="preserve">
+    <value>Transportation Period</value>
+  </data>
+  <data name="ManageTransportationsDescription" xml:space="preserve">
+    <value>Manage and insure merchandise during transportation. Define periods and coverage.</value>
+  </data>
+  <data name="LoadingTransportations" xml:space="preserve">
+    <value>Loading transportations...</value>
+  </data>
+  <data name="NoTransportationsFoundTitle" xml:space="preserve">
+    <value>No transportations found</value>
+  </data>
+  <data name="MerchandiseValue" xml:space="preserve">
+    <value>Value of merchandise transported</value>
+  </data>
+  <data name="Frequency" xml:space="preserve">
+    <value>Frequency</value>
+  </data>
+  <data name="FrequencyOneTime" xml:space="preserve">
+    <value>One-time</value>
+  </data>
+  <data name="FrequencyWeekly" xml:space="preserve">
+    <value>Weekly</value>
+  </data>
+  <data name="FrequencyMonthly" xml:space="preserve">
+    <value>Monthly</value>
+  </data>
+  <data name="FrequencyCasual" xml:space="preserve">
+    <value>Occasional</value>
+  </data>
+  <data name="ReportIncidentOrDamage" xml:space="preserve">
+    <value>Report an incident or damage to one of your assets</value>
+  </data>
+  <data name="SelectAssetType" xml:space="preserve">
+    <value>Select Asset Type</value>
+  </data>
+  <data name="SelectAsset" xml:space="preserve">
+    <value>Select Asset</value>
+  </data>
+  <data name="AutomobileFleet" xml:space="preserve">
+    <value>Automobile Fleet</value>
+  </data>
+  <data name="GoodsTransportation" xml:space="preserve">
+    <value>Goods Transportation</value>
+  </data>
+  <data name="IncidentDate" xml:space="preserve">
+    <value>Incident Date</value>
+  </data>
+  <data name="InProgress" xml:space="preserve">
+    <value>In Progress</value>
+  </data>
+  <data name="Resolved" xml:space="preserve">
+    <value>Resolved</value>
+  </data>
+  <data name="Rejected" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="DescribeIncident" xml:space="preserve">
+    <value>Describe the incident or damage...</value>
+  </data>
+  <data name="EstimatedAmount" xml:space="preserve">
+    <value>Estimated Amount</value>
+  </data>
+  <data name="ResolvedAmount" xml:space="preserve">
+    <value>Resolved Amount</value>
+  </data>
+  <data name="SubmitClaim" xml:space="preserve">
+    <value>Submit Claim</value>
+  </data>
+  <data name="Submitting" xml:space="preserve">
+    <value>Submitting</value>
+  </data>
+  <data name="ClaimSubmittedSuccessfully" xml:space="preserve">
+    <value>Claim submitted successfully!</value>
+  </data>
+  <data name="ErrorSubmittingClaim" xml:space="preserve">
+    <value>Error submitting claim</value>
+  </data>
+  <data name="AssetTypeRequired" xml:space="preserve">
+    <value>Asset type is required</value>
+  </data>
+  <data name="AssetRequired" xml:space="preserve">
+    <value>Asset selection is required</value>
+  </data>
+  <data name="PleaseSelectAsset" xml:space="preserve">
+    <value>Please select an asset and asset type before submitting</value>
+  </data>
+  <data name="BackToLogin" xml:space="preserve">
+    <value>Back to Login</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Select</value>
+  </data>
+  <data name="ViewConfirmationInsurancePolicy" xml:space="preserve">
+    <value>Confirmation of insurance policy</value>
+  </data>
+  <data name="CompanyDocumentsTitle" xml:space="preserve">
+    <value>Confirmation documents</value>
+  </data>
+  <data name="Signature" xml:space="preserve">
+    <value>Signature</value>
+  </data>
+  <data name="SignDocument" xml:space="preserve">
+    <value>Sign document</value>
+  </data>
+  <data name="DrawSignaturePrompt" xml:space="preserve">
+    <value>Draw signature prompt</value>
+  </data>
+  <data name="ConfirmSignature" xml:space="preserve">
+    <value>Confirm signature</value>
+  </data>
+  <data name="SignNow" xml:space="preserve">
+    <value>SignNow</value>
+  </data>
+  <data name="DownloadFile" xml:space="preserve">
+    <value>Download file</value>
+  </data>
+</root>

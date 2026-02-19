@@ -1,0 +1,87 @@
+@page "/transportation-list"
+@inherits AuthenticatedComponentBase
+@rendermode InteractiveServer
+
+<PageTitle>@Localizer["MerchandiseTransportation"] - VIA Assurance</PageTitle>
+
+<div class="transportation-list-container">
+    <div class="page-header">
+        <div class="header-text">
+            <h1>🚚 @Localizer["MerchandiseTransportation"]</h1>
+            <p>@Localizer["ManageTransportationsDescription"]</p>
+        </div>
+        <button class="btn-primary" @onclick='() => Navigation.NavigateTo("/add-transportation")'>
+            + @Localizer["AddTransportation"]
+        </button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="loading-state">
+            <span class="spinner"></span>
+            <p>@Localizer["LoadingTransportations"]</p>
+        </div>
+    }
+    else if (transportations == null || !transportations.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-icon">📦</div>
+            <h3>@Localizer["NoTransportationsFoundTitle"]</h3>
+            <button class="btn-primary" @onclick='() => Navigation.NavigateTo("/add-transportation")'>
+                @Localizer["AddTransportation"]
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="transportation-grid">
+            <table class="transportation-table">
+                <thead>
+                    <tr>
+                        <th>@Localizer["Description"]</th>
+                        <th>@Localizer["Origin"] → @Localizer["Destination"]</th>
+                        <th>@Localizer["Frequency"]</th>
+                        <th>@Localizer["DepartureDate"]</th>
+                        <th>@Localizer["ArrivalDate"]</th>
+                        <th>@Localizer["MerchandiseValue"]</th>
+                        <th>@Localizer["Status"]</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var t in transportations)
+                    {
+                        <tr>
+                            <td>@t.Description</td>
+                            <td>@t.Origin → @t.Destination</td>
+                            <td>@GetFrequencyLabel(t.Frequency)</td>
+                            <td>@t.DepartureDate.ToShortDateString()</td>
+                            <td>@t.ArrivalDate.ToShortDateString()</td>
+                            <td>@t.Value.ToString("N2")</td>
+                            <td>
+                                @if (t.IsInsured)
+                                {
+                                    <span class="badge badge-success">🛡️ @Localizer["Insured"]</span>
+                                }
+                                else if (t.WantsInsurance)
+                                {
+                                    <span class="badge badge-warning">⏳ @Localizer["Pending"]</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-secondary">@Localizer["NotInsured"]</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon" title="Edit" @onclick='() => Navigation.NavigateTo($"/add-transportation?id={t.Id}")'>✏️</button>
+                                    <button class="btn-icon delete" title="Delete" @onclick="() => DeleteTransportation(t)">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

@@ -1,0 +1,118 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@using ClientApp.Services
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<ClientApp.SharedResource> Localizer
+@inject AuthenticationService AuthService
+@inject NavigationManager Navigation
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">🛡️ Assurance</a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<AuthorizeView>
+    <Authorized>
+        <div class="nav-scrollable">
+            <nav class="flex-column">
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> @Localizer["Home"]
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <button class="nav-link btn-toggle" @onclick="ToggleEmployeesMenu">
+                        <span class="bi bi-people-fill-nav-menu" aria-hidden="true"></span> @Localizer["ManageEmployeesTitle"]
+                        <span class="toggle-indicator">@(showEmployeesMenu ? "▼" : "▶")</span>
+                    </button>
+                    @if (showEmployeesMenu)
+                    {
+                        <div class="nav-submenu ps-3">
+                            <div class="nav-item px-3">
+                                <NavLink class="nav-link" href="list-employees">
+                                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> @Localizer["ListOfEmployees"]
+                                </NavLink>
+                            </div>
+                            
+                            <div class="nav-item px-3">
+                                <NavLink class="nav-link" href="add-employee">
+                                    <span class="bi bi-person-plus-fill-nav-menu" aria-hidden="true"></span> @Localizer["AddEmployee"]
+                                </NavLink>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="nav-item px-3">
+                    <button class="nav-link btn-toggle" @onclick="ToggleInsurancesMenu">
+                        <span class="bi bi-shield-lock-fill-nav-menu" aria-hidden="true"></span> @Localizer["InsurancesTitle"]
+                        <span class="toggle-indicator">@(showInsurancesMenu ? "▼" : "▶")</span>
+                    </button>
+                    @if (showInsurancesMenu)
+                    {
+                        <div class="nav-submenu ps-3">
+                            <div class="nav-item px-3">
+                                <NavLink class="nav-link" href="fleet-list">
+                                    <span class="bi bi-car-front-fill-nav-menu" aria-hidden="true"></span> @Localizer["AutomobileFleetInsurance"]
+                                </NavLink>
+                            </div>
+                            
+                            <div class="nav-item px-3">
+                                <NavLink class="nav-link" href="transportation-list">
+                                    <span class="bi bi-truck-nav-menu" aria-hidden="true"></span> @Localizer["GoodsTransportInsurance"]
+                                </NavLink>
+                            </div>
+
+                            <div class="nav-item px-3">
+                                <NavLink class="nav-link" href="warehouse-list">
+                                    <span class="bi bi-box-seam-fill-nav-menu" aria-hidden="true"></span> @Localizer["WarehouseEquipmentProtection"]
+                                </NavLink>
+                            </div>
+
+                            <div class="nav-item px-3">
+                                <NavLink class="nav-link" href="company-documents">
+                                    <span class="bi bi-folder-fill" aria-hidden="true"></span> @Localizer["ViewConfirmationInsurancePolicy"]
+                                </NavLink>
+                            </div>
+                            <div class="nav-item px-3">
+                                <NavLink class="nav-link" href="insurance-policy">
+                                    <span class="bi bi-file-pdf" aria-hidden="true"></span> @Localizer["ViewInsurancePolicy"]
+                                </NavLink>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="nav-item px-3">
+                    <button class="nav-link btn-toggle" @onclick="FillClaims">
+                        <span class="bi bi-exclamation-triangle-fill-nav-menu" aria-hidden="true"></span> @Localizer["FillClaim"]
+                    </button>
+                </div>
+
+                <div class="nav-item logout-item px-3 mt-auto">
+                    <a class="nav-link btn-logout" href="/logout">
+                        <span class="bi bi-box-arrow-right" aria-hidden="true"></span> @Localizer["Logout"]
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="nav-scrollable">
+            <nav class="flex-column">
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="login">
+                        <span class="bi bi-box-arrow-in-right" aria-hidden="true"></span> @Localizer["Login"]
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="register">
+                        <span class="bi bi-person-plus-fill" aria-hidden="true"></span> @Localizer["Register"]
+                    </NavLink>
+                </div>
+            </nav>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>

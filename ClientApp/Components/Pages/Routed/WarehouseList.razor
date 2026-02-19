@@ -1,0 +1,85 @@
+@page "/warehouse-list"
+@rendermode InteractiveServer
+
+<PageTitle>@Localizer["ManageWarehouses"] - VIA Assurance</PageTitle>
+
+<div class="manage-warehouses-container">
+    <div class="page-header">
+        <div class="header-text">
+            <h1>🏢 @Localizer["ManageWarehousesTitle"]</h1>
+            <p>@Localizer["ManageWarehousesDescription"]</p>
+        </div>
+        <button class="btn-add" @onclick='() => Navigation.NavigateTo("/add-warehouse")'>
+            <span>+</span> @Localizer["AddWarehouse"]
+        </button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="loading-state">
+            <span class="spinner"></span>
+            <p>@Localizer["LoadingWarehouses"]</p>
+        </div>
+    }
+    else if (warehouses == null || !warehouses.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-icon">🏭</div>
+            <h3>@Localizer["NoWarehousesFoundTitle"]</h3>
+            <p>@Localizer["NoWarehousesFoundDescription"]</p>
+        </div>
+    }
+    else
+    {
+        <div class="warehouses-grid">
+            <table class="warehouses-table">
+                <thead>
+                    <tr>
+                        <th>@Localizer["Name"]</th>
+                        <th>@Localizer["Size"] (m²)</th>
+                        <th>@Localizer["Address"]</th>
+                        <th>@Localizer["Insurance"]</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var wh in warehouses)
+                    {
+                        <tr>
+                            <td>
+                                <div class="warehouse-info">
+                                    <strong>@wh.Name</strong>
+                                    <span>@wh.ContentsDescription</span>
+                                </div>
+                            </td>
+                            <td>@wh.SizeM2.ToString("N2")</td>
+                            <td>@wh.Address</td>
+                            <td>
+                                @if (wh.IsInsured)
+                                {
+                                    <span class="badge badge-insured">🛡️ @Localizer["Insured"]</span>
+                                }
+                                else if (wh.WantsInsurance)
+                                {
+                                    <span class="badge badge-pending">⏳ @Localizer["Pending"]</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-none">@Localizer["NotInsured"]</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon" title="@Localizer["Materials"]" @onclick='() => Navigation.NavigateTo($"/warehouse-materials/{wh.Id}")'>📦</button>
+                                    <button class="btn-icon" title="Edit" @onclick="() => EditWarehouse(wh)">✏️</button>
+                                    <button class="btn-icon delete" title="Delete" @onclick="() => DeleteWarehouse(wh)">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+

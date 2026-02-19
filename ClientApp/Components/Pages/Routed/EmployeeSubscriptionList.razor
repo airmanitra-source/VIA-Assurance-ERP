@@ -1,0 +1,73 @@
+@page "/employee-subscriptions/{EmployeeId:int}"
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "directeur,RH,auditeur,admin,developer")]
+
+<PageTitle>Employee Subscriptions - VIA Assurance</PageTitle>
+
+<div class="manage-employees-container">
+    <div class="page-header">
+        <div class="header-text">
+            <h1>🛡️ @Localizer["EmployeeSubscriptionsTitle"]</h1>
+            @if (employee != null)
+            {
+                <p>@Localizer["SubscriptionsFor"] <strong>@employee.Prenom @employee.Nom</strong></p>
+            }
+        </div>
+        <button class="btn-add" @onclick='() => Navigation.NavigateTo("/list-employees")'>
+            @Localizer["BackToEmployeeList"]
+        </button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="loading-state">
+            <span class="spinner"></span>
+            <p>@Localizer["LoadingSubscriptions"]</p>
+        </div>
+    }
+    else if (subscriptions == null || !subscriptions.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-icon">🛡️</div>
+            <p>@Localizer["NoSubscriptionsFoundDescription"]</p>
+        </div>
+    }
+    else
+    {
+        <div class="employees-grid">
+            <table class="employees-table">
+                <thead>
+                    <tr>
+                        <th>@Localizer["Month"]</th>
+                        <th>@Localizer["Year"]</th>
+                        <th>@Localizer["Amount"]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var sub in subscriptions)
+                    {
+                        <tr>
+                            <td>
+                                <div class="employee-name">
+                                    <strong>@GetMonthName(sub.MoisDeCotisation)</strong>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="employee-position">
+                                    @sub.AnneeCotisation
+                                </div>
+                            </td>
+                            <td>
+                                <div class="employee-position">
+                                    <strong>@sub.MontantCotisation.ToString("N2") AR</strong>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+

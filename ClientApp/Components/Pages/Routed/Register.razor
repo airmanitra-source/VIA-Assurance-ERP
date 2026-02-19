@@ -1,0 +1,75 @@
+@page "/register"
+
+<PageTitle>Register - VIA Assurance Dashboard</PageTitle>
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <h1>🛡️ VIA Assurance</h1>
+            <p>@Localizer["RegisterSubtitle"]</p>
+        </div>
+
+<EditForm Model="@registerModel" OnValidSubmit="@HandleRegister" class="login-form" FormName="register">
+            <DataAnnotationsValidator />
+            
+            <div class="form-group">
+                <label for="raison-social">Enterprise Name</label>
+                <InputText id="raison-social"
+					   @bind-Value="registerModel.RaisonSocial"
+					   class="form-input"
+					   placeholder="Enter your enterprise name" />
+                <ValidationMessage For="@(() => registerModel.RaisonSocial)" />
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <InputText id="email"
+					   @bind-Value="registerModel.Email"
+					   class="form-input"
+					   placeholder="Enter your email" />
+                <ValidationMessage For="@(() => registerModel.Email)" />
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <InputText id="password" type="password" @bind-Value="registerModel.Password" class="form-input" placeholder="Create a password" />
+                <ValidationMessage For="@(() => registerModel.Password)" />
+            </div>
+
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password</label>
+                <InputText id="confirm-password" type="password" @bind-Value="registerModel.ConfirmPassword" class="form-input" placeholder="Confirm your password" />
+                <ValidationMessage For="@(() => registerModel.ConfirmPassword)" />
+            </div>
+
+            @if (errors.Any())
+            {
+                <div class="error-list">
+                    @foreach (var error in errors)
+                    {
+                        <div class="error-message">⚠️ @error</div>
+                    }
+                </div>
+            }
+
+
+            <button type="submit" class="btn-login" disabled="@isLoading">
+                @if (isLoading)
+                {
+                    <span class="spinner-small"></span>
+                    <span>Creating account...</span>
+                }
+                else
+                {
+                    <span>@Localizer["Register"]</span>
+                }
+            </button>
+        </EditForm>
+
+        <div class="login-footer">
+            <p class="hint">@Localizer["AlreadyHaveAccount"] <a href="/login">@Localizer["SignInLink"]</a></p>
+        </div>
+    </div>
+</div>
+
+

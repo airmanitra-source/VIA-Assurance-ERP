@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # Application Architecture
 
 The application follows a Clean Architecture pattern. It is composed of modules for Business Logic, an Infrastructure layer (handling all database CRUD operations), and a ClientApp (the UI layer, built with .NET Blazor).

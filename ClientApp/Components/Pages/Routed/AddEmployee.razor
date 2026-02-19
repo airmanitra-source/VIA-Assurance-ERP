@@ -1,0 +1,207 @@
+@page "/add-employee"
+@inherits AuthenticatedComponentBase
+@rendermode InteractiveServer
+@using ClientApp.Models
+@using ClientApp.Services
+@using Employee.Module
+@using Employee.Module.Business
+@using Company.Module
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Net.Http.Headers
+@using global::EmployeeDocuments.Module
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "directeur,RH,auditeur,admin,developer")]
+
+
+<PageTitle>@(Id.HasValue ? Localizer["EditEmployee"] : Localizer["AddEmployee"]) - VIA Assurance Dashboard</PageTitle>
+
+<div class="add-employee-container">
+    <div class="add-employee-card">
+        <div class="header">
+            <h1>@(Id.HasValue ? "✏️ " + Localizer["Edit"] : "👤 " + Localizer["AddNew"]) @Localizer["Employee"]</h1>
+            <p>@(Id.HasValue ? $"{Localizer["UpdateInfoFor"]} {employeeModel.Prenom} {employeeModel.Nom}" : Localizer["RegisterNewEmployee"])</p>
+        </div>
+
+        @if (isLoadingCompany || isLoadingEmployee)
+        {
+            <div class="loading-state">
+                <span class="spinner"></span>
+                <p>@(isLoadingEmployee ? Localizer["RetrievingEmployeeInfo"] : Localizer["RetrievingEnterpriseInfo"])</p>
+            </div>
+        }
+        else if (currentCompany == null)
+        {
+            <div class="error-list">
+                <div class="error-message">
+                    ⚠️ @Localizer["CouldNotRetrieve"]
+                </div>
+            </div>
+            <button class="btn-back" @onclick='() => Navigation.NavigateTo("/login")'>Back to Login</button>
+        }
+        else
+        {
+            <div class="enterprise-info">
+                <span>@Localizer["Enterprise"]: <strong>@currentCompany.RaisonSocial</strong></span>
+            </div>
+
+            <EditForm Model="@employeeModel" OnValidSubmit="@HandleSubmit" class="employee-form">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nom">@Localizer["LastName"]</label>
+                        <InputText id="nom" @bind-Value="employeeModel.Nom" class="form-input" placeholder="Enter last name" />
+                        <ValidationMessage For="@(() => employeeModel.Nom)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prenom">@Localizer["FirstName"]</label>
+                        <InputText id="prenom" @bind-Value="employeeModel.Prenom" class="form-input" placeholder="Enter first name" />
+                        <ValidationMessage For="@(() => employeeModel.Prenom)" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="age">Age</label>
+                        <InputNumber id="age" @bind-Value="employeeModel.Age" class="form-input" />
+                        <ValidationMessage For="@(() => employeeModel.Age)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sexe">Sexe</label>
+                        <InputSelect id="sexe" @bind-Value="employeeModel.Sexe" class="form-input">
+                            <option value="M">Male (M)</option>
+                            <option value="F">Female (F)</option>
+                        </InputSelect>
+                        <ValidationMessage For="@(() => employeeModel.Sexe)" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="poste">@Localizer["Position"]</label>
+                    <InputText id="poste" @bind-Value="employeeModel.NomPoste" class="form-input" placeholder="e.g. Accountant" />
+                </div>
+
+                <div class="form-group">
+                    <label for="fonctions">@Localizer["Functions"]</label>
+                    <InputTextArea id="fonctions" @bind-Value="employeeModel.Fonctions" class="form-input" placeholder="Describe employee functions" rows="3" />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="mois">@Localizer["MonthsinPosition"]</label>
+                        <InputNumber id="mois" @bind-Value="employeeModel.NombreMoisPoste" class="form-input" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="statut">Status</label>
+                        <InputSelect id="statut" @bind-Value="employeeModel.StatutEmploye" class="form-input">
+                            <option value="CDI">CDI</option>
+                            <option value="CDD">CDD</option>
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="matricule">Matricule</label>
+                        <InputText id="matricule" @bind-Value="employeeModel.NumeroMatricule" class="form-input" placeholder="Enter registration number" />
+                        <ValidationMessage For="@(() => employeeModel.NumeroMatricule)" />
+                    </div>
+                </div>
+
+                <div class="form-group subscription-toggle">
+                    <label class="switch-container">
+                        <span class="switch-label">@Localizer["SubscribeToInsurance"]</span>
+                        <div class="switch">
+                            <InputCheckbox @bind-Value="employeeModel.VouloirSouscrire" />
+                            <span class="slider round"></span>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="documents-section">
+                    <h3>📎 @Localizer["AttachedDocuments"]</h3>
+
+                    @if (attachedDocuments.Any())
+                    {
+                        <div class="document-list">
+                            @foreach (var doc in attachedDocuments)
+                            {
+                                <div class="document-item">
+                                    <div class="document-info">
+                                        <span class="document-icon">📄</span>
+                                        <div>
+                                            <span class="document-name">@doc.Name</span>
+                                            <span class="document-type-badge">@doc.TypeDocument</span>
+                                        </div>
+                                    </div>
+                                    <div class="document-actions">
+                                        @if (doc.ExistingDocument != null)
+                                        {
+                                            <a href="/api/EmployeeDocuments/@doc.ExistingDocument.StreamId/content?download=true" class="btn-download" title="Download" target="_blank">⬇️</a>
+                                        }
+                                        <button type="button" class="btn-remove" @onclick="() => RemoveDocument(doc)">✕</button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="no-documents">No documents attached yet.</p>
+                    }
+
+                    <div class="document-add-row">
+                        <div class="form-group">
+                            <label for="docType">@Localizer["DocumentType"]</label>
+                            <select id="docType" class="form-input" @bind="selectedDocumentType">
+                                <option value="CV">CV</option>
+                                <option value="Contrat">Contrat</option>
+                                <option value="Attestation">Attestation</option>
+                                <option value="Autre">Autre</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>@Localizer["SelectFile"]</label>
+                            <InputFile OnChange="OnFileSelected" class="form-input file-input" />
+                        </div>
+                    </div>
+                </div>
+
+                @if (errors.Any())
+                {
+                    <div class="error-list">
+                        @foreach (var error in errors)
+                        {
+                            <div class="error-message">⚠️ @error</div>
+                        }
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(successMessage))
+                {
+                    <div class="success-message">
+                        ✅ @successMessage
+                    </div>
+                }
+
+                <div class="actions">
+                    <button type="button" class="btn-secondary" @onclick='() => Navigation.NavigateTo("/manage-employees")'>@Localizer["Cancel"]</button>
+                    <button type="submit" class="btn-primary" disabled="@isSubmitting">
+                        @if (isSubmitting)
+                        {
+                            <span class="spinner-small"></span>
+                            <span>Saving...</span>
+                        }
+                        else
+                        {
+                            <span>@(Id.HasValue ? Localizer["UpdateEmployee"] : Localizer["AddEmployee"])</span>
+                        }
+                    </button>
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>

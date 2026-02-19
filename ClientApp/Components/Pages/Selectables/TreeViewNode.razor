@@ -1,0 +1,57 @@
+@rendermode InteractiveServer
+@namespace ClientApp.Components
+@using ClientApp.Models
+
+<div class="tree-node">
+    @if (Node.IsDirectory)
+    {
+        <div class="tree-item directory" @onclick="ToggleExpand">
+            <span class="toggle-icon">@(Node.IsExpanded ? "▼" : "▶")</span>
+            <span class="node-icon">@Node.DisplayName</span>
+            @if (!string.IsNullOrEmpty(Node.FileType))
+            {
+                <span class="file-type">@Node.FileType</span>
+            }
+        </div>
+        
+        @if (Node.IsExpanded && Node.Children.Any())
+        {
+            <div class="tree-children">
+                @foreach (var child in Node.Children.OrderByDescending(c => c.IsDirectory).ThenBy(c => c.Name))
+                {
+                    <TreeViewNode Node="child" OnNodeSelected="OnNodeSelected" />
+                }
+            </div>
+        }
+    }
+    else
+    {
+        <div class="tree-item file" @onclick="() => SelectNode(Node)">
+            <span class="toggle-icon-spacer"></span>
+            <span class="node-icon">@Node.DisplayName</span>
+            <span class="file-size">@Node.SizeDisplay</span>
+            @if (!string.IsNullOrEmpty(Node.FileType))
+            {
+                <span class="file-type">@Node.FileType</span>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public EmployeeDocumentViewModel Node { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback<EmployeeDocumentViewModel> OnNodeSelected { get; set; }
+
+    private void ToggleExpand()
+    {
+        Node.IsExpanded = !Node.IsExpanded;
+    }
+
+    private async Task SelectNode(EmployeeDocumentViewModel node)
+    {
+        await OnNodeSelected.InvokeAsync(node);
+    }
+}

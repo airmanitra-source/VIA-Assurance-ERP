@@ -1,0 +1,171 @@
+@page "/add-warehouse"
+@rendermode InteractiveServer
+@using ClientApp.Models
+@using ClientApp.Services
+@using Company.Warehouse.Module
+@using Company.Warehouse.Module.Data.Models
+@using Company.Module
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Forms
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> Localizer
+
+<PageTitle>@(Id.HasValue ? Localizer["EditWarehouse"] : Localizer["AddWarehouse"]) - VIA Assurance Dashboard</PageTitle>
+
+<div class="add-warehouse-container">
+    <div class="add-warehouse-card">
+        <div class="header">
+            <h1>@(Id.HasValue ? "✏️ " + Localizer["Edit"] : "🏢 " + Localizer["AddNew"]) @Localizer["Warehouse"]</h1>
+            <p>@(Id.HasValue ? Localizer["UpdateWarehouseInfo"] : Localizer["RegisterNewWarehouse"])</p>
+        </div>
+
+        @if (isLoadingCompany || isLoadingItem)
+        {
+            <div class="loading-state">
+                <span class="spinner"></span>
+                <p>@Localizer["Loading"]...</p>
+            </div>
+        }
+        else if (currentCompany == null)
+        {
+            <div class="error-list">
+                <div class="error-message">⚠️ @Localizer["CouldNotRetrieveEnterprise"]</div>
+            </div>
+            <button class="btn-back" @onclick='() => Navigation.NavigateTo("/login")'>Back to Login</button>
+        }
+        else
+        {
+            <div class="enterprise-info">
+                <span>@Localizer["Enterprise"]: <strong>@currentCompany.RaisonSocial</strong></span>
+            </div>
+
+            <EditForm Model="@warehouseModel" OnValidSubmit="@HandleSubmit" class="warehouse-form">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="form-group">
+                    <label for="name">@Localizer["WarehouseName"]</label>
+                    <InputText id="name" @bind-Value="warehouseModel.Name" class="form-input" placeholder="e.g. Main Warehouse" />
+                    <ValidationMessage For="@(() => warehouseModel.Name)" />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="size">@Localizer["Size"] (m²)</label>
+                        <InputNumber id="size" @bind-Value="warehouseModel.SizeM2" class="form-input" />
+                        <ValidationMessage For="@(() => warehouseModel.SizeM2)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">@Localizer["Address"]</label>
+                        <InputText id="address" @bind-Value="warehouseModel.Address" class="form-input" placeholder="Street, City" />
+                        <ValidationMessage For="@(() => warehouseModel.Address)" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="contents">@Localizer["ContentsDescription"]</label>
+                    <InputTextArea id="contents" @bind-Value="warehouseModel.ContentsDescription" class="form-input" rows="3" placeholder="What is stored inside?" />
+                    <ValidationMessage For="@(() => warehouseModel.ContentsDescription)" />
+                </div>
+
+                <div class="materials-section">
+                    <h3>📦 @Localizer["Materials"] & @Localizer["Inventory"]</h3>
+                    <div class="inline-material-form">
+                        <div class="form-row">
+                            <div class="form-group flex-grow">
+                                <label>@Localizer["Description"]</label>
+                                <InputText @bind-Value="newMaterial.Description" class="form-input" placeholder="e.g. Office Furniture" />
+                            </div>
+                            <div class="form-group">
+                                <label>@Localizer["ApproximateValue"]</label>
+                                <InputNumber @bind-Value="newMaterial.ApproximateValue" class="form-input" />
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <InputCheckbox @bind-Value="newMaterial.WantsInsurance" />
+                                    <span>@Localizer["WantsInsurance"]</span>
+                                </label>
+                            </div>
+                            <div class="form-actions-inline">
+                                <button type="button" class="btn-add-inline" @onclick="AddMaterialToList">@Localizer["Add"]</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (managedMaterials.Any())
+                    {
+                        <div class="managed-materials-list">
+                            <table class="materials-mini-table">
+                                <thead>
+                                    <tr>
+                                        <th>@Localizer["Description"]</th>
+                                        <th>@Localizer["ApproximateValue"]</th>
+                                        <th>@Localizer["Insurance"]</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var m in managedMaterials)
+                                    {
+                                        <tr>
+                                            <td>@m.Description</td>
+                                            <td>@m.ApproximateValue.ToString("N2")</td>
+                                            <td>@(m.WantsInsurance ? "✅" : "❌")</td>
+                                            <td>
+                                                <button type="button" class="btn-remove" @onclick="() => RemoveMaterialFromList(m)">✕</button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+
+                <div class="insurance-section eligible">
+                    <h3>🛡️ @Localizer["Insurance"]</h3>
+                    
+                    <div class="form-group subscription-toggle">
+                        <label class="switch-container">
+                            <span class="switch-label">@Localizer["WantsInsurance"]</span>
+                            <div class="switch">
+                                <InputCheckbox @bind-Value="warehouseModel.WantsInsurance" />
+                                <span class="slider round"></span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                @if (errors.Any())
+                {
+                    <div class="error-list">
+                        @foreach (var error in errors)
+                        {
+                            <div class="error-message">⚠️ @error</div>
+                        }
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(successMessage))
+                {
+                    <div class="success-message">✅ @successMessage</div>
+                }
+
+                <div class="actions">
+                    <button type="button" class="btn-secondary" @onclick='() => Navigation.NavigateTo("/warehouse-list")'>@Localizer["Cancel"]</button>
+                    <button type="submit" class="btn-primary" disabled="@isSubmitting">
+                        @if (isSubmitting)
+                        {
+                            <span class="spinner-small"></span>
+                            <span>@Localizer["Saving"]...</span>
+                        }
+                        else
+                        {
+                            <span>@(Id.HasValue ? Localizer["Update"] : Localizer["Add"])</span>
+                        }
+                    </button>
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>
