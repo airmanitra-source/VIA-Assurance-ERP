@@ -143,14 +143,30 @@ namespace ClientApp.Controllers
             throw new NotImplementedException("Delete employee not yet implemented");
         }
 
+        public async Task<bool> SetActiveStatus(long employeeId, bool isActive, DateTime? deactivationDate)
+        {
+            try
+            {
+                await _employeeModule.SetEmployeeActiveStatusAsync(employeeId, isActive, deactivationDate);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         #region Mapping
         private EmployeeViewModel MapBusinessModelToViewModel(EmployeeBusinessModel business)
         {
             return new EmployeeViewModel
             {
+                EmployeeID = business.EmployeeID,
                 Age = business.Age,
                 DateFinContrat = business.DateFinContrat,
+                EntrepriseId = business.EntrepriseID,
                 Fonctions = business.Fonctions ?? string.Empty,
+                IsActive = business.IsActive,
                 Nom = business.Nom,
                 NombreMoisPoste = business.NombreMoisPoste,
                 NomPoste = business.NomPoste ?? string.Empty,
@@ -186,20 +202,5 @@ namespace ClientApp.Controllers
             };
         }
         #endregion
-    }
-
-    // Helper classes
-    public class EmployeeDetailViewModel
-    {
-        public List<AttachedDocumentViewModel> Documents { get; set; } = new();
-        public EmployeeViewModel Employee { get; set; } = new();
-    }
-
-    public class StoreResult
-    {
-        public long? EmployeeId { get; set; }
-        public List<string> Errors { get; set; } = new();
-        public string Message { get; set; } = string.Empty;
-        public bool Success { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using Company.Module;
 using Company.Transportation.Module;
 using Company.Warehouse.Module;
 using Microsoft.AspNetCore.Components;
+using ClientApp.Controllers;
 
 namespace ClientApp.Components.Pages.Routed
 {
@@ -12,9 +13,7 @@ namespace ClientApp.Components.Pages.Routed
     {
         [Inject] protected NavigationManager Navigation { get; set; } = default!;
         [Inject] AuthenticationService AuthService { get; set; } = default!;
-        [Inject] protected ICompanyFleetModule FleetModule { get; set; } = default!;
-        [Inject] protected ICompanyTransportationModule TransportationModule { get; set; } = default!;
-        [Inject] protected ICompanyWarehouseModule WarehouseModule { get; set; } = default!;
+        [Inject] protected ClaimController ClaimController { get; set; } = default!;
         [Inject] protected ICompanyModule CompanyModule { get; set; } = default!;
 
         protected bool isLoadingCompany = true;
@@ -27,7 +26,7 @@ namespace ClientApp.Components.Pages.Routed
         protected string errorMessage = string.Empty;
 
         protected CompanySinisterViewModel sinisterModel = new();
-        protected List<FleetViewModel> fleets = new();
+        protected List<EntrepriseFleetViewModel> fleets = new();
         protected List<TransportationViewModel> transportations = new();
         protected List<WarehouseViewModel> warehouses = new();
 
@@ -52,49 +51,10 @@ namespace ClientApp.Components.Pages.Routed
                 {
                     isLoadingAssets = true;
 
-                    // Load fleets and convert to ViewModels
-                    var fleetList = await FleetModule.GetCompanyFleetAsync(currentCompany.Id);
-                    fleets = fleetList.Select(f => new FleetViewModel
-                    {
-                        Id = f.Id,
-                        Type = f.Type,
-                        Year = f.Year,
-                        IsWorking = f.IsWorking,
-                        Mileage = f.Mileage,
-                        Make = f.Make,
-                        Model = f.Model,
-                        WantsInsurance = f.WantsInsurance,
-                        IsInsured = f.IsInsured
-                    }).ToList();
-
-                    // Load transportations and convert to ViewModels
-                    var transportationList = await TransportationModule.GetCompanyTransportationsAsync(currentCompany.Id);
-                    transportations = transportationList.Select(t => new TransportationViewModel
-                    {
-                        Id = t.Id,
-                        Description = t.Description,
-                        Value = t.Value,
-                        DepartureDate = t.DepartureDate,
-                        ArrivalDate = t.ArrivalDate,
-                        Origin = t.Origin,
-                        Destination = t.Destination,
-                        Frequency = t.Frequency ?? "OneTime",
-                        WantsInsurance = t.WantsInsurance,
-                        IsInsured = t.IsInsured
-                    }).ToList();
-
-                    // Load warehouses and convert to ViewModels
-                    var warehouseList = await WarehouseModule.GetCompanyWarehousesAsync(currentCompany.Id);
-                    warehouses = warehouseList.Select(w => new WarehouseViewModel
-                    {
-                        Id = w.Id,
-                        Name = w.Name,
-                        SizeM2 = w.SizeM2,
-                        ContentsDescription = w.ContentsDescription,
-                        Address = w.Address,
-                        WantsInsurance = w.WantsInsurance,
-                        IsInsured = w.IsInsured
-                    }).ToList();
+                    var assets = await ClaimController.Index(currentCompany.Id);
+                    fleets = assets.Fleets;
+                    transportations = assets.Transportations;
+                    warehouses = assets.Warehouses;
 
                     isLoadingAssets = false;
                 }
@@ -154,11 +114,8 @@ namespace ClientApp.Components.Pages.Routed
                         break;
                 }
 
-                // TODO: Call the sinister module to save the claim
-                // For now, simulate submission
-                await Task.Delay(500);
-
-                successMessage = Localizer["ClaimSubmittedSuccessfully"];
+                var result = await ClaimController.Store(sinisterModel, currentCompany?.Id ?? 0);
+                successMessage = result.Message;
 
                 // Reset form
                 sinisterModel = new();

@@ -5,14 +5,22 @@ namespace Company.Warehouse.Module.Business
     public class EntrepriseWarehouseBusinessModel
     {
         public long Id { get; set; }
-        public long EntrepriseId { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public decimal SizeM2 { get; set; }
-        public string? ContentsDescription { get; set; }
+
         public string? Address { get; set; }
-        public bool WantsInsurance { get; set; }
+
+        public string? ContentsDescription { get; set; }
+
+        public long EntrepriseId { get; set; }
+
         public bool IsInsured { get; set; }
+
+        public string Name { get; set; } = string.Empty;
+
         public string? PolicyNumber { get; set; }
+
+        public decimal SizeM2 { get; set; }
+
+        public bool WantsInsurance { get; set; }
 
         internal static EntrepriseWarehouseBusinessModel? FromDataModel(EntrepriseWarehouseDataModel? dataModel)
         {
@@ -20,14 +28,14 @@ namespace Company.Warehouse.Module.Business
             return new EntrepriseWarehouseBusinessModel
             {
                 Id = dataModel.Id,
-                EntrepriseId = dataModel.EntrepriseId,
-                Name = dataModel.Name,
-                SizeM2 = dataModel.SizeM2,
-                ContentsDescription = dataModel.ContentsDescription,
                 Address = dataModel.Address,
-                WantsInsurance = dataModel.WantsInsurance,
+                ContentsDescription = dataModel.ContentsDescription,
+                EntrepriseId = dataModel.EntrepriseId,
                 IsInsured = dataModel.IsInsured,
-                PolicyNumber = dataModel.PolicyNumber
+                Name = dataModel.Name,
+                PolicyNumber = dataModel.PolicyNumber,
+                SizeM2 = dataModel.SizeM2,
+                WantsInsurance = dataModel.WantsInsurance
             };
         }
 
@@ -36,14 +44,14 @@ namespace Company.Warehouse.Module.Business
             return new EntrepriseWarehouseDataModel
             {
                 Id = Id,
-                EntrepriseId = EntrepriseId,
-                Name = Name,
-                SizeM2 = SizeM2,
-                ContentsDescription = ContentsDescription,
                 Address = Address,
-                WantsInsurance = WantsInsurance,
+                ContentsDescription = ContentsDescription,
+                EntrepriseId = EntrepriseId,
                 IsInsured = IsInsured,
-                PolicyNumber = PolicyNumber
+                Name = Name,
+                PolicyNumber = PolicyNumber,
+                SizeM2 = SizeM2,
+                WantsInsurance = WantsInsurance
             };
         }
     }

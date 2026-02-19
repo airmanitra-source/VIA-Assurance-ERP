@@ -5,17 +5,28 @@ namespace Company.Transportation.Module.Business
     public class EntrepriseMerchandiseTransportationBusinessModel
     {
         public long Id { get; set; }
-        public long EntrepriseId { get; set; }
-        public string Description { get; set; } = string.Empty;
-        public decimal Value { get; set; }
-        public DateTime DepartureDate { get; set; }
+
         public DateTime ArrivalDate { get; set; }
-        public string Origin { get; set; } = string.Empty;
+
+        public DateTime DepartureDate { get; set; }
+
+        public string Description { get; set; } = string.Empty;
+
         public string Destination { get; set; } = string.Empty;
+
+        public long EntrepriseId { get; set; }
+
         public string Frequency { get; set; } = "OneTime";
-        public bool WantsInsurance { get; set; }
+
         public bool IsInsured { get; set; }
+
+        public string Origin { get; set; } = string.Empty;
+
         public string? PolicyNumber { get; set; }
+
+        public decimal Value { get; set; }
+
+        public bool WantsInsurance { get; set; }
 
         internal static EntrepriseMerchandiseTransportationBusinessModel? FromDataModel(EntrepriseMerchandiseTransportationDataModel? dataModel)
         {
@@ -23,17 +34,17 @@ namespace Company.Transportation.Module.Business
             return new EntrepriseMerchandiseTransportationBusinessModel
             {
                 Id = dataModel.Id,
-                EntrepriseId = dataModel.EntrepriseId,
-                Description = dataModel.Description,
-                Value = dataModel.Value,
-                DepartureDate = dataModel.DepartureDate,
                 ArrivalDate = dataModel.ArrivalDate,
-                Origin = dataModel.Origin,
+                DepartureDate = dataModel.DepartureDate,
+                Description = dataModel.Description,
                 Destination = dataModel.Destination,
+                EntrepriseId = dataModel.EntrepriseId,
                 Frequency = dataModel.Frequency,
-                WantsInsurance = dataModel.WantsInsurance,
                 IsInsured = dataModel.IsInsured,
-                PolicyNumber = dataModel.PolicyNumber
+                Origin = dataModel.Origin,
+                PolicyNumber = dataModel.PolicyNumber,
+                Value = dataModel.Value,
+                WantsInsurance = dataModel.WantsInsurance
             };
         }
 
@@ -42,17 +53,17 @@ namespace Company.Transportation.Module.Business
             return new EntrepriseMerchandiseTransportationDataModel
             {
                 Id = Id,
-                EntrepriseId = EntrepriseId,
-                Description = Description,
-                Value = Value,
-                DepartureDate = DepartureDate,
                 ArrivalDate = ArrivalDate,
-                Origin = Origin,
+                DepartureDate = DepartureDate,
+                Description = Description,
                 Destination = Destination,
+                EntrepriseId = EntrepriseId,
                 Frequency = Frequency,
-                WantsInsurance = WantsInsurance,
                 IsInsured = IsInsured,
-                PolicyNumber = PolicyNumber
+                Origin = Origin,
+                PolicyNumber = PolicyNumber,
+                Value = Value,
+                WantsInsurance = WantsInsurance
             };
         }
     }

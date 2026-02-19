@@ -1,27 +1,25 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
-using Subscription.Module;
-using Subscription.Module.Business;
-using Employee.Module;
-using Employee.Module.Business;
 using ClientApp.Services;
+using ClientApp.Controllers;
+using ClientApp.Models;
 
 namespace ClientApp.Components.Pages.Routed
 {
     public partial class EmployeeSubscriptionList : ComponentBase, IDisposable
     {
         [Parameter]
-        public int EmployeeId { get; set; }
+        public long EmployeeId { get; set; }
 
-        private List<SouscriptionBusinessModel>? subscriptions;
-        private EmployeeBusinessModel? employee;
+        private List<SubscriptionViewModel>? subscriptions;
+        private EmployeeViewModel? employee;
         private bool isLoading = true;
         private System.Timers.Timer? timer;
 
         [Inject] private AuthenticationService AuthService { get; set; } = default!;
         [Inject] private NavigationManager Navigation { get; set; } = default!;
-        [Inject] private ISubscriptionModule SubscriptionModule { get; set; } = default!;
-        [Inject] private IEmployeeModule EmployeeModule { get; set; } = default!;
+        [Inject] private SubscriptionController SubscriptionController { get; set; } = default!;
+        [Inject] private EmployeeController EmployeeController { get; set; } = default!;
 
         protected override async Task OnInitializedAsync()
         {
@@ -50,21 +48,20 @@ namespace ClientApp.Components.Pages.Routed
                 if (employee == null) return;
 
                 // Trigger real-time update simulation
-                var nextSub = new SouscriptionBusinessModel
+                var nextSub = new SubscriptionViewModel
                 {
-                    EmployeeId = EmployeeId,
-                    EntrepriseId = employee.EntrepriseID,
+                    EmployeeId = (int)EmployeeId,
+                    EntrepriseId = employee.EntrepriseId, // Note: I should check if EntrepriseId is in EmployeeViewModel
                     AnneeCotisation = 2026,
                     MontantCotisation = 50000 // Simulation default amount
                 };
 
-                await SubscriptionModule.AddSubscriptionAsync(nextSub);
+                await SubscriptionController.Store(nextSub);
 
                 // Refresh data on UI thread
                 await InvokeAsync(async () =>
                 {
-                    var result = await SubscriptionModule.GetSubscriptionsByEmployeeIdAsync(EmployeeId);
-                    subscriptions = result.ToList();
+                    subscriptions = await SubscriptionController.Index(EmployeeId);
                     StateHasChanged();
                 });
             }
@@ -79,14 +76,23 @@ namespace ClientApp.Components.Pages.Routed
             isLoading = true;
             try
             {
-                employee = await EmployeeModule.GetEmployeeByIdAsync((int)EmployeeId);
+                var entrepriseId = AuthService.GetCurrentEntrepriseId();
+                if (!entrepriseId.HasValue) 
+                {
+                    Navigation.NavigateTo("/login");
+                    return;
+                }
+
+                var detail = await EmployeeController.Show(EmployeeId, entrepriseId.Value);
+                employee = detail?.Employee;
+
                 if (employee == null || !employee.VouloirSouscrire)
                 {
                     Navigation.NavigateTo("/list-employees");
                     return;
                 }
-                var result = await SubscriptionModule.GetSubscriptionsByEmployeeIdAsync(EmployeeId);
-                subscriptions = result.ToList();
+
+                subscriptions = await SubscriptionController.Index(EmployeeId);
             }
             catch (Exception ex)
             {
@@ -103,16 +109,16 @@ namespace ClientApp.Components.Pages.Routed
             return System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month);
         }
 
-        private void EditSubscription(SouscriptionBusinessModel sub)
+        private void EditSubscription(SubscriptionViewModel sub)
         {
             // Future feature: edit subscription
         }
 
-        private async Task RemoveSubscription(SouscriptionBusinessModel sub)
+        private async Task RemoveSubscription(SubscriptionViewModel sub)
         {
             try
             {
-                await SubscriptionModule.RemoveSubscriptionAsync(sub.Id);
+                await SubscriptionController.Destroy(sub.Id);
                 await LoadData();
             }
             catch (Exception ex)

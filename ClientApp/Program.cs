@@ -86,6 +86,13 @@ builder.Services.AddScoped<ICompanyTransportationModule, CompanyTransportationMo
 builder.Services.AddScoped<ICompanyDocumentModule, CompanyDocumentModule>();
 builder.Services.AddScoped<IPolicyGenerator, PolicyGenerator>();
 builder.Services.AddScoped<ISignatureService, SignatureService>();
+// UI Controllers - handle mapping and non-business logic for Razor components
+builder.Services.AddScoped<EmployeeController>();
+builder.Services.AddScoped<ClaimController>();
+builder.Services.AddScoped<FleetController>();
+builder.Services.AddScoped<TransportationController>();
+builder.Services.AddScoped<WarehouseController>();
+builder.Services.AddScoped<SubscriptionController>();
 // Authentication service - registered as Scoped to isolate auth state per user session
 builder.Services.AddScoped<AuthenticationService>();
 builder.Services.AddScoped<UserManagementService>();

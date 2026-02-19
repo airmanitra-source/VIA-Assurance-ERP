@@ -8,17 +8,18 @@ using Company.Fleet.Module;
 using Company.Module;
 using CompanyDocuments.Module;
 using ClientApp.Services;
+using ClientApp.Controllers;
 
 namespace ClientApp.Components.Pages.Routed
 {
     public partial class AddFleet : AuthenticatedComponentBase
     {
         [Inject] protected ICompanyDocumentModule DocumentModule { get; set; } = default!;
-        [Inject] protected ICompanyFleetModule FleetModule { get; set; } = default!;
+        [Inject] protected FleetController FleetController { get; set; } = default!;
 
         [Parameter][SupplyParameterFromQuery] public long? Id { get; set; }
 
-        protected FleetViewModel fleetModel = new();
+        protected EntrepriseFleetViewModel fleetModel = new();
         protected EntrepriseBusinessModel? currentCompany;
         protected bool isLoadingCompany = true;
         protected bool isLoadingItem = false;
@@ -59,21 +60,11 @@ namespace ClientApp.Components.Pages.Routed
             isLoadingItem = true;
             try
             {
-                var item = await FleetModule.GetFleetItemAsync(id);
+                if (currentCompany == null) return;
+                var item = await FleetController.Show(id, currentCompany.Id);
                 if (item != null)
                 {
-                    fleetModel = new FleetViewModel
-                    {
-                        Type = item.Type,
-                        Year = item.Year,
-                        IsWorking = item.IsWorking,
-                        Mileage = item.Mileage,
-                        Make = item.Make,
-                        Model = item.Model,
-                        WantsInsurance = item.WantsInsurance,
-                        IsInsured = item.IsInsured,
-                        PolicyNumber = item.PolicyNumber
-                    };
+                    fleetModel = item;
                 }
                 else
                 {
@@ -100,89 +91,23 @@ namespace ClientApp.Components.Pages.Routed
 
             try
             {
-                // Reset WantsInsurance if no longer eligible
-                if (!fleetModel.IsEligibleForInsurance)
+                var result = await FleetController.Store(fleetModel, currentCompany.Id);
+                if (result.Success)
                 {
-                    fleetModel.WantsInsurance = false;
-                    fleetModel.IsInsured = false;
-                }
-
-                var fleetBusinessModel = new EntrepriseFleetBusinessModel
-                {
-                    Id = Id ?? 0,
-                    EntrepriseId = currentCompany.Id,
-                    Type = fleetModel.Type,
-                    Year = fleetModel.Year,
-                    IsWorking = fleetModel.IsWorking,
-                    Mileage = fleetModel.Mileage,
-                    Make = fleetModel.Make,
-                    Model = fleetModel.Model,
-                    WantsInsurance = fleetModel.WantsInsurance,
-                    IsInsured = fleetModel.IsInsured
-                };
-
-                long fleetId = Id ?? 0;
-                if (Id.HasValue)
-                {
-                    await FleetModule.SetFleetItemAsync(fleetBusinessModel);
-                    successMessage = "Vehicle updated successfully!";
+                    successMessage = result.Message;
+                    if (!Id.HasValue)
+                    {
+                        fleetModel = new EntrepriseFleetViewModel();
+                    }
                 }
                 else
                 {
-                    fleetId = await FleetModule.AddFleetItemAsync(fleetBusinessModel);
-                    successMessage = "Vehicle added successfully!";
+                    errors.AddRange(result.Errors);
                 }
-
-                if (fleetModel.WantsInsurance && !fleetModel.IsInsured)
-                {
-                    fleetModel.PolicyNumber = "FLT-" + fleetId + "-" + DateTime.Now.Ticks.ToString().Substring(12);
-
-                    var policyData = new PolicyPdfModel
-                    {
-                        PolicyNumber = fleetModel.PolicyNumber,
-                        StartDate = DateTime.Now,
-                        EndDate = DateTime.Now.AddYears(1),
-                        InsuredName = currentCompany.RaisonSocial,
-                        Address = "N/A",
-                        VehicleDescription = $"{fleetModel.Year} {fleetModel.Make} {fleetModel.Model} ({fleetModel.Type})",
-                        VIN = "N/A",
-                        VehicleCoverages = new List<CoverageModel>
-                        {
-                            new CoverageModel { Description = "Chapitre A - Responsabilité civile", Amount = 2000000 },
-                            new CoverageModel { Description = "Chapitre B3 - Tous les risques sauf collision ou renversement", Deductible = 500 }
-                        },
-                        PolicyCoverages = new List<CoverageModel>
-                        {
-                            new CoverageModel { Description = "F.A.Q. no 27 Resp. civile domm. véh. n'appartenant pas à l'assuré", Amount = 100000 }
-                        }
-                    };
-
-                    await DocumentModule.GenerateAndLinkPolicyConfirmationAsync(currentCompany.Id, "Fleet", policyData, fleetId);
-
-                    // Mark as insured in database
-                    fleetBusinessModel.Id = fleetId;
-                    fleetBusinessModel.IsInsured = true;
-                    fleetBusinessModel.PolicyNumber = fleetModel.PolicyNumber;
-                    await FleetModule.SetFleetItemAsync(fleetBusinessModel);
-                    
-                    fleetModel.IsInsured = true;
-                }
-
-                if (!Id.HasValue)
-                {
-                    fleetModel = new FleetViewModel();
-                }
-
-                _ = Task.Delay(3000).ContinueWith(_ => {
-                    InvokeAsync(() => {
-                        successMessage = string.Empty;
-                        StateHasChanged();
-                    });
-                });
             }
             catch (Exception ex)
             {
-                errors.Add($"Failed to save: {ex.Message}");
+                errors.Add($"An error occurred while saving: {ex.Message}");
             }
             finally
             {

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Company.Fleet.Module.Business;
 
 namespace ClientApp.Models
@@ -5,15 +6,36 @@ namespace ClientApp.Models
     public class EntrepriseFleetViewModel
     {
         public long Id { get; set; }
+
         public long EntrepriseId { get; set; }
-        public string Type { get; set; } = string.Empty; // 'Auto' or 'Moto'
-        public int Year { get; set; }
-        public bool IsWorking { get; set; }
-        public int Mileage { get; set; }
-        public string Make { get; set; } = string.Empty;
-        public string Model { get; set; } = string.Empty;
-        public bool WantsInsurance { get; set; }
+
+        public string Immatriculation { get; set; } = string.Empty;
+
+        public bool IsEligibleForInsurance => IsWorking && Year >= (DateTime.Now.Year - 20);
+
         public bool IsInsured { get; set; }
+
+        public bool IsWorking { get; set; } = true;
+
+        [Required(ErrorMessage = "Make is required")]
+        public string Make { get; set; } = string.Empty;
+
+        [Range(0, 10000000, ErrorMessage = "Mileage must be a positive number")]
+        public int Mileage { get; set; }
+
+        [Required(ErrorMessage = "Model is required")]
+        public string Model { get; set; } = string.Empty;
+
+        public string? PolicyNumber { get; set; }
+
+        [Required(ErrorMessage = "Type is required")]
+        public string Type { get; set; } = "Auto"; // 'Auto' or 'Moto'
+
+        public bool WantsInsurance { get; set; }
+
+        [Required(ErrorMessage = "Year is required")]
+        [Range(1900, 2100, ErrorMessage = "Please enter a valid year")]
+        public int Year { get; set; } = DateTime.Now.Year;
 
         internal static List<EntrepriseFleetViewModel>? FromBusinessModel(List<EntrepriseFleetBusinessModel> entrepriseFleetBusinessModels)
         {

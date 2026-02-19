@@ -1,4 +1,4 @@
-@page "/employee-subscriptions/{EmployeeId:int}"
+@page "/employee-subscriptions/{EmployeeId:long}"
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "directeur,RH,auditeur,admin,developer")]

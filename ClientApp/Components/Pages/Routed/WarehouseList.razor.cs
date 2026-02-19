@@ -3,21 +3,18 @@ using Microsoft.JSInterop;
 using Microsoft.Extensions.Localization;
 using ClientApp.Models;
 using ClientApp.Services;
-using Company.Warehouse.Module;
-using Company.Warehouse.Module.Business;
-using Company.Module;
+using ClientApp.Controllers;
 
 namespace ClientApp.Components.Pages.Routed
 {
     public partial class WarehouseList : ComponentBase
     {
-        private List<EntrepriseWarehouseBusinessModel>? warehouses;
+        private List<WarehouseViewModel>? warehouses;
         private bool isLoading = true;
 
         [Inject] private NavigationManager Navigation { get; set; } = default!;
         [Inject] private AuthenticationService AuthService { get; set; } = default!;
-        [Inject] private ICompanyWarehouseModule WarehouseModule { get; set; } = default!;
-        [Inject] private ICompanyModule CompanyModule { get; set; } = default!;
+        [Inject] private WarehouseController WarehouseController { get; set; } = default!;
         [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 
         protected override async Task OnInitializedAsync()
@@ -39,12 +36,7 @@ namespace ClientApp.Components.Pages.Routed
                 var entrepriseId = AuthService.GetCurrentEntrepriseId();
                 if (entrepriseId.HasValue)
                 {
-                    var company = await CompanyModule.GetCompanyByIdAsync(entrepriseId.Value);
-                    if (company != null)
-                    {
-                        var result = await WarehouseModule.GetCompanyWarehousesAsync(company.Id);
-                        warehouses = result.ToList();
-                    }
+                    warehouses = await WarehouseController.Index(entrepriseId.Value);
                 }
             }
             catch (Exception ex)
@@ -57,16 +49,16 @@ namespace ClientApp.Components.Pages.Routed
             }
         }
 
-        private void EditWarehouse(EntrepriseWarehouseBusinessModel wh)
+        private void EditWarehouse(WarehouseViewModel wh)
         {
             Navigation.NavigateTo($"/add-warehouse?id={wh.Id}");
         }
 
-        private async Task DeleteWarehouse(EntrepriseWarehouseBusinessModel wh)
+        private async Task DeleteWarehouse(WarehouseViewModel wh)
         {
             if (await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {wh.Name}?"))
             {
-                await WarehouseModule.RemoveWarehouseAsync(wh.Id);
+                await WarehouseController.Destroy(wh.Id);
                 await LoadData();
             }
         }

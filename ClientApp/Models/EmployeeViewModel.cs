@@ -5,55 +5,58 @@ namespace ClientApp.Models
 {
     public class EmployeeViewModel
     {
-        [Required(ErrorMessage = "Nom is required")]
-        public string Nom { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Prenom is required")]
-        public string Prenom { get; set; } = string.Empty;
+        public long EmployeeID { get; set; }
 
         [Range(18, 100, ErrorMessage = "Age must be between 18 and 100")]
         public int Age { get; set; } = 18;
 
-        [Required(ErrorMessage = "Sexe is required")]
-        public string Sexe { get; set; } = "M";
+        public DateTime? DateFinContrat { get; set; }
 
-        public string? NomPoste { get; set; }
+        public long EntrepriseId { get; set; }
+
         public string? Fonctions { get; set; }
-        
+
+        public bool IsActive { get; set; }
+
+        [Required(ErrorMessage = "Nom is required")]
+        public string Nom { get; set; } = string.Empty;
+
         [Range(0, 1000, ErrorMessage = "Nombre de mois must be positive")]
         public int NombreMoisPoste { get; set; }
 
-        [Required(ErrorMessage = "Statut is required")]
-        public string StatutEmploye { get; set; } = "CDI";
+        public string? NomPoste { get; set; }
 
         [Required(ErrorMessage = "Matricule is required")]
         public string NumeroMatricule { get; set; } = string.Empty;
 
-        public DateTime? DateFinContrat { get; set; }
+        [Required(ErrorMessage = "Prenom is required")]
+        public string Prenom { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Sexe is required")]
+        public string Sexe { get; set; } = "M";
+
+        [Required(ErrorMessage = "Statut is required")]
+        public string StatutEmploye { get; set; } = "CDI";
 
         public bool VouloirSouscrire { get; set; }
-
-        public bool IsActive { get; set; }
-
-        public long EmployeeID { get; set; }
 
         internal static EmployeeViewModel FromBusinessModel(EmployeeBusinessModel employee)
         {
             return new EmployeeViewModel
             {
                 EmployeeID = employee.EmployeeID,
-                IsActive = employee.IsActive,
-                VouloirSouscrire = employee.VouloirSouscrire,
-                DateFinContrat = employee.DateFinContrat,
-                NumeroMatricule = employee.NumeroMatricule,
-                StatutEmploye = employee.StatutEmploye,
-                NombreMoisPoste = employee.NombreMoisPoste,
-                Fonctions = employee.Fonctions,
-                NomPoste = employee.NomPoste,
-                Sexe = employee.Sexe,
                 Age = employee.Age,
+                DateFinContrat = employee.DateFinContrat,
+                Fonctions = employee.Fonctions,
+                IsActive = employee.IsActive,
+                Nom = employee.Nom,
+                NombreMoisPoste = employee.NombreMoisPoste,
+                NomPoste = employee.NomPoste,
+                NumeroMatricule = employee.NumeroMatricule,
                 Prenom = employee.Prenom,
-                Nom = employee.Nom
+                Sexe = employee.Sexe,
+                StatutEmploye = employee.StatutEmploye,
+                VouloirSouscrire = employee.VouloirSouscrire
             };
         }
     }

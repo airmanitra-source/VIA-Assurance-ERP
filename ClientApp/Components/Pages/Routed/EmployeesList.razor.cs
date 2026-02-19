@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Components;
 using ClientApp.Components.Shared;
 using ClientApp.Models;
-using Employee.Module;
+using ClientApp.Controllers;
 
 namespace ClientApp.Components.Pages.Routed
 {
     public partial class EmployeesList: AuthenticatedComponentBase
     {
-        [Inject] protected IEmployeeModule EmployeeModule{ get; set; } = default!;
+        [Inject] protected EmployeeController EmployeeController { get; set; } = default!;
 
         protected List<EmployeeViewModel>? employees;
         protected bool isLoading = true;
@@ -28,8 +28,7 @@ namespace ClientApp.Components.Pages.Routed
             {
                 if (CurrentEnterpriseId.HasValue)
                 {
-                    var employeeBusinessModel = await EmployeeModule.GetEmployeesByEnterpriseIdAsync(CurrentEnterpriseId.Value);
-                    employees = employeeBusinessModel.ToList().Select(EmployeeViewModel.FromBusinessModel).ToList();
+                    employees = await EmployeeController.Index(CurrentEnterpriseId.Value);
                 }
             }
             catch (Exception ex)
@@ -75,9 +74,12 @@ namespace ClientApp.Components.Pages.Routed
             {
                 try
                 {
-                    await EmployeeModule.SetEmployeeActiveStatusAsync(employee.EmployeeID, true, null);
-                    employee.IsActive = true;
-                    employee.DateFinContrat = null;
+                    var success = await EmployeeController.SetActiveStatus(employee.EmployeeID, true, null);
+                    if (success)
+                    {
+                        employee.IsActive = true;
+                        employee.DateFinContrat = null;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -98,14 +100,21 @@ namespace ClientApp.Components.Pages.Routed
 
             try
             {
-                await EmployeeModule.SetEmployeeActiveStatusAsync(employeeToDeactivate.EmployeeID, false, deactivationDate);
-                employeeToDeactivate.IsActive = false;
-                employeeToDeactivate.DateFinContrat = deactivationDate;
-                CloseModal();
+                var success = await EmployeeController.SetActiveStatus(employeeToDeactivate.EmployeeID, false, deactivationDate);
+                if (success)
+                {
+                    // Success! Refresh the list
+                    await LoadDataAsync();
+                    CloseModal();
+                }
+                else
+                {
+                    Console.WriteLine("Failed to deactivate employee");
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error deactivating status: {ex.Message}");
+                Console.WriteLine($"Error deactivating employee: {ex.Message}");
             }
         }
         #endregion

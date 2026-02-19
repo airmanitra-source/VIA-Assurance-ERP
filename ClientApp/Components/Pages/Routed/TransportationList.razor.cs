@@ -1,17 +1,17 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using ClientApp.Components.Shared;
-using Company.Transportation.Module;
-using Company.Transportation.Module.Business;
+using ClientApp.Controllers;
+using ClientApp.Models;
 
 namespace ClientApp.Components.Pages.Routed
 {
     public partial class TransportationList: AuthenticatedComponentBase
     {
-        [Inject] public ICompanyTransportationModule TransportationModule { get; set; } = default!;
+        [Inject] public TransportationController TransportationController { get; set; } = default!;
         [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 
-        private List<EntrepriseMerchandiseTransportationBusinessModel>? transportations;
+        private List<TransportationViewModel>? transportations;
         private bool isLoading = true;
         private Company.Module.Business.EntrepriseBusinessModel? currentCompany;
 
@@ -28,12 +28,7 @@ namespace ClientApp.Components.Pages.Routed
                 var entrepriseId = AuthService.GetCurrentEntrepriseId();
                 if (entrepriseId.HasValue)
                 {
-                    currentCompany = await CompanyModule.GetCompanyByIdAsync(entrepriseId.Value);
-                    if (currentCompany != null)
-                    {
-                        var result = await TransportationModule.GetCompanyTransportationsAsync(currentCompany.Id);
-                        transportations = result.ToList();
-                    }
+                    transportations = await TransportationController.Index(entrepriseId.Value);
                 }
             }
             catch (Exception ex)
@@ -46,11 +41,11 @@ namespace ClientApp.Components.Pages.Routed
             }
         }
 
-        private async Task DeleteTransportation(EntrepriseMerchandiseTransportationBusinessModel t)
+        private async Task DeleteTransportation(TransportationViewModel t)
         {
             if (await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {t.Description}?"))
             {
-                await TransportationModule.RemoveTransportationAsync(t.Id);
+                await TransportationController.Destroy(t.Id);
                 await LoadDataAsync();
             }
         }

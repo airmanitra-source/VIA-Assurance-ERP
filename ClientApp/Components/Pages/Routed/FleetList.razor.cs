@@ -3,13 +3,14 @@ using ClientApp.Models;
 using Company.Fleet.Module;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using ClientApp.Controllers;
 
 namespace ClientApp.Components.Pages.Routed
 {
     public partial class FleetList: AuthenticatedComponentBase
     {
         [Inject]
-        protected ICompanyFleetModule FleetModule { get; set; } = default!;
+        protected FleetController FleetController { get; set; } = default!;
 
         [Inject] 
         protected IJSRuntime JSRuntime { get; set; } = default!;
@@ -32,8 +33,7 @@ namespace ClientApp.Components.Pages.Routed
                 var company = await GetOrLoadCurrentCompanyAsync();
                 if (company != null)
                 {
-                    var result = await FleetModule.GetCompanyFleetAsync(company.Id);
-                    fleetItems = EntrepriseFleetViewModel.FromBusinessModel(result.ToList());
+                    fleetItems = await FleetController.Index(company.Id);
                 }
             }
             catch (Exception ex)
@@ -55,7 +55,7 @@ namespace ClientApp.Components.Pages.Routed
         {
             if (await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {item.Make} {item.Model}?"))
             {
-                await FleetModule.RemoveFleetItemAsync(item.Id);
+                await FleetController.Destroy(item.Id);
                 await LoadDataAsync();
             }
         }

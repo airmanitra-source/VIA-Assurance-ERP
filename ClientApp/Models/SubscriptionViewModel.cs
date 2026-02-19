@@ -1,12 +1,12 @@
-namespace Subscription.Module.Business
+namespace ClientApp.Models
 {
-    public class SouscriptionBusinessModel
+    public class SubscriptionViewModel
     {
         public long Id { get; set; }
 
         public int AnneeCotisation { get; set; }
 
-        public int EmployeeId { get; set; }
+        public long EmployeeId { get; set; }
 
         public long EntrepriseId { get; set; }
 
