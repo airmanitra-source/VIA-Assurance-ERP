@@ -3,6 +3,9 @@ namespace Company.Fleet.Module.Data.Models
     public class EntrepriseFleetDataModel
     {
         public long EntrepriseId { get; set; }
+        public decimal? FranchiseAmount { get; set; }
+        public decimal? FranchisePercentage { get; set; }
+        public string FranchiseType { get; set; } = "Fixed";
         public int? FiscalPower { get; set; }
         public long Id { get; set; }
         public DateTime? InsuranceEndDate { get; set; }

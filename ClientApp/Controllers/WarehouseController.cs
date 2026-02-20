@@ -2,8 +2,6 @@ using ClientApp.Models;
 using Company.Warehouse.Module;
 using Company.Warehouse.Module.Business;
 using CompanyDocuments.Module;
-using CompanyDocuments.Module.Business;
-using Microsoft.AspNetCore.Components;
 
 namespace ClientApp.Controllers
 {
@@ -61,6 +59,7 @@ namespace ClientApp.Controllers
                 else
                 {
                     warehouseId = await _warehouseModule.AddWarehouseAsync(businessModel);
+                    businessModel.Id = warehouseId; // Ensure Id is set on business model
                     result.Message = "Warehouse and materials added successfully!";
                 }
 
@@ -84,31 +83,22 @@ namespace ClientApp.Controllers
                 // Policy generation if requested
                 if (viewModel.WantsInsurance && !viewModel.IsInsured)
                 {
-                    var policyNumber = "WHS-" + warehouseId + "-" + DateTime.Now.Ticks.ToString().Substring(12);
-
-                    var policyData = new PolicyPdfModel
+                    // Map view models to business models for generation
+                    var materialBusinessModels = materials.Select(m => new EntrepriseWarehouseMaterialBusinessModel
                     {
-                        PolicyNumber = policyNumber,
-                        StartDate = viewModel.InsuranceStartDate ?? DateTime.Now,
-                        EndDate = viewModel.InsuranceEndDate ?? DateTime.Now.AddYears(1),
-                        InsuredName = companyRaisonSocial ?? "Company",
-                        Address = viewModel.Address,
-                        VehicleDescription = $"Warehouse: {viewModel.Name} ({viewModel.SizeM2} m²)",
-                        VIN = "N/A",
-                        Coverages = materials.Where(m => m.WantsInsurance).Select(m => new CoverageModel
-                        {
-                            Description = m.Description,
-                            Deductible = 0,
-                            Amount = m.ApproximateValue
-                        }).ToList()
-                    };
+                        Id = m.Id,
+                        Description = m.Description,
+                        ApproximateValue = m.ApproximateValue,
+                        WantsInsurance = m.WantsInsurance
+                    }).ToList();
 
-                    await _documentModule.GenerateAndLinkPolicyConfirmationAsync(enterpriseId, "Warehouse", policyData, warehouseId);
+                    // Generate and link using new overload
+                    await _documentModule.GenerateAndLinkPolicyConfirmationAsync(enterpriseId, businessModel, materialBusinessModels, companyRaisonSocial ?? "Company");
 
                     // Re-update marker
                     businessModel.Id = warehouseId;
                     businessModel.IsInsured = true;
-                    businessModel.PolicyNumber = policyNumber;
+                    // businessModel.PolicyNumber updated in method
                     await _warehouseModule.SetWarehouseAsync(businessModel);
 
                     result.Success = true;
@@ -161,6 +151,9 @@ namespace ClientApp.Controllers
                 Address = b.Address,
                 ContentsDescription = b.ContentsDescription,
                 EntrepriseId = b.EntrepriseId,
+                FranchiseAmount = b.FranchiseAmount,
+                FranchisePercentage = b.FranchisePercentage,
+                FranchiseType = b.FranchiseType,
                 Id = b.Id,
                 InsuranceEndDate = b.InsuranceEndDate,
                 InsuranceStartDate = b.InsuranceStartDate,
@@ -179,6 +172,9 @@ namespace ClientApp.Controllers
                 Address = vm.Address,
                 ContentsDescription = vm.ContentsDescription,
                 EntrepriseId = enterpriseId,
+                FranchiseAmount = vm.FranchiseAmount,
+                FranchisePercentage = vm.FranchisePercentage,
+                FranchiseType = vm.FranchiseType,
                 Id = vm.Id,
                 InsuranceEndDate = vm.InsuranceEndDate,
                 InsuranceStartDate = vm.InsuranceStartDate,

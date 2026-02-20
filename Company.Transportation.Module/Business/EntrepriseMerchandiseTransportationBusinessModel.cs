@@ -14,6 +14,12 @@ namespace Company.Transportation.Module.Business
 
         public long EntrepriseId { get; set; }
 
+        public decimal? FranchiseAmount { get; set; }
+
+        public decimal? FranchisePercentage { get; set; }
+
+        public string FranchiseType { get; set; } = "Fixed";
+
         public string Frequency { get; set; } = "OneTime";
 
         public long Id { get; set; }
@@ -42,6 +48,9 @@ namespace Company.Transportation.Module.Business
                 Description = dataModel.Description,
                 Destination = dataModel.Destination,
                 EntrepriseId = dataModel.EntrepriseId,
+                FranchiseAmount = dataModel.FranchiseAmount,
+                FranchisePercentage = dataModel.FranchisePercentage,
+                FranchiseType = dataModel.FranchiseType,
                 Frequency = dataModel.Frequency,
                 Id = dataModel.Id,
                 InsuranceEndDate = dataModel.InsuranceEndDate,
@@ -63,6 +72,9 @@ namespace Company.Transportation.Module.Business
                 Description = Description,
                 Destination = Destination,
                 EntrepriseId = EntrepriseId,
+                FranchiseAmount = FranchiseAmount,
+                FranchisePercentage = FranchisePercentage,
+                FranchiseType = FranchiseType,
                 Frequency = Frequency,
                 Id = Id,
                 InsuranceEndDate = InsuranceEndDate,

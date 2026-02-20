@@ -12,6 +12,12 @@ namespace FileTable.Infrastructure.FileTableDb.Entities
 
         public long EntrepriseId { get; set; }
 
+        public decimal? FranchiseAmount { get; set; }
+
+        public decimal? FranchisePercentage { get; set; }
+
+        public string FranchiseType { get; set; } = "Fixed";
+
         public string Frequency { get; set; } = "OneTime";
 
         public long Id { get; set; }

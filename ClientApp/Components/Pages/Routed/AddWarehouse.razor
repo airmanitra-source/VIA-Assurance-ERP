@@ -145,6 +145,25 @@
                                 <InputDate @bind-Value="warehouseModel.InsuranceEndDate" class="form-input" />
                             </div>
                         </div>
+
+                        <div class="form-row animated-fade-in">
+                            <div class="form-group">
+                                <label>@Localizer["FranchiseType"]</label>
+                                <InputSelect @bind-Value="warehouseModel.FranchiseType" class="form-input">
+                                    <option value="Fixed">@Localizer["FixedDeductible"]</option>
+                                    <option value="Relative">@Localizer["RelativeDeductible"]</option>
+                                    <option value="Proportional">@Localizer["ProportionalDeductible"]</option>
+                                </InputSelect>
+                            </div>
+                            <div class="form-group">
+                                <label>@Localizer["FranchiseAmount"]</label>
+                                <InputNumber @bind-Value="warehouseModel.FranchiseAmount" class="form-input" disabled="@(warehouseModel.FranchiseType != "Fixed")" />
+                            </div>
+                            <div class="form-group">
+                                <label>@Localizer["FranchisePercentage"] (%)</label>
+                                <InputNumber @bind-Value="warehouseModel.FranchisePercentage" class="form-input" disabled="@(warehouseModel.FranchiseType == "Fixed")" />
+                            </div>
+                        </div>
                     }
                 </div>
 

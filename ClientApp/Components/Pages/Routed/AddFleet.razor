@@ -126,6 +126,25 @@
                                     <InputDate @bind-Value="fleetModel.InsuranceEndDate" class="form-input" />
                                 </div>
                             </div>
+
+                            <div class="form-row animated-fade-in">
+                                <div class="form-group">
+                                    <label>@Localizer["FranchiseType"]</label>
+                                    <InputSelect @bind-Value="fleetModel.FranchiseType" class="form-input">
+                                        <option value="Fixed">@Localizer["FixedDeductible"]</option>
+                                        <option value="Relative">@Localizer["RelativeDeductible"]</option>
+                                        <option value="Proportional">@Localizer["ProportionalDeductible"]</option>
+                                    </InputSelect>
+                                </div>
+                                <div class="form-group">
+                                    <label>@Localizer["FranchiseAmount"]</label>
+                                    <InputNumber @bind-Value="fleetModel.FranchiseAmount" class="form-input" disabled="@(fleetModel.FranchiseType != "Fixed")" />
+                                </div>
+                                <div class="form-group">
+                                    <label>@Localizer["FranchisePercentage"] (%)</label>
+                                    <InputNumber @bind-Value="fleetModel.FranchisePercentage" class="form-input" disabled="@(fleetModel.FranchiseType == "Fixed")" />
+                                </div>
+                            </div>
                         }
 
                         <p class="eligibility-hint">✅ @Localizer["EligibleForInsurance"]</p>

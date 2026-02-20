@@ -5,6 +5,9 @@ namespace Company.Warehouse.Module.Data.Models
         public string? Address { get; set; }
         public string? ContentsDescription { get; set; }
         public long EntrepriseId { get; set; }
+        public decimal? FranchiseAmount { get; set; }
+        public decimal? FranchisePercentage { get; set; }
+        public string FranchiseType { get; set; } = "Fixed";
         public long Id { get; set; }
         public DateTime? InsuranceEndDate { get; set; }
         public DateTime? InsuranceStartDate { get; set; }

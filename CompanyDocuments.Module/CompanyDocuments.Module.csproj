@@ -13,4 +13,10 @@
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Company.Fleet.Module\Company.Fleet.Module.csproj" />
+    <ProjectReference Include="..\Company.Transportation.Module\Company.Transportation.Module.csproj" />
+    <ProjectReference Include="..\Company.Warehouse.Module\Company.Warehouse.Module.csproj" />
+  </ItemGroup>
+
 </Project>

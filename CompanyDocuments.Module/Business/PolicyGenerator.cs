@@ -7,7 +7,7 @@ namespace CompanyDocuments.Module.Business
 {
     public class PolicyGenerator : IPolicyGenerator
     {
-        public byte[] GeneratePolicyPdf(PolicyPdfModel model)
+        public byte[] GeneratePolicyPdf(PolicyConfirmationModel model)
         {
             // QuestPDF requirement: License configuration (Community is free for small/OSS)
             QuestPDF.Settings.License = LicenseType.Community;
@@ -21,18 +21,18 @@ namespace CompanyDocuments.Module.Business
                     page.PageColor(Colors.White);
                     page.DefaultTextStyle(x => x.FontSize(10).FontFamily(Fonts.Arial));
 
-                    page.Header().Row(row =>
+                    page.Header().Column(header =>
                     {
-                        row.RelativeItem().Column(col =>
+                        header.Item().Row(row =>
                         {
-                            col.Item().Text("VIA Assurance").FontSize(20).SemiBold().FontColor("#0051ba");
-                            col.Item().Text("Votre partenaire confiance").FontSize(10).Italic();
+                            row.RelativeItem().Column(col =>
+                            {
+                                col.Item().Text("VIA Assurance").FontSize(20).SemiBold().FontColor("#0051ba");
+                                col.Item().Text("Votre partenaire confiance").FontSize(10).Italic();
+                            });
                         });
 
-                        row.RelativeItem().AlignRight().Column(col =>
-                        {
-                            col.Item().PaddingTop(10).Text("CONFIRMATION D'ASSURANCE").FontSize(16).SemiBold();
-                        });
+                        header.Item().PaddingTop(10).AlignCenter().Text(model.Title.ToUpper()).FontSize(16).SemiBold();
                     });
 
                     page.Content().PaddingVertical(10).Column(col =>

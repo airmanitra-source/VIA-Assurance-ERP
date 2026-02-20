@@ -17,8 +17,8 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         {
             using var connection = _dbContext.CreateConnection();
             var sql = @"
-                INSERT INTO [documentdb].[dbo].[EntrepriseMerchandiseTransportation] (ArrivalDate, DepartureDate, Description, Destination, EntrepriseId, Frequency, InsuranceEndDate, InsuranceStartDate, IsInsured, Origin, PolicyNumber, Value, WantsInsurance)
-                VALUES (@ArrivalDate, @DepartureDate, @Description, @Destination, @EntrepriseId, @Frequency, @InsuranceEndDate, @InsuranceStartDate, @IsInsured, @Origin, @PolicyNumber, @Value, @WantsInsurance);
+                INSERT INTO [documentdb].[dbo].[EntrepriseMerchandiseTransportation] (ArrivalDate, DepartureDate, Description, Destination, EntrepriseId, FranchiseAmount, FranchisePercentage, FranchiseType, Frequency, InsuranceEndDate, InsuranceStartDate, IsInsured, Origin, PolicyNumber, Value, WantsInsurance)
+                VALUES (@ArrivalDate, @DepartureDate, @Description, @Destination, @EntrepriseId, @FranchiseAmount, @FranchisePercentage, @FranchiseType, @Frequency, @InsuranceEndDate, @InsuranceStartDate, @IsInsured, @Origin, @PolicyNumber, @Value, @WantsInsurance);
                 SELECT CAST(SCOPE_IDENTITY() as bigint);";
 
             return await connection.ExecuteScalarAsync<long>(sql, transportation);
@@ -34,6 +34,9 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
                     Description = @Description,
                     Destination = @Destination,
                     EntrepriseId = @EntrepriseId,
+                    FranchiseAmount = @FranchiseAmount,
+                    FranchisePercentage = @FranchisePercentage,
+                    FranchiseType = @FranchiseType,
                     Frequency = @Frequency,
                     InsuranceEndDate = @InsuranceEndDate,
                     InsuranceStartDate = @InsuranceStartDate,

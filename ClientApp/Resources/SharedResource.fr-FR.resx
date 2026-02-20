@@ -144,6 +144,9 @@
   <data name="Settings" xml:space="preserve">
     <value>Paramètres</value>
   </data>
+  <data name="ProportionalDeductible" xml:space="preserve">
+    <value>Franchise proportionnelle</value>
+  </data>
   <data name="Language" xml:space="preserve">
     <value>Langue</value>
   </data>

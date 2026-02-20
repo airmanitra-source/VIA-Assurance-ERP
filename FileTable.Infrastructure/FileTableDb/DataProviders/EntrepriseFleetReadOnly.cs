@@ -35,6 +35,9 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
             return new EntrepriseFleetDataModel
             {
                 EntrepriseId = entity.EntrepriseId,
+                FranchiseAmount = entity.FranchiseAmount,
+                FranchisePercentage = entity.FranchisePercentage,
+                FranchiseType = entity.FranchiseType,
                 FiscalPower = entity.FiscalPower,
                 Id = entity.Id,
                 InsuranceEndDate = entity.InsuranceEndDate,

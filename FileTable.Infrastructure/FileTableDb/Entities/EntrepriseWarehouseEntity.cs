@@ -21,5 +21,11 @@ namespace FileTable.Infrastructure.FileTableDb.Entities
         public decimal SizeM2 { get; set; }
 
         public bool WantsInsurance { get; set; }
+        
+        public decimal? FranchiseAmount { get; set; }
+        
+        public decimal? FranchisePercentage { get; set; }
+        
+        public string FranchiseType { get; set; } = "Fixed";
     }
 }

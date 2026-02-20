@@ -144,6 +144,9 @@
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="ProportionalDeductible" xml:space="preserve">
+    <value>Proportional deductible</value>
+  </data>
   <data name="Language" xml:space="preserve">
     <value>Language</value>
   </data>

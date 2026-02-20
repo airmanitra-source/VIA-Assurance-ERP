@@ -7,6 +7,12 @@ namespace Company.Fleet.Module.Business
     {
         public long EntrepriseId { get; set; }
 
+        public decimal? FranchiseAmount { get; set; }
+
+        public decimal? FranchisePercentage { get; set; }
+
+        public string FranchiseType { get; set; } = "Fixed";
+
         public int? FiscalPower { get; set; }
 
         public long Id { get; set; }
@@ -41,6 +47,9 @@ namespace Company.Fleet.Module.Business
             return new EntrepriseFleetBusinessModel
             {
                 EntrepriseId = fleetDataModel.EntrepriseId,
+                FranchiseAmount = fleetDataModel.FranchiseAmount,
+                FranchisePercentage = fleetDataModel.FranchisePercentage,
+                FranchiseType = fleetDataModel.FranchiseType,
                 FiscalPower = fleetDataModel.FiscalPower,
                 Id = fleetDataModel.Id,
                 InsuranceEndDate = fleetDataModel.InsuranceEndDate,
@@ -63,6 +72,9 @@ namespace Company.Fleet.Module.Business
             return new EntrepriseFleetDataModel
             {
                 EntrepriseId = EntrepriseId,
+                FranchiseAmount = FranchiseAmount,
+                FranchisePercentage = FranchisePercentage,
+                FranchiseType = FranchiseType,
                 FiscalPower = FiscalPower,
                 Id = Id,
                 InsuranceEndDate = InsuranceEndDate,

@@ -1,3 +1,6 @@
+using Company.Fleet.Module.Business;
+using Company.Warehouse.Module.Business;
+using Company.Transportation.Module.Business;
 using CompanyDocuments.Module.Business;
 using CompanyDocuments.Module.Data.Models;
 using CompanyDocuments.Module.Data.Providers;
@@ -54,7 +57,7 @@ namespace CompanyDocuments.Module
             return streamId;
         }
 
-        public async Task<Guid> GenerateAndLinkPolicyConfirmationAsync(long entrepriseId, string typeInsurance, PolicyPdfModel data, long? itemId = null)
+        public async Task<Guid> GenerateAndLinkPolicyConfirmationAsync(long entrepriseId, string typeInsurance, PolicyConfirmationModel data, long? itemId = null)
         {
             var bytes = _policyGenerator.GeneratePolicyPdf(data);
             // Append timestamp with seconds to ensure uniqueness in FileTable
@@ -65,6 +68,106 @@ namespace CompanyDocuments.Module
             long? transportationId = typeInsurance == "Transportation" ? itemId : null;
 
             return await UploadAndLinkDocumentAsync(entrepriseId, uniqueFileName, bytes, "Confirmation Police", fleetId, warehouseId, transportationId);
+        }
+
+        public async Task<Guid> GenerateAndLinkPolicyConfirmationAsync(long entrepriseId, EntrepriseFleetBusinessModel fleetItem, string companyName)
+        {
+            var policyNumber = fleetItem.PolicyNumber;
+            if (string.IsNullOrEmpty(policyNumber))
+            {
+                policyNumber = "FLT-" + fleetItem.Id + "-" + DateTime.Now.Ticks.ToString().Substring(12);
+                fleetItem.PolicyNumber = policyNumber;
+            }
+
+            var policyData = new PolicyConfirmationModel
+            {
+                Title = "Confirmation Assurance auto/moto",
+                PolicyNumber = policyNumber,
+                StartDate = fleetItem.InsuranceStartDate ?? DateTime.Now,
+                EndDate = fleetItem.InsuranceEndDate ?? DateTime.Now.AddYears(1),
+                InsuredName = companyName,
+                Address = "N/A",
+                VehicleDescription = $"{fleetItem.Make} {fleetItem.Model} ({fleetItem.Year}) {fleetItem.Type}",
+                VIN = "N/A",
+                VehicleCoverages = new List<CoverageModel>
+                {
+                    new CoverageModel
+                    {
+                        Description = fleetItem.FranchiseType == "Fixed"
+                            ? "Comprehensive Coverage"
+                            : $"Comprehensive Coverage (Franchise {fleetItem.FranchiseType} {(fleetItem.FranchisePercentage ?? 0)}%)",
+                        Deductible = fleetItem.FranchiseType == "Fixed" ? (fleetItem.FranchiseAmount ?? 0) : 0,
+                        Amount = 0
+                    }
+                }
+            };
+
+            return await GenerateAndLinkPolicyConfirmationAsync(entrepriseId, "Fleet", policyData, fleetItem.Id);
+        }
+
+        public async Task<Guid> GenerateAndLinkPolicyConfirmationAsync(long entrepriseId, EntrepriseWarehouseBusinessModel warehouse, List<EntrepriseWarehouseMaterialBusinessModel> materials, string companyName)
+        {
+            var policyNumber = warehouse.PolicyNumber;
+            if (string.IsNullOrEmpty(policyNumber))
+            {
+                policyNumber = "WH-" + warehouse.Id + "-" + DateTime.Now.Ticks.ToString().Substring(12);
+                warehouse.PolicyNumber = policyNumber;
+            }
+
+            var policyData = new PolicyConfirmationModel
+            {
+                Title = "Confirmation Assurance Locaux",
+                PolicyNumber = policyNumber,
+                StartDate = warehouse.InsuranceStartDate ?? DateTime.Now,
+                EndDate = warehouse.InsuranceEndDate ?? DateTime.Now.AddYears(1),
+                InsuredName = companyName,
+                Address = warehouse.Address,
+                VehicleDescription = $"Warehouse: {warehouse.Name} ({warehouse.SizeM2} m²)",
+                VIN = "N/A",
+                Coverages = materials.Where(m => m.WantsInsurance).Select(m => new CoverageModel
+                {
+                    Description = m.Description,
+                    Deductible = warehouse.FranchiseType == "Fixed" ? (warehouse.FranchiseAmount ?? 0) : 0,
+                    Amount = m.ApproximateValue
+                }).ToList()
+            };
+
+            return await GenerateAndLinkPolicyConfirmationAsync(entrepriseId, "Warehouse", policyData, warehouse.Id);
+        }
+
+        public async Task<Guid> GenerateAndLinkPolicyConfirmationAsync(long entrepriseId, EntrepriseMerchandiseTransportationBusinessModel transportation, string companyName)
+        {
+            var policyNumber = transportation.PolicyNumber;
+            if (string.IsNullOrEmpty(policyNumber))
+            {
+                policyNumber = "TRN-" + transportation.Id + "-" + DateTime.Now.Ticks.ToString().Substring(12);
+                transportation.PolicyNumber = policyNumber;
+            }
+
+            var policyData = new PolicyConfirmationModel
+            {
+                Title = "Confirmation Assurance voyage",
+                PolicyNumber = policyNumber,
+                StartDate = transportation.InsuranceStartDate ?? transportation.DepartureDate,
+                EndDate = transportation.InsuranceEndDate ?? transportation.ArrivalDate,
+                InsuredName = companyName,
+                Address = "N/A",
+                VehicleDescription = $"Transportation: {transportation.Description} (from {transportation.Origin} to {transportation.Destination})",
+                VIN = "N/A",
+                Coverages = new List<CoverageModel>
+                {
+                    new CoverageModel
+                    {
+                        Description = transportation.FranchiseType == "Fixed"
+                            ? "Cargo Insurance"
+                            : $"Cargo Insurance (Franchise {transportation.FranchiseType} {(transportation.FranchisePercentage ?? 0)}%)",
+                        Deductible = transportation.FranchiseType == "Fixed" ? (transportation.FranchiseAmount ?? 0) : 0,
+                        Amount = transportation.Value
+                    }
+                }
+            };
+
+            return await GenerateAndLinkPolicyConfirmationAsync(entrepriseId, "Transportation", policyData, transportation.Id);
         }
 
         public async Task SignDocumentAsync(long entrepriseId, Guid streamId, string signerName, string? signatureImageBase64 = null)

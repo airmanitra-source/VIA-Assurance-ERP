@@ -11,6 +11,12 @@ namespace ClientApp.Models
 
         public long Id { get; set; }
 
+        public decimal? FranchiseAmount { get; set; }
+
+        public decimal? FranchisePercentage { get; set; }
+
+        public string FranchiseType { get; set; } = "Fixed";
+
         public string Immatriculation { get; set; } = string.Empty;
 
         public DateTime? InsuranceEndDate { get; set; }
@@ -23,13 +29,13 @@ namespace ClientApp.Models
 
         public bool IsWorking { get; set; } = true;
 
-        [Required(ErrorMessage = "Make is required")]
+        [Required(ErrorMessage = "Marque de voiture requise")]
         public string Make { get; set; } = string.Empty;
 
-        [Range(0, 10000000, ErrorMessage = "Mileage must be a positive number")]
+        [Range(0, 10000000, ErrorMessage = "Kilométrage doit être positif")]
         public int Mileage { get; set; }
 
-        [Required(ErrorMessage = "Model is required")]
+        [Required(ErrorMessage = "Modèle est requis")]
         public string Model { get; set; } = string.Empty;
 
         public string? PolicyNumber { get; set; }
@@ -41,8 +47,8 @@ namespace ClientApp.Models
 
         public bool WantsInsurance { get; set; }
 
-        [Required(ErrorMessage = "Year is required")]
-        [Range(1900, 2100, ErrorMessage = "Please enter a valid year")]
+        [Required(ErrorMessage = "Année de mise en circulation requise")]
+        [Range(1900, 2100, ErrorMessage = "L'année doit être valide")]
         public int Year { get; set; } = DateTime.Now.Year;
 
         internal static List<EntrepriseFleetViewModel>? FromBusinessModel(List<EntrepriseFleetBusinessModel> entrepriseFleetBusinessModels)
@@ -50,6 +56,9 @@ namespace ClientApp.Models
            return entrepriseFleetBusinessModels.Select(x => new EntrepriseFleetViewModel
            {
                EntrepriseId = x.EntrepriseId,
+               FranchiseAmount = x.FranchiseAmount,
+               FranchisePercentage = x.FranchisePercentage,
+               FranchiseType = x.FranchiseType,
                FiscalPower = x.FiscalPower,
                Id = x.Id,
                InsuranceEndDate = x.InsuranceEndDate,

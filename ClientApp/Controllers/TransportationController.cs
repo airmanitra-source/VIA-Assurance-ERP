@@ -2,8 +2,7 @@ using ClientApp.Models;
 using Company.Transportation.Module;
 using Company.Transportation.Module.Business;
 using CompanyDocuments.Module;
-using CompanyDocuments.Module.Business;
-using Microsoft.AspNetCore.Components;
+
 
 namespace ClientApp.Controllers
 {
@@ -56,34 +55,18 @@ namespace ClientApp.Controllers
                 else
                 {
                     transId = await _transportationModule.AddTransportationAsync(businessModel);
+                    businessModel.Id = transId; // Ensure Id is set on business model
                     result.Message = "Transportation item added successfully!";
                 }
 
                 if (viewModel.WantsInsurance && !viewModel.IsInsured)
                 {
-                    var policyNumber = "TRN-" + transId + "-" + DateTime.Now.Ticks.ToString().Substring(12);
-
-                    var policyData = new PolicyPdfModel
-                    {
-                        PolicyNumber = policyNumber,
-                        StartDate = viewModel.InsuranceStartDate ?? viewModel.DepartureDate,
-                        EndDate = viewModel.InsuranceEndDate ?? viewModel.ArrivalDate,
-                        InsuredName = companyRaisonSocial ?? "Company",
-                        Address = "N/A",
-                        VehicleDescription = $"Transportation: {viewModel.Description} (from {viewModel.Origin} to {viewModel.Destination})",
-                        VIN = "N/A",
-                        Coverages = new List<CoverageModel>
-                        {
-                            new CoverageModel { Description = "Cargo Insurance", Deductible = 0, Amount = viewModel.Value }
-                        }
-                    };
-
-                    await _documentModule.GenerateAndLinkPolicyConfirmationAsync(enterpriseId, "Transportation", policyData, transId);
-
-                    // Mark as insured
-                    businessModel.Id = transId;
+                    // Call the overload that handles logic internally
+                    await _documentModule.GenerateAndLinkPolicyConfirmationAsync(enterpriseId, businessModel, companyRaisonSocial ?? "Company");
+                    
+                    // Set is insured
                     businessModel.IsInsured = true;
-                    businessModel.PolicyNumber = policyNumber;
+                    // PolicyNumber is updated inside GenerateAndLinkPolicyConfirmationAsync (passed by reference)
                     await _transportationModule.SetTransportationAsync(businessModel);
                 }
 
@@ -144,6 +127,9 @@ namespace ClientApp.Controllers
                 Description = vm.Description,
                 Destination = vm.Destination,
                 EntrepriseId = enterpriseId,
+                FranchiseAmount = vm.FranchiseAmount,
+                FranchisePercentage = vm.FranchisePercentage,
+                FranchiseType = vm.FranchiseType,
                 Frequency = vm.Frequency,
                 Id = vm.Id,
                 InsuranceEndDate = vm.InsuranceEndDate,

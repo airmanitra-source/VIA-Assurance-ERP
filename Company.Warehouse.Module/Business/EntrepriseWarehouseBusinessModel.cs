@@ -10,6 +10,12 @@ namespace Company.Warehouse.Module.Business
 
         public long EntrepriseId { get; set; }
 
+        public decimal? FranchiseAmount { get; set; }
+
+        public decimal? FranchisePercentage { get; set; }
+
+        public string FranchiseType { get; set; } = "Fixed";
+
         public long Id { get; set; }
 
         public DateTime? InsuranceEndDate { get; set; }
@@ -34,6 +40,9 @@ namespace Company.Warehouse.Module.Business
                 Address = dataModel.Address,
                 ContentsDescription = dataModel.ContentsDescription,
                 EntrepriseId = dataModel.EntrepriseId,
+                FranchiseAmount = dataModel.FranchiseAmount,
+                FranchisePercentage = dataModel.FranchisePercentage,
+                FranchiseType = dataModel.FranchiseType,
                 Id = dataModel.Id,
                 InsuranceEndDate = dataModel.InsuranceEndDate,
                 InsuranceStartDate = dataModel.InsuranceStartDate,
@@ -52,6 +61,9 @@ namespace Company.Warehouse.Module.Business
                 Address = Address,
                 ContentsDescription = ContentsDescription,
                 EntrepriseId = EntrepriseId,
+                FranchiseAmount = FranchiseAmount,
+                FranchisePercentage = FranchisePercentage,
+                FranchiseType = FranchiseType,
                 Id = Id,
                 InsuranceEndDate = InsuranceEndDate,
                 InsuranceStartDate = InsuranceStartDate,

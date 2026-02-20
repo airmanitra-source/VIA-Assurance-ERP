@@ -4,14 +4,14 @@ namespace ClientApp.Models
 {
     public class TransportationViewModel
     {
-        [Required(ErrorMessage = "Arrival date is required")]
+        [Required(ErrorMessage = "Date d'arrivée requise")]
         public DateTime ArrivalDate { get; set; } = DateTime.Today.AddDays(7);
 
-        [Required(ErrorMessage = "Departure date is required")]
+        [Required(ErrorMessage = "Date de départ requise")]
         public DateTime DepartureDate { get; set; } = DateTime.Today;
 
-        [Required(ErrorMessage = "Description is required")]
-        [StringLength(250, ErrorMessage = "Description is too long")]
+        [Required(ErrorMessage = "Description requise")]
+        [StringLength(250, ErrorMessage = "Description trop longue")]
         public string Description { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Destination is required")]
@@ -24,6 +24,14 @@ namespace ClientApp.Models
 
         public long Id { get; set; }
 
+        [Range(0, 1000000000, ErrorMessage = "Montant de la franchise doit être positif")]
+        public decimal? FranchiseAmount { get; set; }
+
+        [Range(0, 100, ErrorMessage = "Franchise percentage must be between 0 and 100")]
+        public decimal? FranchisePercentage { get; set; }
+
+        public string FranchiseType { get; set; } = "Fixed";
+
         public DateTime? InsuranceEndDate { get; set; }
 
         public DateTime? InsuranceStartDate { get; set; }
@@ -35,8 +43,8 @@ namespace ClientApp.Models
 
         public string? PolicyNumber { get; set; }
 
-        [Required(ErrorMessage = "Value of merchandise is required")]
-        [Range(200000, 1000000000, ErrorMessage = "Value of merchandise must be positive  and at least 200 000 MGA")]
+        [Required(ErrorMessage = "Valeur estimée de la marchandise requise")]
+        [Range(200000, 1000000000, ErrorMessage = "Valeur estimée de la marchandise doit être positif  et au moins 200 000 MGA")]
         public decimal Value { get; set; }
 
         public bool WantsInsurance { get; set; }

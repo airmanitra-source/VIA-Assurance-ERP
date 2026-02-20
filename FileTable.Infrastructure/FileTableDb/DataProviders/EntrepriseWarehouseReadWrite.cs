@@ -17,8 +17,8 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         {
             using var connection = _dbContext.CreateConnection();
             var sql = @"
-                INSERT INTO [documentdb].[dbo].[EntrepriseWarehouse] (Address, ContentsDescription, EntrepriseId, InsuranceEndDate, InsuranceStartDate, IsInsured, Name, PolicyNumber, SizeM2, WantsInsurance)
-                VALUES (@Address, @ContentsDescription, @EntrepriseId, @InsuranceEndDate, @InsuranceStartDate, @IsInsured, @Name, @PolicyNumber, @SizeM2, @WantsInsurance);
+                INSERT INTO [documentdb].[dbo].[EntrepriseWarehouse] (Address, ContentsDescription, EntrepriseId, FranchiseAmount, FranchisePercentage, FranchiseType, InsuranceEndDate, InsuranceStartDate, IsInsured, Name, PolicyNumber, SizeM2, WantsInsurance)
+                VALUES (@Address, @ContentsDescription, @EntrepriseId, @FranchiseAmount, @FranchisePercentage, @FranchiseType, @InsuranceEndDate, @InsuranceStartDate, @IsInsured, @Name, @PolicyNumber, @SizeM2, @WantsInsurance);
                 SELECT CAST(SCOPE_IDENTITY() as bigint);";
 
             return await connection.ExecuteScalarAsync<long>(sql, warehouse);
@@ -32,6 +32,9 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
                 SET Address = @Address,
                     ContentsDescription = @ContentsDescription,
                     EntrepriseId = @EntrepriseId,
+                    FranchiseAmount = @FranchiseAmount,
+                    FranchisePercentage = @FranchisePercentage,
+                    FranchiseType = @FranchiseType,
                     InsuranceEndDate = @InsuranceEndDate,
                     InsuranceStartDate = @InsuranceStartDate,
                     IsInsured = @IsInsured,

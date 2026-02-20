@@ -2,8 +2,7 @@ using ClientApp.Models;
 using Company.Fleet.Module;
 using Company.Fleet.Module.Business;
 using CompanyDocuments.Module;
-using CompanyDocuments.Module.Business;
-using Microsoft.AspNetCore.Components;
+
 
 namespace ClientApp.Controllers
 {
@@ -56,34 +55,18 @@ namespace ClientApp.Controllers
                 else
                 {
                     fleetId = await _fleetModule.AddFleetItemAsync(businessModel);
+                    businessModel.Id = fleetId; // Ensure Id is set on business model
                     result.Message = "Fleet added successfully!";
                 }
 
                 if (viewModel.WantsInsurance && !viewModel.IsInsured)
                 {
-                    var policyNumber = "FLT-" + fleetId + "-" + DateTime.Now.Ticks.ToString().Substring(12);
+                    // Generate and link policy confirmation using the module logic
+                    // This updates businessModel.PolicyNumber internally if needed
+                    await _documentModule.GenerateAndLinkPolicyConfirmationAsync(enterpriseId, businessModel, companyRaisonSocial ?? "Company");
 
-                    var policyData = new PolicyPdfModel
-                    {
-                        PolicyNumber = policyNumber,
-                        StartDate = viewModel.InsuranceStartDate ?? DateTime.Now,
-                        EndDate = viewModel.InsuranceEndDate ?? DateTime.Now.AddYears(1),
-                        InsuredName = companyRaisonSocial ?? "Company",
-                        Address = "N/A",
-                        VehicleDescription = $"{viewModel.Make} {viewModel.Model} ({viewModel.Year}) {viewModel.Type}",
-                        VIN = "N/A",
-                        VehicleCoverages = new List<CoverageModel>
-                        {
-                            new CoverageModel { Description = "Comprehensive Coverage", Deductible = 500, Amount = 0 }
-                        }
-                    };
-
-                    await _documentModule.GenerateAndLinkPolicyConfirmationAsync(enterpriseId, "Fleet", policyData, fleetId);
-
-                    // Mark as insured
-                    businessModel.Id = fleetId;
+                    // Mark as insured and update
                     businessModel.IsInsured = true;
-                    businessModel.PolicyNumber = policyNumber;
                     await _fleetModule.SetFleetItemAsync(businessModel);
                 }
 
@@ -119,6 +102,9 @@ namespace ClientApp.Controllers
             return new EntrepriseFleetViewModel
             {
                 EntrepriseId = b.EntrepriseId,
+                FranchiseAmount = b.FranchiseAmount,
+                FranchisePercentage = b.FranchisePercentage,
+                FranchiseType = b.FranchiseType,
                 FiscalPower = b.FiscalPower,
                 Id = b.Id,
                 InsuranceEndDate = b.InsuranceEndDate,
@@ -141,6 +127,9 @@ namespace ClientApp.Controllers
             return new EntrepriseFleetBusinessModel
             {
                 EntrepriseId = enterpriseId,
+                FranchiseAmount = vm.FranchiseAmount,
+                FranchisePercentage = vm.FranchisePercentage,
+                FranchiseType = vm.FranchiseType,
                 FiscalPower = vm.FiscalPower,
                 Id = vm.Id,
                 InsuranceEndDate = vm.InsuranceEndDate,
