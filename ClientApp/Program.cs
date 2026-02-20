@@ -1,5 +1,5 @@
-using ClientApp.Components;
 using ClientApp.Services;
+using ClientApp.Components;
 using FileTable.Infrastructure;
 using FileTable.Infrastructure.FileTableDb.DataProviders;
 using FileTable.Infrastructure.Identities;
@@ -87,6 +87,7 @@ builder.Services.AddScoped<ICompanyDocumentModule, CompanyDocumentModule>();
 builder.Services.AddScoped<IPolicyGenerator, PolicyGenerator>();
 builder.Services.AddScoped<ISignatureService, SignatureService>();
 // UI Controllers - handle mapping and non-business logic for Razor components
+builder.Services.AddScoped<DataSeeder>();
 builder.Services.AddScoped<EmployeeController>();
 builder.Services.AddScoped<ClaimController>();
 builder.Services.AddScoped<FleetController>();
@@ -144,5 +145,17 @@ app.MapStaticAssets();
 app.MapControllers();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+try
+{
+    using var scope = app.Services.CreateScope();
+    var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+    await seeder.SeedAsync();
+}
+catch (Exception ex)
+{
+    var loggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
+    loggerFactory.CreateLogger("DataSeeder").LogWarning(ex, "Employee seeding failed; application startup continues.");
+}
 
 app.Run();
