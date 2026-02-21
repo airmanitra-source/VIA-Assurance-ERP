@@ -1,5 +1,7 @@
 using ClientApp.Components;
 using ClientApp.Services;
+using ClientApp.Controllers;
+using ClientApp;
 using FileTable.Infrastructure;
 using FileTable.Infrastructure.FileTableDb.DataProviders;
 using FileTable.Infrastructure.Identities;
@@ -27,7 +29,7 @@ using Sinister.Module;
 using CompanyDocuments.Module.Data.Providers;
 using CompanyDocuments.Module;
 using CompanyDocuments.Module.Business;
-using ClientApp.Controllers;
+using ModelContextProtocol.Server;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -88,6 +90,7 @@ builder.Services.AddScoped<IPolicyGenerator, PolicyGenerator>();
 builder.Services.AddScoped<ISignatureService, SignatureService>();
 // UI Controllers - handle mapping and non-business logic for Razor components
 builder.Services.AddScoped<EmployeeController>();
+builder.Services.AddScoped<McpTools>();
 builder.Services.AddScoped<ClaimController>();
 builder.Services.AddScoped<FleetController>();
 builder.Services.AddScoped<TransportationController>();
@@ -100,6 +103,11 @@ builder.Services.AddScoped<AuthenticationService>();
 builder.Services.AddScoped<UserManagementService>();
 builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<CustomAuthenticationStateProvider>());
+
+builder.Services.AddMcpServer()
+    .WithHttpTransport()
+    .WithToolsFromAssembly();
+
 // Add localization services
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddHttpContextAccessor();
@@ -133,7 +141,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection(); // Disable for Local MCP Debugging
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -142,6 +150,7 @@ app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapControllers();
+app.MapMcp("/mcp");
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 

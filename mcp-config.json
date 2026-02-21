@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "via-erp-server": {
+      "url": "http://localhost:5220/mcp"
+    }
+  }
+}
