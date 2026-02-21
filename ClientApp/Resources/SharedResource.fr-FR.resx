@@ -741,4 +741,16 @@
   <data name="InsurancePeriod" xml:space="preserve">
     <value>Période d'Assurance</value>
   </data>
+  <data name="ManageUsers" xml:space="preserve">
+    <value>Gérer les utilisateurs et leurs rôles</value>
+  </data>
+  <data name="UserManagement" xml:space="preserve">
+    <value>Gestion des utilisateurs</value>
+  </data>
+  <data name="ManageRoles" xml:space="preserve">
+    <value>Gérer les rôles</value>
+  </data>
+  <data name="UserSettings" xml:space="preserve">
+    <value>Paramètres utilisateurs</value>
+  </data>
 </root>

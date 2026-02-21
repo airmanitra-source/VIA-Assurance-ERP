@@ -2,7 +2,7 @@
 @namespace ClientApp.Components
 @using ClientApp.Models
 
-<div class="tree-node">
+<div class="tree-node @(IsSelected ? "selected" : "")">
     @if (Node.IsDirectory)
     {
         <div class="tree-item directory" @onclick="ToggleExpand">
@@ -19,7 +19,7 @@
             <div class="tree-children">
                 @foreach (var child in Node.Children.OrderByDescending(c => c.IsDirectory).ThenBy(c => c.Name))
                 {
-                    <TreeViewNode Node="child" OnNodeSelected="OnNodeSelected" />
+                    <TreeViewNode Node="child" OnNodeSelected="OnNodeSelected" IsSelected="IsSelected && SelectedNode == child" SelectedNode="SelectedNode" />
                 }
             </div>
         }
@@ -44,6 +44,12 @@
 
     [Parameter]
     public EventCallback<EmployeeDocumentViewModel> OnNodeSelected { get; set; }
+
+    [Parameter]
+    public bool IsSelected { get; set; }
+
+    [Parameter]
+    public EmployeeDocumentViewModel? SelectedNode { get; set; }
 
     private void ToggleExpand()
     {

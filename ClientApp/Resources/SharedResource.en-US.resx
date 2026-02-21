@@ -144,6 +144,9 @@
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="ProportionalDeductible" xml:space="preserve">
+    <value>Proportional deductible</value>
+  </data>
   <data name="Language" xml:space="preserve">
     <value>Language</value>
   </data>
@@ -737,5 +740,17 @@
   </data>
   <data name="InsurancePeriod" xml:space="preserve">
     <value>Insurance Period</value>
+  </data>
+  <data name="ManageUsers" xml:space="preserve">
+    <value>Manage users and their roles.</value>
+  </data>
+  <data name="UserManagement" xml:space="preserve">
+    <value>User Management</value>
+  </data>
+  <data name="ManageRoles" xml:space="preserve">
+    <value>Manage Roles</value>
+  </data>
+  <data name="UserSettings" xml:space="preserve">
+    <value>User settings</value>
   </data>
 </root>

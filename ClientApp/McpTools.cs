@@ -15,15 +15,14 @@ namespace ClientApp
             _employeeController = employeeController;
         }
 
-        [McpServerTool, Description("Ajoute un nouvel employé dans le système")]
+        [McpServerTool, Description("Ajoute un nouvel employé ou collègue dans le système")]
         public async Task<string> AddEmployeeAsync(
             [Description("Nom de l'employé")] string nom,
             [Description("Prénom de l'employé")] string prenom,
             [Description("Numéro de matricule")] string matricule,
             [Description("Sexe (Homme (M) ou Femme (F))")] string sexe,
             [Description("Age de l'employé")] int age,
-           
-            [Description("Poste occupé")] string? poste = null)
+            [Description("Poste ou fonction occupé")] string? poste = null)
         {
             var vm = new EmployeeViewModel
             {

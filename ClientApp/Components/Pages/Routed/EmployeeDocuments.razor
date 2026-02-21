@@ -42,7 +42,7 @@
                 <div class="tree-view">
                     @foreach (var node in documentTree)
                     {
-                        <TreeViewNode Node="node" OnNodeSelected="HandleNodeSelected" />
+                        <TreeViewNode Node="node" OnNodeSelected="HandleNodeSelected" IsSelected="selectedNode == node" SelectedNode="selectedNode" />
                     }
                 </div>
             }
