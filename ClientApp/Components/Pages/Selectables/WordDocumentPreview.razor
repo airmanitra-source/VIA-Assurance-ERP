@@ -1,0 +1,55 @@
+@rendermode InteractiveServer
+@namespace ClientApp.Components
+@using ClientApp.Models
+
+<div class="word-preview">
+    @if (Document != null && IsWordFile())
+    {
+        <div class="word-document-container">
+            <div id="word-content-@Document.StreamId" style="padding: 20px; background-color: white; border: 1px solid #ddd; border-radius: 4px;"></div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public CompanyDocumentViewModel? Document { get; set; }
+
+    [Inject]
+    private IJSRuntime JS { get; set; } = null!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && Document != null && IsWordFile())
+        {
+            await LoadWordDocumentAsync();
+        }
+    }
+
+    private async Task LoadWordDocumentAsync()
+    {
+        if (Document == null) return;
+
+        var apiUrl = $"/api/CompanyDocuments/{Document.StreamId}/content";
+        
+        try
+        {
+            await JS.InvokeVoidAsync("loadWordDocument", apiUrl, $"word-content-{Document.StreamId}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading Word document: {ex.Message}");
+        }
+    }
+
+    private bool IsWordFile()
+    {
+        var ext = GetExtension();
+        return ext == "docx" || ext == "doc";
+    }
+
+    private string GetExtension()
+    {
+        return Document?.FileType?.TrimStart('.').ToLowerInvariant() ?? "";
+    }
+}

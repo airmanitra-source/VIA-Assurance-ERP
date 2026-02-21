@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using ClientApp.Controllers;
 using ClientApp.Models;
-using Company.Module.Data.Providers;
 using ModelContextProtocol.Server;
 
 namespace ClientApp
@@ -10,12 +9,10 @@ namespace ClientApp
     public class McpTools
     {
         private readonly EmployeeController _employeeController;
-        private readonly IEntrepriseReadOnly _entrepriseReadOnly;
 
-        public McpTools(EmployeeController employeeController, IEntrepriseReadOnly entrepriseReadOnly)
+        public McpTools(EmployeeController employeeController)
         {
             _employeeController = employeeController;
-            _entrepriseReadOnly = entrepriseReadOnly;
         }
 
         [McpServerTool, Description("Ajoute un nouvel employé dans le système")]
