@@ -35,18 +35,19 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
             return new EmployeeDataModel
             {
                 EmployeeID = entity.EmployeeID,
-                Nom = entity.Nom,
-                Prenom = entity.Prenom,
                 Age = entity.Age,
-                Sexe = entity.Sexe,
-                NomPoste = entity.NomPoste,
-                Fonctions = entity.Fonctions,
-                NombreMoisPoste = entity.NombreMoisPoste,
-                StatutEmploye = entity.StatutEmploye,
-                EntrepriseID = entity.EntrepriseID,
-                NumeroMatricule = entity.NumeroMatricule,
-                IsActive = entity.IsActive,
                 DateFinContrat = entity.DateFinContrat,
+                Email = entity.Email,
+                EntrepriseID = entity.EntrepriseID,
+                Fonctions = entity.Fonctions,
+                IsActive = entity.IsActive,
+                Nom = entity.Nom,
+                NombreMoisPoste = entity.NombreMoisPoste,
+                NomPoste = entity.NomPoste,
+                NumeroMatricule = entity.NumeroMatricule,
+                Prenom = entity.Prenom,
+                Sexe = entity.Sexe,
+                StatutEmploye = entity.StatutEmploye,
                 VouloirSouscrire = entity.VouloirSouscrire
             };
         }

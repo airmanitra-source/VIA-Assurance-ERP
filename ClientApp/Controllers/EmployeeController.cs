@@ -164,6 +164,7 @@ namespace ClientApp.Controllers
                 EmployeeID = business.EmployeeID,
                 Age = business.Age,
                 DateFinContrat = business.DateFinContrat,
+                Email = business.Email,
                 EntrepriseId = business.EntrepriseID,
                 Fonctions = business.Fonctions ?? string.Empty,
                 IsActive = business.IsActive,
@@ -187,6 +188,7 @@ namespace ClientApp.Controllers
             {
                 Age = viewModel.Age,
                 DateFinContrat = null, // Ensure nulled if saved as active
+                Email = viewModel.Email,
                 EmployeeID = employeeId ?? 0,
                 EntrepriseID = enterpriseId,
                 Fonctions = viewModel.Fonctions,

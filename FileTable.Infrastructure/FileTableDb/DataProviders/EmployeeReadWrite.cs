@@ -17,8 +17,8 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         {
             using var connection = _dbContext.CreateConnection();
             var sql = @"
-                INSERT INTO [documentdb].[dbo].[Employee] (Nom, Prenom, Age, Sexe, NomPoste, Fonctions, NombreMoisPoste, StatutEmploye, EntrepriseID, IsActive, NumeroMatricule, DateFinContrat, VouloirSouscrire)
-                VALUES (@Nom, @Prenom, @Age, @Sexe, @NomPoste, @Fonctions, @NombreMoisPoste, @StatutEmploye, @EntrepriseID, @IsActive, @NumeroMatricule, @DateFinContrat, @VouloirSouscrire);
+                INSERT INTO [documentdb].[dbo].[Employee] (Nom, Prenom, Age, Sexe, NomPoste, Fonctions, NombreMoisPoste, StatutEmploye, EntrepriseID, IsActive, NumeroMatricule, DateFinContrat, Email, VouloirSouscrire)
+                VALUES (@Nom, @Prenom, @Age, @Sexe, @NomPoste, @Fonctions, @NombreMoisPoste, @StatutEmploye, @EntrepriseID, @IsActive, @NumeroMatricule, @DateFinContrat, @Email, @VouloirSouscrire);
                 SELECT CAST(SCOPE_IDENTITY() as int);";
 
             return await connection.ExecuteScalarAsync<long>(sql, employee);
@@ -47,6 +47,7 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
                     IsActive = @IsActive,
                     NumeroMatricule = @NumeroMatricule,
                     DateFinContrat = @DateFinContrat,
+                    Email = @Email,
                     VouloirSouscrire = @VouloirSouscrire
                 WHERE EmployeeID = @EmployeeID";
 

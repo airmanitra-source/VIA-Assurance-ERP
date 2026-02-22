@@ -23,14 +23,14 @@ namespace ClientApp.Components.Pages.Routed
 
             try
             {
-                var result = await AuthService.LoginAsync(loginModel.Username, loginModel.Password);
-                if (result)
+                var (success, message) = await AuthService.LoginAsync(loginModel.Username, loginModel.Password);
+                if (success)
                 {
                     shouldNavigate = true;
                 }
                 else
                 {
-                    errorMessage = "Invalid username or password. Please try again.";
+                    errorMessage = message ?? "Invalid username or password. Please try again.";
                 }
             }
             catch (NavigationException)

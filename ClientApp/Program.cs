@@ -93,6 +93,7 @@ builder.Services.AddScoped<EmployeeController>();
 builder.Services.AddScoped<McpTools>();
 builder.Services.AddScoped<ClaimController>();
 builder.Services.AddScoped<FleetController>();
+builder.Services.AddScoped<ResetPasswordController>();
 builder.Services.AddScoped<TransportationController>();
 builder.Services.AddScoped<WarehouseController>();
 builder.Services.AddScoped<SubscriptionController>();
@@ -103,6 +104,7 @@ builder.Services.AddScoped<AuthenticationService>();
 builder.Services.AddScoped<UserManagementService>();
 builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<CustomAuthenticationStateProvider>());
+builder.Services.AddScoped<FileTable.Infrastructure.Services.IEmailService, FileTable.Infrastructure.Services.EmailService>();
 
 builder.Services.AddMcpServer()
     .WithHttpTransport()

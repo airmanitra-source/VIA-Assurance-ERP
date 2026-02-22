@@ -8,6 +8,8 @@ namespace FileTable.Infrastructure.FileTableDb.Entities
 
         public DateTime? DateFinContrat { get; set; }
 
+        public string? Email { get; set; }
+
         public long EntrepriseID { get; set; }
 
         public string? Fonctions { get; set; }

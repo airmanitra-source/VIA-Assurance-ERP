@@ -17,7 +17,7 @@ namespace FileTable.Infrastructure.Identities
         public async Task<IdentityResult> CreateAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             using var connection = new SqlConnection(_connectionString);
-            var sql = "INSERT INTO [documentdb].[dbo].[AppUser] (UserName, NormalizedUserName, Email, NormalizedEmail, PasswordHash, SecurityStamp, EntrepriseId) VALUES (@UserName, @NormalizedUserName, @Email, @NormalizedEmail, @PasswordHash, @SecurityStamp, @EntrepriseId); SELECT CAST(SCOPE_IDENTITY() as bigint);";
+            var sql = "INSERT INTO [documentdb].[dbo].[AppUser] (UserName, NormalizedUserName, Email, NormalizedEmail, PasswordHash, SecurityStamp, EntrepriseId, InitialPasswordResetCompleted) VALUES (@UserName, @NormalizedUserName, @Email, @NormalizedEmail, @PasswordHash, @SecurityStamp, @EntrepriseId, @InitialPasswordResetCompleted); SELECT CAST(SCOPE_IDENTITY() as bigint);";
             var id = await connection.ExecuteScalarAsync<long>(sql, user);
             user.Id = id.ToString();
             return IdentityResult.Success;
@@ -64,7 +64,7 @@ namespace FileTable.Infrastructure.Identities
         {
             using var connection = new SqlConnection(_connectionString);
             await connection.ExecuteAsync(
-                "UPDATE [documentdb].[dbo].[AppUser] SET UserName = @UserName, NormalizedUserName = @NormalizedUserName, Email = @Email, NormalizedEmail = @NormalizedEmail, PasswordHash = @PasswordHash, SecurityStamp = @SecurityStamp, EntrepriseId = @EntrepriseId WHERE Id = @Id",
+                "UPDATE [documentdb].[dbo].[AppUser] SET UserName = @UserName, NormalizedUserName = @NormalizedUserName, Email = @Email, NormalizedEmail = @NormalizedEmail, PasswordHash = @PasswordHash, SecurityStamp = @SecurityStamp, EntrepriseId = @EntrepriseId, InitialPasswordResetCompleted = @InitialPasswordResetCompleted WHERE Id = @Id",
                 user);
             return IdentityResult.Success;
         }

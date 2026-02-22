@@ -1,27 +1,37 @@
 using ClientApp.Components.Shared;
+using ClientApp.Controllers;
+using ClientApp.Models;
 using ClientApp.Services;
+using FileTable.Infrastructure.Services;
 using FileTable.Infrastructure.Identities;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Identity;
 
 namespace ClientApp.Components.Pages.Admin
 {
     public partial class Users : AuthenticatedComponentBase
     {
         // --- Injections ---
+        [Inject] protected EmployeeController EmployeeController { get; set; } = default!;
+        [Inject] protected IEmailService EmailService { get; set; } = default!;
+        [Inject] protected UserManager<ApplicationUser> UserManager { get; set; } = default!;
         [Inject] protected UserManagementService UserManagementService { get; set; } = default!;
 
         // --- State (alphabetically sorted, Id fields first) ---
         protected List<string> allRoles = new();
-        protected bool isLoading = true;
-        protected bool isProcessing = false;
-        protected bool showAddUserModal = false;
-        protected bool showConfirmDeleteModal = false;
-        protected bool showRoleModal = false;
         protected string addUserConfirmPassword = string.Empty;
         protected string addUserEmail = string.Empty;
         protected string addUserPassword = string.Empty;
+        protected string addUserSelectedRole = "employee";
+        protected long addUserSelectedEmployeeId = 0;
+        protected List<EmployeeViewModel> availableEmployees = new();
         protected string errorMessage = string.Empty;
+        protected bool isLoading = true;
+        protected bool isProcessing = false;
         protected ApplicationUser? pendingDeleteUser;
+        protected bool showAddUserModal = false;
+        protected bool showConfirmDeleteModal = false;
+        protected bool showRoleModal = false;
         protected ApplicationUser? selectedUser;
         protected HashSet<string> selectedUserRoles = new();
         protected List<ApplicationUser> users = new();
@@ -60,16 +70,74 @@ namespace ClientApp.Components.Pages.Admin
             addUserConfirmPassword = string.Empty;
             addUserEmail = string.Empty;
             addUserPassword = string.Empty;
+            addUserSelectedRole = "employee";
+            addUserSelectedEmployeeId = 0;
+            availableEmployees.Clear();
             showAddUserModal = true;
+        }
+
+        private async Task OnRoleChangedAsync(ChangeEventArgs e)
+        {
+            if (e.Value is string role)
+            {
+                addUserSelectedRole = role;
+                addUserSelectedEmployeeId = 0;
+
+                if (role == "employee")
+                {
+                    // Load available employees when employee role is selected
+                    await LoadAvailableEmployeesAsync();
+                }
+                else
+                {
+                    availableEmployees.Clear();
+                }
+
+                StateHasChanged();
+            }
+        }
+
+        private async Task LoadAvailableEmployeesAsync()
+        {
+            try
+            {
+                if (CurrentEnterpriseId.HasValue)
+                {
+                    // Get all employees for current enterprise
+                    availableEmployees = await EmployeeController.Index(CurrentEnterpriseId.Value);
+                    
+                    // Filter out:
+                    // 1. Employees without email addresses
+                    // 2. Employees that already have user accounts
+                    // 3. Employees whose initial password reset has been completed
+                    var allUserEmails = users.Select(u => u.Email?.ToLower()).ToHashSet();
+                    var completedPasswordResetEmails = users
+                        .Where(u => u.InitialPasswordResetCompleted)
+                        .Select(u => u.Email?.ToLower())
+                        .ToHashSet();
+
+                    availableEmployees = availableEmployees
+                        .Where(e => !string.IsNullOrWhiteSpace(e.Email) // Must have email
+                            && !allUserEmails.Contains(e.Email?.ToLower()) 
+                            && !completedPasswordResetEmails.Contains(e.Email?.ToLower()))
+                        .ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMessage = $"Error loading employees: {ex.Message}";
+                Console.WriteLine($"Error loading employees: {ex.Message}");
+            }
         }
 
         private async Task CreateUserAsync()
         {
             errorMessage = string.Empty;
 
-            if (string.IsNullOrWhiteSpace(addUserEmail) || string.IsNullOrWhiteSpace(addUserPassword))
+            // Validate common fields
+            if (string.IsNullOrWhiteSpace(addUserPassword) || string.IsNullOrWhiteSpace(addUserConfirmPassword))
             {
-                errorMessage = "Email, password are required.";
+                errorMessage = "Password is required.";
                 return;
             }
 
@@ -94,23 +162,84 @@ namespace ClientApp.Components.Pages.Admin
             isProcessing = true;
             try
             {
-                var existingUser = await UserManagementService.FindUserByEmailAsync(addUserEmail);
-                if (existingUser != null)
-                {
-                    errorMessage = "User with this email already exists.";
-                    return;
-                }
+                ApplicationUser newUser;
 
-                var newUser = new ApplicationUser
+                if (addUserSelectedRole == "employee")
                 {
-                    UserName = addUserEmail,
-                    Email = addUserEmail,
-                    EntrepriseId = CurrentEnterpriseId.Value
-                };
+                    // Create user from selected employee
+                    if (addUserSelectedEmployeeId == 0)
+                    {
+                        errorMessage = "Please select an employee.";
+                        isProcessing = false;
+                        return;
+                    }
+
+                    var selectedEmployee = availableEmployees.FirstOrDefault(e => e.EmployeeID == addUserSelectedEmployeeId);
+                    if (selectedEmployee == null || string.IsNullOrWhiteSpace(selectedEmployee.Email))
+                    {
+                        errorMessage = "Selected employee does not have an email address.";
+                        isProcessing = false;
+                        return;
+                    }
+
+                    newUser = new ApplicationUser
+                    {
+                        UserName = selectedEmployee.Email,
+                        Email = selectedEmployee.Email,
+                        EntrepriseId = CurrentEnterpriseId.Value
+                    };
+                }
+                else
+                {
+                    // Create regular user with manual email
+                    if (string.IsNullOrWhiteSpace(addUserEmail))
+                    {
+                        errorMessage = "Email is required.";
+                        isProcessing = false;
+                        return;
+                    }
+
+                    var existingUser = await UserManagementService.FindUserByEmailAsync(addUserEmail);
+                    if (existingUser != null)
+                    {
+                        errorMessage = "User with this email already exists.";
+                        isProcessing = false;
+                        return;
+                    }
+
+                    newUser = new ApplicationUser
+                    {
+                        UserName = addUserEmail,
+                        Email = addUserEmail,
+                        RaisonSocial = addUserEmail, // Use email as default, can be updated later
+                        EntrepriseId = CurrentEnterpriseId.Value
+                    };
+                }
 
                 var result = await UserManagementService.CreateUserAsync(newUser, addUserPassword);
                 if (result.Succeeded)
                 {
+                    // Assign the selected role
+                    if (!string.IsNullOrEmpty(addUserSelectedRole))
+                    {
+                        await UserManagementService.AddRoleAsync(newUser, addUserSelectedRole);
+                    }
+
+                    // Send password reset email
+                    try
+                    {
+                        var resetToken = await UserManager.GeneratePasswordResetTokenAsync(newUser);
+                        var baseUrl = Navigation.BaseUri.TrimEnd('/');
+                        var resetUrl = $"{baseUrl}/reset-password";
+                        
+                        await EmailService.SendPasswordResetEmailAsync(newUser.Email!, newUser.RaisonSocial, resetToken, resetUrl);
+                    }
+                    catch (Exception emailEx)
+                    {
+                        Console.WriteLine($"Error sending password reset email: {emailEx.Message}");
+                        // Don't fail user creation if email fails
+                    }
+
                     await LoadDataAsync();
                     CloseAddUserModal();
                 }
@@ -136,6 +265,9 @@ namespace ClientApp.Components.Pages.Admin
             addUserConfirmPassword = string.Empty;
             addUserEmail = string.Empty;
             addUserPassword = string.Empty;
+            addUserSelectedRole = "employee";
+            addUserSelectedEmployeeId = 0;
+            availableEmployees.Clear();
             errorMessage = string.Empty;
         }
 

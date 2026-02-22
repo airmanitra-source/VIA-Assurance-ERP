@@ -1,5 +1,5 @@
 @rendermode InteractiveServer
-@namespace ClientApp.Components
+@namespace ClientApp.Components.Pages.Selectables
 @using ClientApp.Models
 
 <div class="tree-node @(IsSelected ? "selected" : "")">
@@ -37,27 +37,3 @@
         </div>
     }
 </div>
-
-@code {
-    [Parameter]
-    public EmployeeDocumentViewModel Node { get; set; } = null!;
-
-    [Parameter]
-    public EventCallback<EmployeeDocumentViewModel> OnNodeSelected { get; set; }
-
-    [Parameter]
-    public bool IsSelected { get; set; }
-
-    [Parameter]
-    public EmployeeDocumentViewModel? SelectedNode { get; set; }
-
-    private void ToggleExpand()
-    {
-        Node.IsExpanded = !Node.IsExpanded;
-    }
-
-    private async Task SelectNode(EmployeeDocumentViewModel node)
-    {
-        await OnNodeSelected.InvokeAsync(node);
-    }
-}

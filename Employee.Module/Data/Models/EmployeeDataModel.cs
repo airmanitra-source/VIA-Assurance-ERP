@@ -15,6 +15,7 @@ namespace Employee.Module.Data.Models
         public bool IsActive { get; set; } = true;
         public string? NumeroMatricule { get; set; }
         public DateTime? DateFinContrat { get; set; }
+        public string? Email { get; set; }
         public bool VouloirSouscrire { get; set; } = false;
     }
 }

@@ -56,19 +56,20 @@ namespace Employee.Module
         {
             return new EmployeeDataModel
             {
-                EmployeeID = businessModel.EmployeeID,
-                Nom = businessModel.Nom,
-                Prenom = businessModel.Prenom,
                 Age = businessModel.Age,
-                Sexe = businessModel.Sexe,
-                NomPoste = businessModel.NomPoste,
-                Fonctions = businessModel.Fonctions,
-                NombreMoisPoste = businessModel.NombreMoisPoste,
-                StatutEmploye = businessModel.StatutEmploye,
-                EntrepriseID = businessModel.EntrepriseID,
-                IsActive = businessModel.IsActive,
-                NumeroMatricule = businessModel.NumeroMatricule,
                 DateFinContrat = businessModel.DateFinContrat,
+                EmployeeID = businessModel.EmployeeID,
+                Email = businessModel.Email,
+                EntrepriseID = businessModel.EntrepriseID,
+                Fonctions = businessModel.Fonctions,
+                IsActive = businessModel.IsActive,
+                Nom = businessModel.Nom,
+                NombreMoisPoste = businessModel.NombreMoisPoste,
+                NomPoste = businessModel.NomPoste,
+                NumeroMatricule = businessModel.NumeroMatricule,
+                Prenom = businessModel.Prenom,
+                Sexe = businessModel.Sexe,
+                StatutEmploye = businessModel.StatutEmploye,
                 VouloirSouscrire = businessModel.VouloirSouscrire
             };
         }
@@ -77,19 +78,20 @@ namespace Employee.Module
         {
             return new EmployeeBusinessModel
             {
-                EmployeeID = dataModel.EmployeeID,
-                Nom = dataModel.Nom,
-                Prenom = dataModel.Prenom,
                 Age = dataModel.Age,
-                Sexe = dataModel.Sexe,
-                NomPoste = dataModel.NomPoste,
-                Fonctions = dataModel.Fonctions,
-                NombreMoisPoste = dataModel.NombreMoisPoste,
-                StatutEmploye = dataModel.StatutEmploye,
-                EntrepriseID = dataModel.EntrepriseID,
-                IsActive = dataModel.IsActive,
-                NumeroMatricule = dataModel.NumeroMatricule,
                 DateFinContrat = dataModel.DateFinContrat,
+                EmployeeID = dataModel.EmployeeID,
+                Email = dataModel.Email,
+                EntrepriseID = dataModel.EntrepriseID,
+                Fonctions = dataModel.Fonctions,
+                IsActive = dataModel.IsActive,
+                Nom = dataModel.Nom,
+                NombreMoisPoste = dataModel.NombreMoisPoste,
+                NomPoste = dataModel.NomPoste,
+                NumeroMatricule = dataModel.NumeroMatricule,
+                Prenom = dataModel.Prenom,
+                Sexe = dataModel.Sexe,
+                StatutEmploye = dataModel.StatutEmploye,
                 VouloirSouscrire = dataModel.VouloirSouscrire
             };
         }

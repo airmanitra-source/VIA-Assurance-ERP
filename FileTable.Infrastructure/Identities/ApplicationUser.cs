@@ -4,7 +4,10 @@ namespace FileTable.Infrastructure.Identities
 {
     public class ApplicationUser: IdentityUser
     {
-        public string RaisonSocial { get; set; } = string.Empty;
         public long EntrepriseId { get; set; }
+
+        public bool InitialPasswordResetCompleted { get; set; } = false;
+
+        public string RaisonSocial { get; set; } = string.Empty;
     }
 }

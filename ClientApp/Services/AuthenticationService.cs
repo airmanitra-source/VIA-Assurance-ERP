@@ -22,12 +22,22 @@ public class AuthenticationService
 
     public event Action? OnAuthStateChanged;
 
-    public async Task<bool> LoginAsync(string username, string password)
+    public async Task<(bool Success, string? Message)> LoginAsync(string username, string password)
     {
         var user = await _userManager.FindByNameAsync(username);
         if (user == null)
         {
-            return false;
+            return (false, "Invalid username or password.");
+        }
+
+        // Check if user needs to reset password (except for developers)
+        var userRoles = await _userManager.GetRolesAsync(user);
+        var isDeveloper = userRoles.Contains("developer");
+        
+        if (!isDeveloper && !user.InitialPasswordResetCompleted)
+        {
+            // User must reset password first
+            return (false, "Your account requires initial password setup. Please check your email for the password reset link.");
         }
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
@@ -60,10 +70,10 @@ public class AuthenticationService
             
             _authStateProvider.SetAuthenticationState(claimsPrincipal);
             OnAuthStateChanged?.Invoke();
-            return true;
+            return (true, null);
         }
 
-        return false;
+        return (false, "Invalid username or password.");
     }
 
     public async Task<IdentityResult> RegisterAsync(long entrepriseId, string email, string password)

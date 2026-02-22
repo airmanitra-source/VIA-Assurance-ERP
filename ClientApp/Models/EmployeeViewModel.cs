@@ -12,6 +12,9 @@ namespace ClientApp.Models
 
         public DateTime? DateFinContrat { get; set; }
 
+        [EmailAddress(ErrorMessage = "Email must be valid")]
+        public string? Email { get; set; }
+
         public long EntrepriseId { get; set; }
 
         public string? Fonctions { get; set; }
@@ -47,6 +50,7 @@ namespace ClientApp.Models
                 EmployeeID = employee.EmployeeID,
                 Age = employee.Age,
                 DateFinContrat = employee.DateFinContrat,
+                Email = employee.Email,
                 Fonctions = employee.Fonctions,
                 IsActive = employee.IsActive,
                 Nom = employee.Nom,
