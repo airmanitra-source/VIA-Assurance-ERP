@@ -3,9 +3,11 @@ using Company.Fleet.Module;
 using Company.Module;
 using Company.Transportation.Module;
 using Company.Warehouse.Module;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ClientApp.Controllers
 {
+    [Authorize(Roles = "developer")]
     public class ClaimController
     {
         private readonly ICompanyFleetModule _fleetModule;

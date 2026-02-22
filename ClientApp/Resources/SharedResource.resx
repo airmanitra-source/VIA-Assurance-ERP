@@ -753,4 +753,19 @@
   <data name="UserSettings" xml:space="preserve">
     <value>User settings</value>
   </data>
+  <data name="FranchiseType" xml:space="preserve">
+    <value>Franchise Type</value>
+  </data>
+  <data name="FixedDeductible" xml:space="preserve">
+    <value>Fixed Deductible</value>
+  </data>
+  <data name="RelativeDeductible" xml:space="preserve">
+    <value>Relative Deductible</value>
+  </data>
+  <data name="FranchiseAmount" xml:space="preserve">
+    <value>Franchise Amount</value>
+  </data>
+  <data name="FranchisePercentage" xml:space="preserve">
+    <value>Franchise Percentage</value>
+  </data>
 </root>

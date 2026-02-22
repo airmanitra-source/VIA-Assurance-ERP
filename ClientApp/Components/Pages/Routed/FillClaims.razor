@@ -1,4 +1,6 @@
 @page "/fill-claims"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "developer")]
 @rendermode InteractiveServer
 @using ClientApp.Models
 @using ClientApp.Services

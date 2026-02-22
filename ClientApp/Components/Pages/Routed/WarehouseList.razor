@@ -1,4 +1,6 @@
 @page "/warehouse-list"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "developer")]
 @rendermode InteractiveServer
 
 <PageTitle>@Localizer["ManageWarehouses"] - VIA Assurance</PageTitle>

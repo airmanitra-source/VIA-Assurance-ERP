@@ -1,9 +1,11 @@
 using ClientApp.Models;
 using Subscription.Module;
 using Subscription.Module.Business;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ClientApp.Controllers
 {
+    [Authorize(Roles = "developer")]
     public class SubscriptionController
     {
         private readonly ISubscriptionModule _subscriptionModule;

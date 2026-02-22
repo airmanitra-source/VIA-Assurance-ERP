@@ -1,8 +1,10 @@
 @page "/admin/users"
+@inherits AuthenticatedComponentBase
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "developer")]
 @rendermode InteractiveServer
 @using ClientApp.Services
+@using ClientApp.Components.Shared
 @using FileTable.Infrastructure.Identities
 @using Microsoft.AspNetCore.Identity
 
@@ -10,9 +12,22 @@
 
 <div class="admin-users-container">
     <div class="page-header">
-        <h1>🛠️ @Localizer["UserSettings"]</h1>
-        <p>@Localizer["ManageUsers"]</p>
+        <div class="header-content">
+            <h1>🛠️ User Management</h1>
+            <p>@Localizer["ManageUsers"]</p>
+        </div>
+        <button class="btn-primary" @onclick="OpenAddUserModal" disabled="@isLoading">
+            ➕ Add New User
+        </button>
     </div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">
+            @errorMessage
+            <button class="btn-close-alert" @onclick='() => errorMessage = ""'>&times;</button>
+        </div>
+    }
 
     @if (isLoading)
     {
@@ -47,9 +62,20 @@
                                         <span class="role-badge">@role</span>
                                     }
                                 }
+                                else
+                                {
+                                    <span class="text-muted">No roles</span>
+                                }
                             </td>
                             <td>
-                                <button class="btn-sm" @onclick="() => OpenRoleModalAsync(user)">Manage Roles</button>
+                                <div class="action-buttons">
+                                    <button class="btn-sm btn-info" @onclick="() => OpenRoleModalAsync(user)">
+                                        🔐 Manage Roles
+                                    </button>
+                                    <button class="btn-sm btn-danger" @onclick="() => OpenConfirmDeleteModal(user)" disabled="@isProcessing">
+                                        ❌ Inactivate
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -59,29 +85,132 @@
     }
 </div>
 
+@* Add User Modal *@
+@if (showAddUserModal)
+{
+    <div class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New User</h3>
+                <button class="btn-close" @onclick="CloseAddUserModal" disabled="@isProcessing">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger">
+                        @errorMessage
+                    </div>
+                }
+
+                <form>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" class="form-control" 
+                               @bind="addUserEmail" 
+                               disabled="@isProcessing"
+                               placeholder="user@example.com" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" class="form-control" 
+                               @bind="addUserPassword" 
+                               disabled="@isProcessing"
+                               placeholder="Enter password" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" class="form-control" 
+                               @bind="addUserConfirmPassword" 
+                               disabled="@isProcessing"
+                               placeholder="Confirm password" />
+                        @if (!string.IsNullOrEmpty(addUserPassword) && !string.IsNullOrEmpty(addUserConfirmPassword) && addUserPassword != addUserConfirmPassword)
+                        {
+                            <small class="form-text-error">Passwords do not match</small>
+                        }
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-secondary" @onclick="CloseAddUserModal" disabled="@isProcessing">
+                    Cancel
+                </button>
+                <button class="btn-primary" @onclick="CreateUserAsync" disabled="@isProcessing">
+                    @if (isProcessing)
+                    {
+                        <span class="spinner-border spinner-border-sm"></span>
+                    }
+                    Create User
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@* Manage Roles Modal *@
 @if (showRoleModal && selectedUser != null)
 {
     <div class="modal-overlay">
         <div class="modal-content">
-            <h3>Manage Roles for @selectedUser.RaisonSocial</h3>
-            <p>@selectedUser.Email</p>
-            
-            <div class="roles-list">
-                @foreach (var role in allRoles)
-                {
-                    <div class="role-item">
-                        <label>
-                            <input type="checkbox" 
-                                   checked="@(selectedUserRoles.Contains(role))" 
-                                   @onchange="@(e => ToggleRoleAsync(role, e.Value))" />
-                            @role
-                        </label>
-                    </div>
-                }
+            <div class="modal-header">
+                <h3>Manage Roles for @selectedUser.Email</h3>
+                <button class="btn-close" @onclick="CloseRoleModal">&times;</button>
             </div>
 
-            <div class="modal-actions">
-                <button class="btn-primary" @onclick="CloseModal">Close</button>
+            <div class="modal-body">
+                <p class="user-info">@selectedUser.RaisonSocial</p>
+                
+                <div class="roles-list">
+                    @foreach (var role in allRoles)
+                    {
+                        <div class="role-item">
+                            <label>
+                                <input type="checkbox" 
+                                       checked="@(selectedUserRoles.Contains(role))" 
+                                       @onchange="@(e => ToggleRoleAsync(role, e.Value))" />
+                                @role
+                            </label>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-primary" @onclick="CloseRoleModal">Close</button>
+            </div>
+        </div>
+    </div>
+}
+
+@* Confirm Delete Modal *@
+@if (showConfirmDeleteModal && pendingDeleteUser != null)
+{
+    <div class="modal-overlay">
+        <div class="modal-content modal-content-sm">
+            <div class="modal-header">
+                <h3>Confirm Inactivation</h3>
+                <button class="btn-close" @onclick="CloseConfirmDeleteModal" disabled="@isProcessing">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <p>Are you sure you want to inactivate <strong>@pendingDeleteUser.Email</strong>?</p>
+                <p class="text-warning">This action cannot be easily undone.</p>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-secondary" @onclick="CloseConfirmDeleteModal" disabled="@isProcessing">
+                    Cancel
+                </button>
+                <button class="btn-danger" @onclick="ConfirmInactivateUserAsync" disabled="@isProcessing">
+                    @if (isProcessing)
+                    {
+                        <span class="spinner-border spinner-border-sm"></span>
+                    }
+                    Inactivate User
+                </button>
             </div>
         </div>
     </div>

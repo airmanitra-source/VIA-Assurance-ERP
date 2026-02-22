@@ -39,4 +39,29 @@ public class UserManagementService
     {
         return new List<string> { "directeur", "RH", "auditeur", "admin", "developer", "employee" };
     }
+
+    public async Task<IdentityResult> CreateUserAsync(ApplicationUser user, string password)
+    {
+        return await _userManager.CreateAsync(user, password);
+    }
+
+    public async Task<IdentityResult> UpdateUserAsync(ApplicationUser user)
+    {
+        return await _userManager.UpdateAsync(user);
+    }
+
+    public async Task<IdentityResult> DeleteUserAsync(ApplicationUser user)
+    {
+        return await _userManager.DeleteAsync(user);
+    }
+
+    public async Task<ApplicationUser?> FindUserByEmailAsync(string email)
+    {
+        return await _userManager.FindByEmailAsync(email);
+    }
+
+    public async Task<ApplicationUser?> FindUserByIdAsync(string userId)
+    {
+        return await _userManager.FindByIdAsync(userId);
+    }
 }
