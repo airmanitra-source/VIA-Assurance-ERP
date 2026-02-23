@@ -4,6 +4,7 @@
 
 use documentdb
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = '[EntrepriseSinister]' AND schema_id = SCHEMA_ID('dbo'))
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'EntrepriseSinister' AND schema_id = SCHEMA_ID('dbo'))
 BEGIN
     CREATE TABLE [documentdb].[dbo].[EntrepriseSinister] (
         [Id] BIGINT IDENTITY(1,1) PRIMARY KEY,
@@ -19,22 +20,22 @@ BEGIN
         [EntrepriseWarehouseId] BIGINT NULL,
         [CreatedDate] DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
         [LastModifiedDate] DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
-        CONSTRAINT [FK_CompanySinister_Entreprise] FOREIGN KEY ([EntrepriseId]) REFERENCES [documentdb].[dbo].[Entreprise]([Id]) ON DELETE CASCADE,
-        CONSTRAINT [FK_CompanySinister_EntrepriseFleet] FOREIGN KEY ([EntrepriseFleetId]) REFERENCES [documentdb].[dbo].[EntrepriseFleet]([Id]) ON DELETE SET NULL,
-        CONSTRAINT [FK_CompanySinister_EntrepriseMerchandiseTransportation] FOREIGN KEY ([EntrepriseMerchandiseTransportationId]) REFERENCES [documentdb].[dbo].[EntrepriseMerchandiseTransportation]([Id]) ON DELETE SET NULL,
-        CONSTRAINT [FK_CompanySinister_EntrepriseWarehouse] FOREIGN KEY ([EntrepriseWarehouseId]) REFERENCES [documentdb].[dbo].[EntrepriseWarehouse]([Id]) ON DELETE SET NULL,
+        CONSTRAINT [FK_CompanySinister_Entreprise] FOREIGN KEY ([EntrepriseId]) REFERENCES [documentdb].[dbo].[Entreprise]([Id]) ON DELETE NO ACTION,
+        CONSTRAINT [FK_CompanySinister_EntrepriseFleet] FOREIGN KEY ([EntrepriseFleetId]) REFERENCES [documentdb].[dbo].[EntrepriseFleet]([Id]) ON DELETE NO ACTION,
+        CONSTRAINT [FK_CompanySinister_EntrepriseMerchandiseTransportation] FOREIGN KEY ([EntrepriseMerchandiseTransportationId]) REFERENCES [documentdb].[dbo].[EntrepriseMerchandiseTransportation]([Id]) ON DELETE NO ACTION,
+        CONSTRAINT [FK_CompanySinister_EntrepriseWarehouse] FOREIGN KEY ([EntrepriseWarehouseId]) REFERENCES [documentdb].[dbo].[EntrepriseWarehouse]([Id]) ON DELETE NO ACTION,
         -- Constraint to ensure only one asset is referenced per sinister
         CONSTRAINT [CK_CompanySinister_SingleAsset] CHECK (
             (CASE WHEN [EntrepriseFleetId] IS NOT NULL THEN 1 ELSE 0 END) +
             (CASE WHEN [EntrepriseMerchandiseTransportationId] IS NOT NULL THEN 1 ELSE 0 END) +
             (CASE WHEN [EntrepriseWarehouseId] IS NOT NULL THEN 1 ELSE 0 END) = 1
         )
-    );
+    )
     
     -- Create indexes for better query performance
-    CREATE INDEX [IX_EntrepriseSinister_EntrepriseId] ON [documentdb].[dbo].EntrepriseSinister([EntrepriseId]);
-    CREATE INDEX [IX_EntrepriseSinister_SinisterDate] ON [documentdb].[dbo].EntrepriseSinister([SinisterDate]);
-    CREATE INDEX [IX_EntrepriseSinister_Status] ON [documentdb].[dbo].EntrepriseSinister([Status]);
-    CREATE INDEX [IX_EntrepriseSinister_AssetType] ON [documentdb].[dbo].EntrepriseSinister([AssetType]);
+    CREATE INDEX [IX_EntrepriseSinister_EntrepriseId] ON [documentdb].[dbo].EntrepriseSinister([EntrepriseId])
+    CREATE INDEX [IX_EntrepriseSinister_SinisterDate] ON [documentdb].[dbo].EntrepriseSinister([SinisterDate])
+    CREATE INDEX [IX_EntrepriseSinister_Status] ON [documentdb].[dbo].EntrepriseSinister([Status])
+    CREATE INDEX [IX_EntrepriseSinister_AssetType] ON [documentdb].[dbo].EntrepriseSinister([AssetType])
 END
 GO

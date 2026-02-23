@@ -50,6 +50,7 @@
     <ProjectReference Include="..\Company.Warehouse.Module\Company.Warehouse.Module.csproj" />
     <ProjectReference Include="..\Company.Transportation.Module\Company.Transportation.Module.csproj" />
     <ProjectReference Include="..\Sinister.Module\Sinister.Module.csproj" />
+    <ProjectReference Include="..\Company.Sinister.Module\Company.Sinister.Module.csproj" />
     <ProjectReference Include="..\CompanyDocuments.Module\CompanyDocuments.Module.csproj" />
   </ItemGroup>
 

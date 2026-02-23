@@ -4,12 +4,12 @@ namespace Company.Sinister.Module.Data.Providers
 {
     public interface ICompanySinisterReadOnly
     {
-        Task<CompanySinisterDataModel?> GetSinisterByIdAsync(long id);
-        Task<IEnumerable<CompanySinisterDataModel>> GetSinistersByEntrepriseIdAsync(long entrepriseId);
-        Task<IEnumerable<CompanySinisterDataModel>> GetSinistersByAssetTypeAsync(long entrepriseId, string assetType);
-        Task<IEnumerable<CompanySinisterDataModel>> GetSinistersByFleetAsync(long fleetId);
-        Task<IEnumerable<CompanySinisterDataModel>> GetSinistersByTransportationAsync(long transportationId);
-        Task<IEnumerable<CompanySinisterDataModel>> GetSinistersByWarehouseAsync(long warehouseId);
-        Task<IEnumerable<CompanySinisterDataModel>> GetSinistersByStatusAsync(long entrepriseId, string status);
+        Task<CompanySinisterDataModel?> ReadSinisterByIdAsync(long id);
+        Task<IEnumerable<CompanySinisterDataModel>> ReadSinistersByEntrepriseIdAsync(long entrepriseId);
+        Task<IEnumerable<CompanySinisterDataModel>> ReadSinistersByAssetTypeAsync(long entrepriseId, string assetType);
+        Task<IEnumerable<CompanySinisterDataModel>> ReadSinistersByFleetAsync(long fleetId);
+        Task<IEnumerable<CompanySinisterDataModel>> ReadSinistersByTransportationAsync(long transportationId);
+        Task<IEnumerable<CompanySinisterDataModel>> ReadSinistersByWarehouseAsync(long warehouseId);
+        Task<IEnumerable<CompanySinisterDataModel>> ReadSinistersByStatusAsync(long entrepriseId, string status);
     }
 }

@@ -19,6 +19,7 @@
     <ProjectReference Include="..\FileTable.Infrastructure\FileTable.Infrastructure.csproj" />
     <ProjectReference Include="..\Subscription.Module\Subscription.Module.csproj" />
     <ProjectReference Include="..\Sinister.Module\Sinister.Module.csproj" />
+    <ProjectReference Include="..\Company.Sinister.Module\Company.Sinister.Module.csproj" />
     <ProjectReference Include="..\CompanyDocuments.Module\CompanyDocuments.Module.csproj" />
   </ItemGroup>
 

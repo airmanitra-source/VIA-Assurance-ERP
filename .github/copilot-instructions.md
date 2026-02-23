@@ -12,6 +12,8 @@ The application follows a Clean Architecture pattern. It is composed of modules 
 
 * Property Ordering: Properties within classes must be sorted alphabetically, with the exception of Id fields which should come first.
 
+* Interfaces and their implementations must not be in the same file.
+
 ## Infrastructure Project
 
 The Infrastructure layer is located in the Filetable.Infrastructure folder. It contains all implementations for read-only and read-write data providers.
@@ -30,11 +32,11 @@ Modules encapsulate the business logic. Each module is divided into 'Business' a
 
 * Data: Subdivided into Models and Providers. The Providers folder contains the contracts implemented by the Infrastructure layer. You must strictly separate Read contracts from Read/Write contracts.
 
-Entry Points: Each module is accessed via a specific interface and its implementation. Module methods must be prefixed with `Get`, `Add`, `Set`, or `Remove`.
+* Entry Points: Each module is accessed via a specific interface and its implementation. Module methods must be prefixed with `Get`, `Add`, `Set`, or `Remove`.
 
-Mapping: Business Models are responsible for mapping Data Models into Business Models.
+* Mapping: Business Models are responsible for mapping Data Models into Business Models.
 
-Dependency Rule: Data Models must remain "pure"; they should not depend on, or have knowledge of, Business Logic or Entities.
+* Dependency Rule: Data Models must remain "pure"; they should not depend on, or have knowledge of, Business Logic or Entities.
 
 ## ClientApp Project
 

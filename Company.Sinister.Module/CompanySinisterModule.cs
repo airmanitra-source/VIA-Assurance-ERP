@@ -12,39 +12,39 @@ namespace Company.Sinister.Module
             _sinisterProvider = sinisterProvider;
         }
 
-        public async Task<CompanySinisterDataModel?> GetSinisterAsync(long id)
+        public async Task<CompanySinisterDataModel?> ReadSinisterByIdAsync(long id)
         {
-            return await _sinisterProvider.GetSinisterByIdAsync(id);
+            return await _sinisterProvider.ReadSinisterByIdAsync(id);
         }
 
-        public async Task<IEnumerable<CompanySinisterDataModel>> GetCompanySinistersAsync(long entrepriseId)
+        public async Task<IEnumerable<CompanySinisterDataModel>> ReadCompanySinistersAsync(long entrepriseId)
         {
-            return await _sinisterProvider.GetSinistersByEntrepriseIdAsync(entrepriseId);
+            return await _sinisterProvider.ReadSinistersByEntrepriseIdAsync(entrepriseId);
         }
 
-        public async Task<IEnumerable<CompanySinisterDataModel>> GetSinistersByAssetTypeAsync(long entrepriseId, string assetType)
+        public async Task<IEnumerable<CompanySinisterDataModel>> ReadSinistersByAssetTypeAsync(long entrepriseId, string assetType)
         {
-            return await _sinisterProvider.GetSinistersByAssetTypeAsync(entrepriseId, assetType);
+            return await _sinisterProvider.ReadSinistersByAssetTypeAsync(entrepriseId, assetType);
         }
 
-        public async Task<IEnumerable<CompanySinisterDataModel>> GetSinistersByFleetAsync(long fleetId)
+        public async Task<IEnumerable<CompanySinisterDataModel>> ReadSinistersByFleetAsync(long fleetId)
         {
-            return await _sinisterProvider.GetSinistersByFleetAsync(fleetId);
+            return await _sinisterProvider.ReadSinistersByFleetAsync(fleetId);
         }
 
-        public async Task<IEnumerable<CompanySinisterDataModel>> GetSinistersByTransportationAsync(long transportationId)
+        public async Task<IEnumerable<CompanySinisterDataModel>> ReadSinistersByTransportationAsync(long transportationId)
         {
-            return await _sinisterProvider.GetSinistersByTransportationAsync(transportationId);
+            return await _sinisterProvider.ReadSinistersByTransportationAsync(transportationId);
         }
 
-        public async Task<IEnumerable<CompanySinisterDataModel>> GetSinistersByWarehouseAsync(long warehouseId)
+        public async Task<IEnumerable<CompanySinisterDataModel>> ReadSinistersByWarehouseAsync(long warehouseId)
         {
-            return await _sinisterProvider.GetSinistersByWarehouseAsync(warehouseId);
+            return await _sinisterProvider.ReadSinistersByWarehouseAsync(warehouseId);
         }
 
-        public async Task<IEnumerable<CompanySinisterDataModel>> GetSinistersByStatusAsync(long entrepriseId, string status)
+        public async Task<IEnumerable<CompanySinisterDataModel>> ReadSinistersByStatusAsync(long entrepriseId, string status)
         {
-            return await _sinisterProvider.GetSinistersByStatusAsync(entrepriseId, status);
+            return await _sinisterProvider.ReadSinistersByStatusAsync(entrepriseId, status);
         }
 
         public async Task<long> AddSinisterAsync(CompanySinisterDataModel sinister)

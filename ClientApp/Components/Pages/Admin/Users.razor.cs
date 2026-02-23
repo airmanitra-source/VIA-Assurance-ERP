@@ -6,7 +6,6 @@ using FileTable.Infrastructure.Identities;
 using FileTable.Infrastructure.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 
 namespace ClientApp.Components.Pages.Admin
 {

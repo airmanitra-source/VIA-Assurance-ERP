@@ -8,6 +8,10 @@ The application follows a Clean Architecture pattern. It is composed of modules 
 
 ## General Guidelines and Naming Conventions
 
+* Migration scripts are written using t-sql. You must follow syntax rules and check for errors.
+
+* Interface and implementation must not be located on the same file.
+
 * Asynchronous Methods: All async methods must be suffixed with Async.
 
 * Property Ordering: Properties within classes must be sorted alphabetically, with the exception of Id fields which should come first.
@@ -40,7 +44,8 @@ Dependency Rule: Data Models must remain "pure"; they should not depend on, or h
 
 This is the UI layer.
 
-* Components: Razor UI components must exclusively use ViewModels located in the Models folder.
+* Components: Razor UI components must exclusively use ViewModels located in the Models folder. They also must be suffixed by `Component`.
+
 Separation of Concerns: Razor markup, C# code-behind, and CSS must be kept in separate files. Razor code should only handle state and events.
 
 * Controllers: All other logic is handled by them. Each view is managed by a controller responsible for mapping Business Models into ViewModels and non business logic such as sorting, ordering, mapping back to business model when submitting from the UI.

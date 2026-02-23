@@ -1,6 +1,8 @@
 using ClientApp.Models;
 using Company.Fleet.Module;
 using Company.Module;
+using Company.Sinister.Module;
+using Company.Sinister.Module.Data.Models;
 using Company.Transportation.Module;
 using Company.Warehouse.Module;
 using Microsoft.AspNetCore.Authorization;
@@ -11,17 +13,20 @@ namespace ClientApp.Controllers
     public class ClaimController
     {
         private readonly ICompanyFleetModule _fleetModule;
+        private readonly ICompanySinisterModule _sinisterModule;
         private readonly ICompanyTransportationModule _transportationModule;
         private readonly ICompanyWarehouseModule _warehouseModule;
         private readonly ICompanyModule _companyModule;
 
         public ClaimController(
             ICompanyFleetModule fleetModule,
+            ICompanySinisterModule sinisterModule,
             ICompanyTransportationModule transportationModule,
             ICompanyWarehouseModule warehouseModule,
             ICompanyModule companyModule)
         {
             _fleetModule = fleetModule;
+            _sinisterModule = sinisterModule;
             _transportationModule = transportationModule;
             _warehouseModule = warehouseModule;
             _companyModule = companyModule;
@@ -78,9 +83,31 @@ namespace ClientApp.Controllers
 
         public async Task<StoreResult> Store(CompanySinisterViewModel viewModel, long enterpriseId)
         {
-            // Simulate saving
-            await Task.Delay(500);
-            return new StoreResult { Message = "Claim submitted successfully!", Success = true };
+            try
+            {
+                var dataModel = new CompanySinisterDataModel
+                {
+                    AssetType = viewModel.AssetType,
+                    CreatedDate = DateTime.UtcNow,
+                    Description = viewModel.Description,
+                    EntrepriseFleetId = viewModel.EntrepriseFleetId,
+                    EntrepriseId = enterpriseId,
+                    EntrepriseMerchandiseTransportationId = viewModel.EntrepriseMerchandiseTransportationId,
+                    EntrepriseWarehouseId = viewModel.EntrepriseWarehouseId,
+                    EstimatedAmount = viewModel.EstimatedAmount,
+                    LastModifiedDate = DateTime.UtcNow,
+                    SinisterDate = viewModel.SinisterDate,
+                    SinisterId = viewModel.SinisterId,
+                    Status = "Pending"
+                };
+
+                await _sinisterModule.AddSinisterAsync(dataModel);
+                return new StoreResult { Message = "Claim submitted successfully!", Success = true };
+            }
+            catch (Exception ex)
+            {
+                return new StoreResult { Message = $"Failed to submit claim: {ex.Message}", Success = false };
+            }
         }
     }
 }

@@ -29,6 +29,9 @@ using Sinister.Module;
 using CompanyDocuments.Module.Data.Providers;
 using CompanyDocuments.Module;
 using CompanyDocuments.Module.Business;
+using Company.Sinister.Module;
+using Company.Sinister.Module.Data.Providers;
+using FileTable.Infrastructure.FileTableDb.DataProviders;
 using ModelContextProtocol.Server;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -74,9 +77,13 @@ builder.Services.AddScoped<IEntrepriseMerchandiseTransportationReadWrite, Entrep
 // Sinister policy providers (policy metadata storage)
 builder.Services.AddScoped<ISinisterPolicyReadOnly, FileTable.Infrastructure.FileTableDb.DataProviders.SinisterPolicyReadOnly>();
 builder.Services.AddScoped<ISinisterPolicyReadWrite, FileTable.Infrastructure.FileTableDb.DataProviders.SinisterPolicyReadWrite>();
+// Company sinister (claims) providers
+builder.Services.AddScoped<ICompanySinisterReadOnly, CompanySinisterReadOnly>();
+builder.Services.AddScoped<ICompanySinisterReadWrite, CompanySinisterReadWrite>();
 builder.Services.AddScoped<ICompanyDocumentReadOnly, CompanyDocumentReadOnly>();
 builder.Services.AddScoped<ICompanyDocumentReadWrite, CompanyDocumentReadWrite>();
 builder.Services.AddScoped<ISinisterModule, SinisterModule>();
+builder.Services.AddScoped<ICompanySinisterModule, CompanySinisterModule>();
 builder.Services.AddScoped<IEmployeeDocumentModule, EmployeeDocumentModule>();
 builder.Services.AddScoped<IEmployeeModule, EmployeeModule>();
 builder.Services.AddScoped<ISubscriptionModule, SubscriptionModule>();
@@ -98,6 +105,7 @@ builder.Services.AddScoped<TransportationController>();
 builder.Services.AddScoped<WarehouseController>();
 builder.Services.AddScoped<SubscriptionController>();
 builder.Services.AddScoped<CompanyDocumentsController>();
+builder.Services.AddScoped<SinisterListController>();
 builder.Services.AddScoped<EmployeeDocumentsController>();
 // Authentication service - registered as Scoped to isolate auth state per user session
 builder.Services.AddScoped<AuthenticationService>();
