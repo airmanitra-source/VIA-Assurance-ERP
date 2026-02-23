@@ -2,10 +2,11 @@ using ClientApp.Components.Shared;
 using ClientApp.Controllers;
 using ClientApp.Models;
 using ClientApp.Services;
-using FileTable.Infrastructure.Services;
 using FileTable.Infrastructure.Identities;
+using FileTable.Infrastructure.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 
 namespace ClientApp.Components.Pages.Admin
 {
@@ -14,6 +15,7 @@ namespace ClientApp.Components.Pages.Admin
         // --- Injections ---
         [Inject] protected EmployeeController EmployeeController { get; set; } = default!;
         [Inject] protected IEmailService EmailService { get; set; } = default!;
+        [Inject] protected IConfiguration Configuration { get; set; } = default!;
         [Inject] protected UserManager<ApplicationUser> UserManager { get; set; } = default!;
         [Inject] protected UserManagementService UserManagementService { get; set; } = default!;
 
@@ -22,7 +24,7 @@ namespace ClientApp.Components.Pages.Admin
         protected string addUserConfirmPassword = string.Empty;
         protected string addUserEmail = string.Empty;
         protected string addUserPassword = string.Empty;
-        protected string addUserSelectedRole = "employee";
+        protected string addUserSelectedRole = string.Empty;
         protected long addUserSelectedEmployeeId = 0;
         protected List<EmployeeViewModel> availableEmployees = new();
         protected string errorMessage = string.Empty;
@@ -32,6 +34,7 @@ namespace ClientApp.Components.Pages.Admin
         protected bool showAddUserModal = false;
         protected bool showConfirmDeleteModal = false;
         protected bool showRoleModal = false;
+        protected bool useDefaultPassword = true;
         protected ApplicationUser? selectedUser;
         protected HashSet<string> selectedUserRoles = new();
         protected List<ApplicationUser> users = new();
@@ -70,10 +73,16 @@ namespace ClientApp.Components.Pages.Admin
             addUserConfirmPassword = string.Empty;
             addUserEmail = string.Empty;
             addUserPassword = string.Empty;
-            addUserSelectedRole = "employee";
+            addUserSelectedRole = string.Empty;
             addUserSelectedEmployeeId = 0;
             availableEmployees.Clear();
+            useDefaultPassword = true;
             showAddUserModal = true;
+        }
+
+        private string GetDefaultPassword()
+        {
+            return Configuration["UserDefaults:DefaultPassword"] ?? string.Empty;
         }
 
         private async Task OnRoleChangedAsync(ChangeEventArgs e)
@@ -117,8 +126,8 @@ namespace ClientApp.Components.Pages.Admin
                         .ToHashSet();
 
                     availableEmployees = availableEmployees
-                        .Where(e => !string.IsNullOrWhiteSpace(e.Email) // Must have email
-                            && !allUserEmails.Contains(e.Email?.ToLower()) 
+                        .Where(e => !string.IsNullOrWhiteSpace(e.Email)
+                            && !allUserEmails.Contains(e.Email?.ToLower())
                             && !completedPasswordResetEmails.Contains(e.Email?.ToLower()))
                         .ToList();
                 }
@@ -134,20 +143,31 @@ namespace ClientApp.Components.Pages.Admin
         {
             errorMessage = string.Empty;
 
+            var passwordToUse = useDefaultPassword ? GetDefaultPassword() : addUserPassword;
+
+            if (string.IsNullOrWhiteSpace(passwordToUse))
+            {
+                errorMessage = "Default password is not configured. Please set UserDefaults:DefaultPassword in appsettings.json.";
+                return;
+            }
+
             // Validate common fields
-            if (string.IsNullOrWhiteSpace(addUserPassword) || string.IsNullOrWhiteSpace(addUserConfirmPassword))
+            if (!useDefaultPassword)
             {
-                errorMessage = "Password is required.";
-                return;
+                if (string.IsNullOrWhiteSpace(addUserPassword) || string.IsNullOrWhiteSpace(addUserConfirmPassword))
+                {
+                    errorMessage = "Password is required.";
+                    return;
+                }
+
+                if (addUserPassword != addUserConfirmPassword)
+                {
+                    errorMessage = "Passwords do not match. Please try again.";
+                    return;
+                }
             }
 
-            if (addUserPassword != addUserConfirmPassword)
-            {
-                errorMessage = "Passwords do not match. Please try again.";
-                return;
-            }
-
-            if (addUserPassword.Length < 6)
+            if (passwordToUse.Length < 6)
             {
                 errorMessage = "Password must be at least 6 characters long.";
                 return;
@@ -186,7 +206,8 @@ namespace ClientApp.Components.Pages.Admin
                     {
                         UserName = selectedEmployee.Email,
                         Email = selectedEmployee.Email,
-                        EntrepriseId = CurrentEnterpriseId.Value
+                        EntrepriseId = CurrentEnterpriseId.Value,
+                        InitialPasswordResetCompleted = false
                     };
                 }
                 else
@@ -211,12 +232,12 @@ namespace ClientApp.Components.Pages.Admin
                     {
                         UserName = addUserEmail,
                         Email = addUserEmail,
-                        RaisonSocial = addUserEmail, // Use email as default, can be updated later
-                        EntrepriseId = CurrentEnterpriseId.Value
+                        EntrepriseId = CurrentEnterpriseId.Value,
+                        InitialPasswordResetCompleted = false
                     };
                 }
 
-                var result = await UserManagementService.CreateUserAsync(newUser, addUserPassword);
+                var result = await UserManagementService.CreateUserAsync(newUser, passwordToUse);
                 if (result.Succeeded)
                 {
                     // Assign the selected role
@@ -232,7 +253,7 @@ namespace ClientApp.Components.Pages.Admin
                         var baseUrl = Navigation.BaseUri.TrimEnd('/');
                         var resetUrl = $"{baseUrl}/reset-password";
                         
-                        await EmailService.SendPasswordResetEmailAsync(newUser.Email!, newUser.RaisonSocial, resetToken, resetUrl);
+                        await EmailService.SendPasswordResetEmailAsync(newUser.Email!, newUser.Email ?? newUser.UserName ?? "User", resetToken, resetUrl);
                     }
                     catch (Exception emailEx)
                     {
@@ -265,7 +286,7 @@ namespace ClientApp.Components.Pages.Admin
             addUserConfirmPassword = string.Empty;
             addUserEmail = string.Empty;
             addUserPassword = string.Empty;
-            addUserSelectedRole = "employee";
+            addUserSelectedRole = string.Empty;
             addUserSelectedEmployeeId = 0;
             availableEmployees.Clear();
             errorMessage = string.Empty;

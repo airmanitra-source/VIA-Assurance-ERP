@@ -36,7 +36,12 @@ public class EmailService : IEmailService
             var fullResetUrl = $"{resetUrl}?token={encodedToken}&email={HttpUtility.UrlEncode(email)}";
 
             var subject = "Password Reset Request - VIA Assurance";
-            var htmlBody = GeneratePasswordResetEmailHtml(userName, fullResetUrl);
+            var defaultPassword = _configuration["UserDefaults:DefaultPassword"]?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(defaultPassword))
+            {
+                _logger.LogWarning("Default password is not configured. Email will not include default password.");
+            }
+            var htmlBody = GeneratePasswordResetEmailHtml(userName, fullResetUrl, defaultPassword);
 
             await SendEmailAsync(email, subject, htmlBody);
             _logger.LogInformation($"Password reset email sent successfully to: {email}");
@@ -119,8 +124,12 @@ public class EmailService : IEmailService
         }
     }
 
-    private string GeneratePasswordResetEmailHtml(string userName, string resetUrl)
+    private string GeneratePasswordResetEmailHtml(string userName, string resetUrl, string defaultPassword)
     {
+        var defaultPasswordSection = string.IsNullOrWhiteSpace(defaultPassword)
+            ? "<p><strong>Default Password:</strong> Not configured. Please contact support.</p>"
+            : $"<p><strong>Default Password (required for reset):</strong> {WebUtility.HtmlEncode(defaultPassword)}</p>";
+
         return $@"
 <!DOCTYPE html>
 <html>
@@ -153,6 +162,8 @@ public class EmailService : IEmailService
             <p>Or copy and paste this link in your browser:</p>
             <p style='word-break: break-all;'><code>{resetUrl}</code></p>
             
+            {defaultPasswordSection}
+
             <div class='warning'>
                 <strong>⚠️ Important:</strong> This link will expire in 24 hours for security reasons. If you did not request this, please contact the administrator.
             </div>

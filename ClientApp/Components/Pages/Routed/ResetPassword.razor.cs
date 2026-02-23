@@ -1,6 +1,7 @@
 using ClientApp.Controllers;
 using FileTable.Infrastructure.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Configuration;
 
 namespace ClientApp.Components.Pages.Routed
 {
@@ -13,10 +14,13 @@ namespace ClientApp.Components.Pages.Routed
         // --- Injections ---
         [Inject] protected ResetPasswordController Controller { get; set; } = default!;
         [Inject] protected IEmailService EmailService { get; set; } = default!;
+        [Inject] protected IConfiguration Configuration { get; set; } = default!;
         [Inject] protected NavigationManager Navigation { get; set; } = default!;
 
         // --- State (alphabetically sorted) ---
         protected string confirmPassword = string.Empty;
+        protected string defaultPassword = string.Empty;
+        protected string defaultPasswordInput = string.Empty;
         protected string errorMessage = string.Empty;
         protected bool isInvalidToken = false;
         protected bool isLoading = true;
@@ -30,11 +34,18 @@ namespace ClientApp.Components.Pages.Routed
             // Note: Blazor automatically URL-decodes query parameters via [SupplyParameterFromQuery]
             // No manual decoding needed!
 
+            defaultPassword = Configuration["UserDefaults:DefaultPassword"] ?? string.Empty;
+
             // Verify token is valid
             if (string.IsNullOrWhiteSpace(Token) || string.IsNullOrWhiteSpace(Email))
             {
                 isInvalidToken = true;
                 errorMessage = "Invalid password reset link. Missing token or email.";
+            }
+            else if (string.IsNullOrWhiteSpace(defaultPassword))
+            {
+                isInvalidToken = true;
+                errorMessage = "Default password is not configured. Please contact support.";
             }
             else
             {
@@ -57,6 +68,18 @@ namespace ClientApp.Components.Pages.Routed
             successMessage = string.Empty;
 
             // Validation
+            if (string.IsNullOrWhiteSpace(defaultPasswordInput))
+            {
+                errorMessage = "Default password is required.";
+                return;
+            }
+
+            if (!string.Equals(defaultPasswordInput, defaultPassword, StringComparison.Ordinal))
+            {
+                errorMessage = "Default password is not valid. Please check the email and try again.";
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(newPassword))
             {
                 errorMessage = "Password is required.";
@@ -86,6 +109,7 @@ namespace ClientApp.Components.Pages.Routed
                     successMessage = message;
                     newPassword = string.Empty;
                     confirmPassword = string.Empty;
+                    defaultPasswordInput = string.Empty;
 
                     // Redirect to login after 3 seconds
                     await Task.Delay(3000);
