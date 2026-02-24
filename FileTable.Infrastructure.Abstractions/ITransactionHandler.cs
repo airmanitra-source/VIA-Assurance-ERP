@@ -1,4 +1,4 @@
-namespace Company.Sinister.Module.Data.Providers
+namespace FileTable.Infrastructure.Abstractions
 {
     public interface ITransactionHandler
     {

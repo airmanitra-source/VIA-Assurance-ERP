@@ -1,6 +1,7 @@
 using Company.Sinister.Module.Business;
 using Company.Sinister.Module.Data.Providers;
 using CompanySinisterDocument.Module;
+using FileTable.Infrastructure.Abstractions;
 
 namespace Company.Sinister.Module
 {

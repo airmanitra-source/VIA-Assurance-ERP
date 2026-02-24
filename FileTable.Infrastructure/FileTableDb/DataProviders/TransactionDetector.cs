@@ -1,5 +1,5 @@
 using System.Transactions;
-using Company.Sinister.Module.Data.Providers;
+using FileTable.Infrastructure.Abstractions;
 
 namespace FileTable.Infrastructure.FileTableDb.DataProviders
 {

@@ -31,6 +31,7 @@ using CompanyDocuments.Module;
 using CompanyDocuments.Module.Business;
 using Company.Sinister.Module;
 using Company.Sinister.Module.Data.Providers;
+using FileTable.Infrastructure.Abstractions;
 using FileTable.Infrastructure.FileTableDb.DataProviders;
 using ModelContextProtocol.Server;
 using CompanySinisterDocument.Module;
