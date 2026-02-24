@@ -1,62 +1,102 @@
-using Company.Sinister.Module.Data.Models;
+using Company.Sinister.Module.Business;
 using Company.Sinister.Module.Data.Providers;
+using CompanySinisterDocument.Module;
 
 namespace Company.Sinister.Module
 {
     public class CompanySinisterModule : ICompanySinisterModule
     {
-        private readonly ICompanySinisterReadWrite _sinisterProvider;
+        private readonly ICompanySinisterDocumentModule _documentModule;
+        private readonly ICompanySinisterReadOnly _readOnlyProvider;
+        private readonly ICompanySinisterReadWrite _readWriteProvider;
+        private readonly ITransactionDetector _transactionDetector;
+        private readonly ITransactionHandler _transactionHandler;
 
-        public CompanySinisterModule(ICompanySinisterReadWrite sinisterProvider)
+        private ICompanySinisterReadOnly ReadProvider =>
+           _transactionDetector.IsTransactionActive() ? _readWriteProvider : _readOnlyProvider;
+
+        public CompanySinisterModule(
+            ICompanySinisterReadOnly readOnlyProvider,
+            ICompanySinisterReadWrite readWriteProvider,
+            ICompanySinisterDocumentModule documentModule,
+            ITransactionDetector transactionDetector,
+            ITransactionHandler transactionHandler)
         {
-            _sinisterProvider = sinisterProvider;
+            _documentModule = documentModule;
+            _readOnlyProvider = readOnlyProvider;
+            _readWriteProvider = readWriteProvider;
+            _transactionDetector = transactionDetector;
+            _transactionHandler = transactionHandler;
         }
 
-        public async Task<CompanySinisterDataModel?> GetSinisterByIdAsync(long id)
+        public async Task<long> AddSinisterAsync(CompanySinisterBusinessModel sinister, IReadOnlyList<(string FileName, byte[] FileContent, string TypeDocument)> documents)
         {
-            return await _sinisterProvider.ReadSinisterByIdAsync(id);
+            return await _transactionHandler.ExecuteInTransactionAsync(async () =>
+            {
+                var dataModel = sinister.ToDataModel();
+                dataModel.CreatedDate = DateTime.UtcNow;
+                dataModel.LastModifiedDate = DateTime.UtcNow;
+                var sinisterId = await _readWriteProvider.AddSinisterAsync(dataModel);
+
+                foreach (var doc in documents)
+                {
+                    await _documentModule.AddDocumentAsync(sinister.EntrepriseId, sinisterId, doc.FileName, doc.FileContent, doc.TypeDocument);
+                }
+
+                return sinisterId;
+            });
         }
 
-        public async Task<IEnumerable<CompanySinisterDataModel>> GetCompanySinistersAsync(long entrepriseId)
+        public async Task DeleteSinisterAsync(long id)
         {
-            return await _sinisterProvider.ReadSinistersByEntrepriseIdAsync(entrepriseId);
+            await _readWriteProvider.DeleteSinisterAsync(id);
         }
 
-        public async Task<IEnumerable<CompanySinisterDataModel>> GetSinistersByAssetTypeAsync(long entrepriseId, string assetType)
+        public async Task<IEnumerable<CompanySinisterBusinessModel>> GetCompanySinistersAsync(long entrepriseId)
         {
-            return await _sinisterProvider.ReadSinistersByAssetTypeAsync(entrepriseId, assetType);
+            var items = await ReadProvider.ReadSinistersByEntrepriseIdAsync(entrepriseId);
+            return items.Select(CompanySinisterBusinessModel.From);
         }
 
-        public async Task<IEnumerable<CompanySinisterDataModel>> GetSinistersByFleetAsync(long fleetId)
+        public async Task<CompanySinisterBusinessModel?> GetSinisterByIdAsync(long id)
         {
-            return await _sinisterProvider.ReadSinistersByFleetAsync(fleetId);
+            var dataModel = await ReadProvider.ReadSinisterByIdAsync(id);
+            return dataModel != null ? CompanySinisterBusinessModel.From(dataModel) : null;
         }
 
-        public async Task<IEnumerable<CompanySinisterDataModel>> GetSinistersByTransportationAsync(long transportationId)
+        public async Task<IEnumerable<CompanySinisterBusinessModel>> GetSinistersByAssetTypeAsync(long entrepriseId, string assetType)
         {
-            return await _sinisterProvider.ReadSinistersByTransportationAsync(transportationId);
+            var items = await ReadProvider.ReadSinistersByAssetTypeAsync(entrepriseId, assetType);
+            return items.Select(CompanySinisterBusinessModel.From);
         }
 
-        public async Task<IEnumerable<CompanySinisterDataModel>> GetSinistersByWarehouseAsync(long warehouseId)
+        public async Task<IEnumerable<CompanySinisterBusinessModel>> GetSinistersByFleetAsync(long fleetId)
         {
-            return await _sinisterProvider.ReadSinistersByWarehouseAsync(warehouseId);
+            var items = await ReadProvider.ReadSinistersByFleetAsync(fleetId);
+            return items.Select(CompanySinisterBusinessModel.From);
         }
 
-        public async Task<IEnumerable<CompanySinisterDataModel>> GetSinistersByStatusAsync(long entrepriseId, string status)
+        public async Task<IEnumerable<CompanySinisterBusinessModel>> GetSinistersByStatusAsync(long entrepriseId, string status)
         {
-            return await _sinisterProvider.ReadSinistersByStatusAsync(entrepriseId, status);
+            var items = await ReadProvider.ReadSinistersByStatusAsync(entrepriseId, status);
+            return items.Select(CompanySinisterBusinessModel.From);
         }
 
-        public async Task<long> AddSinisterAsync(CompanySinisterDataModel sinister)
+        public async Task<IEnumerable<CompanySinisterBusinessModel>> GetSinistersByTransportationAsync(long transportationId)
         {
-            sinister.CreatedDate = DateTime.UtcNow;
-            sinister.LastModifiedDate = DateTime.UtcNow;
-            return await _sinisterProvider.AddSinisterAsync(sinister);
+            var items = await ReadProvider.ReadSinistersByTransportationAsync(transportationId);
+            return items.Select(CompanySinisterBusinessModel.From);
         }
 
-        public async Task UpdateSinisterAsync(CompanySinisterDataModel sinister)
+        public async Task<IEnumerable<CompanySinisterBusinessModel>> GetSinistersByWarehouseAsync(long warehouseId)
         {
-            var existing = await _sinisterProvider.ReadSinisterByIdAsync(sinister.Id);
+            var items = await ReadProvider.ReadSinistersByWarehouseAsync(warehouseId);
+            return items.Select(CompanySinisterBusinessModel.From);
+        }
+
+        public async Task SetSinisterAsync(CompanySinisterBusinessModel sinister)
+        {
+            var existing = await _readWriteProvider.ReadSinisterByIdAsync(sinister.Id);
             if (existing != null && string.Equals(existing.Status, "Resolved", StringComparison.OrdinalIgnoreCase))
             {
                 throw new InvalidOperationException("Approved sinister cannot be modified.");
@@ -68,13 +108,9 @@ namespace Company.Sinister.Module
                 throw new InvalidOperationException("Resolved amount is required to approve a sinister.");
             }
 
-            sinister.LastModifiedDate = DateTime.UtcNow;
-            await _sinisterProvider.UpdateSinisterAsync(sinister);
-        }
-
-        public async Task DeleteSinisterAsync(long id)
-        {
-            await _sinisterProvider.DeleteSinisterAsync(id);
+            var dataModel = sinister.ToDataModel();
+            dataModel.LastModifiedDate = DateTime.UtcNow;
+            await _readWriteProvider.UpdateSinisterAsync(dataModel);
         }
     }
 }

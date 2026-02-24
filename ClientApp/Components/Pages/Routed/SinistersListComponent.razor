@@ -127,9 +127,23 @@
                             <tr class="accordion-row">
                                 <td colspan="9">
                                     <div class="accordion-content">
-                                        <div>
-                                            <strong>Description complète :</strong>
-                                            <div>@s.Description</div>
+                                        <div class="accordion-top">
+                                            <div class="accordion-description">
+                                                <strong>Description complète :</strong>
+                                                <div>@s.Description</div>
+                                            </div>
+                                            @if (s.AccidentPhotoDataUrls.Any())
+                                            {
+                                                <div class="accordion-photo">
+                                                    <strong>Photo de l'accident :</strong>
+                                                    <div class="accordion-photo-grid">
+                                                        @foreach (var photoUrl in s.AccidentPhotoDataUrls)
+                                                        {
+                                                            <img src="@photoUrl" alt="Photo du sinistre #@s.Id" />
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
                                         </div>
                                         <div class="accordion-details">
                                             <div><strong>Date de création :</strong> @s.CreatedDate.ToString("dd/MM/yyyy")</div>

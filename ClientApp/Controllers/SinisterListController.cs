@@ -1,28 +1,33 @@
 using ClientApp.Models;
 using Company.Sinister.Module;
-using Company.Sinister.Module.Data.Models;
+using Company.Sinister.Module.Business;
+using CompanySinisterDocument.Module;
 
 namespace ClientApp.Controllers
 {
     public class SinisterListController
     {
+        private readonly ICompanySinisterDocumentModule _sinisterDocumentModule;
         private readonly ICompanySinisterModule _sinisterModule;
 
-        public SinisterListController(ICompanySinisterModule sinisterModule)
+        public SinisterListController(ICompanySinisterModule sinisterModule, ICompanySinisterDocumentModule sinisterDocumentModule)
         {
             _sinisterModule = sinisterModule;
+            _sinisterDocumentModule = sinisterDocumentModule;
         }
 
         public async Task<List<CompanySinisterViewModel>> IndexAsync(long entrepriseId)
         {
             var items = await _sinisterModule.GetCompanySinistersAsync(entrepriseId);
-            return items.Select(MapToViewModel).OrderByDescending(s => s.CreatedDate).ToList();
+            var viewModels = await Task.WhenAll(items.Select(MapToViewModelAsync));
+            return viewModels.OrderByDescending(s => s.CreatedDate).ToList();
         }
 
         public async Task<List<CompanySinisterViewModel>> IndexByStatusAsync(long entrepriseId, string status)
         {
             var items = await _sinisterModule.GetSinistersByStatusAsync(entrepriseId, status);
-            return items.Select(MapToViewModel).OrderByDescending(s => s.CreatedDate).ToList();
+            var viewModels = await Task.WhenAll(items.Select(MapToViewModelAsync));
+            return viewModels.OrderByDescending(s => s.CreatedDate).ToList();
         }
 
         public async Task<bool> StoreApprovalAsync(long id, bool approved, decimal? resolvedAmount)
@@ -33,11 +38,18 @@ namespace ClientApp.Controllers
             sinister.Status = approved ? "Resolved" : "Rejected";
             sinister.ResolvedAmount = approved ? resolvedAmount : null;
 
-            await _sinisterModule.UpdateSinisterAsync(sinister);
+            await _sinisterModule.SetSinisterAsync(sinister);
             return true;
         }
 
-        private static CompanySinisterViewModel MapToViewModel(CompanySinisterDataModel m)
+        private async Task<CompanySinisterViewModel> MapToViewModelAsync(CompanySinisterBusinessModel m)
+        {
+            var viewModel = MapToViewModel(m);
+            viewModel.AccidentPhotoDataUrls = await _sinisterDocumentModule.GetAccidentPhotoDataUrlsAsync(m.Id);
+            return viewModel;
+        }
+
+        private static CompanySinisterViewModel MapToViewModel(CompanySinisterBusinessModel m)
         {
             return new CompanySinisterViewModel
             {

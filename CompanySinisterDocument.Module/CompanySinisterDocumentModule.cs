@@ -23,6 +23,32 @@ namespace CompanySinisterDocument.Module
             return dataModels.Select(ConvertToBusinessModel).ToList();
         }
 
+        public async Task<string?> GetAccidentPhotoDataUrlAsync(long sinisterId)
+        {
+            var documents = await GetDocumentsBySinisterIdAsync(sinisterId);
+            var photo = documents.FirstOrDefault(d => string.Equals(d.TypeDocument, "Photo", StringComparison.OrdinalIgnoreCase));
+            if (photo == null)
+            {
+                return null;
+            }
+
+            var extension = (photo.FileType ?? Path.GetExtension(photo.Name))?.TrimStart('.').ToLowerInvariant() ?? string.Empty;
+            var mimeType = GetImageMimeType(extension);
+            if (mimeType == null)
+            {
+                return null;
+            }
+
+            var content = await GetFileContentAsync(photo.StreamId);
+            if (content == null || content.Length == 0)
+            {
+                return null;
+            }
+
+            var base64 = Convert.ToBase64String(content);
+            return $"data:{mimeType};base64,{base64}";
+        }
+
         public async Task<CompanySinisterDocumentBusinessModel?> GetDocumentByIdAsync(Guid streamId)
         {
             var dataModel = await _documentReadOnly.ReadDocumentByIdAsync(streamId);
@@ -74,6 +100,53 @@ namespace CompanySinisterDocument.Module
                 StreamId = dataModel.StreamId,
                 TypeDocument = dataModel.TypeDocument
             };
+        }
+
+        private static string? GetImageMimeType(string extension)
+        {
+            return extension switch
+            {
+                "jpg" or "jpeg" => "image/jpeg",
+                "png" => "image/png",
+                "gif" => "image/gif",
+                "bmp" => "image/bmp",
+                "webp" => "image/webp",
+                "svg" => "image/svg+xml",
+                "ico" => "image/x-icon",
+                _ => null
+            };
+        }
+
+        public async Task<List<string>> GetAccidentPhotoDataUrlsAsync(long sinisterId)
+        {
+            var documents = await GetDocumentsBySinisterIdAsync(sinisterId);
+            var photos = documents.Where(d => string.Equals(d.TypeDocument, "Photo", StringComparison.OrdinalIgnoreCase)).ToList();
+            if (!photos.Any())
+            {
+                return new List<string>();
+            }
+
+            var results = new List<string>();
+            foreach (var photo in photos)
+            {
+                var extension = (photo.FileType ?? Path.GetExtension(photo.Name))?.TrimStart('.').ToLowerInvariant() ?? string.Empty;
+                var mimeType = GetImageMimeType(extension);
+                if (mimeType == null)
+                {
+                    continue;
+                }
+
+                var content = await GetFileContentAsync(photo.StreamId);
+                if (content == null || content.Length == 0)
+                {
+                    continue;
+                }
+
+                var base64 = Convert.ToBase64String(content);
+                results.Add($"data:{mimeType};base64,{base64}");
+            }
+
+            return results;
         }
     }
 }

@@ -149,7 +149,7 @@ namespace ClientApp.Components.Pages.Routed
 
                     // Redirect after 2 seconds
                     await Task.Delay(2000);
-                    Navigation.NavigateTo("");
+                    Navigation.NavigateTo("/list-sinisters");
                 }
                 else
                 {

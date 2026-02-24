@@ -2,11 +2,10 @@ using ClientApp.Models;
 using Company.Fleet.Module;
 using Company.Module;
 using Company.Sinister.Module;
-using Company.Sinister.Module.Data.Models;
+using Company.Sinister.Module.Business;
 using Company.Transportation.Module;
 using Company.Warehouse.Module;
 using Microsoft.AspNetCore.Authorization;
-using CompanySinisterDocument.Module;
 
 namespace ClientApp.Controllers
 {
@@ -14,26 +13,21 @@ namespace ClientApp.Controllers
     public class ClaimController
     {
         private readonly ICompanyFleetModule _fleetModule;
-        private readonly ICompanySinisterDocumentModule _sinisterDocumentModule;
         private readonly ICompanySinisterModule _sinisterModule;
         private readonly ICompanyTransportationModule _transportationModule;
         private readonly ICompanyWarehouseModule _warehouseModule;
-        private readonly ICompanyModule _companyModule;
 
         public ClaimController(
             ICompanyFleetModule fleetModule,
             ICompanySinisterModule sinisterModule,
             ICompanyTransportationModule transportationModule,
             ICompanyWarehouseModule warehouseModule,
-            ICompanyModule companyModule,
-            ICompanySinisterDocumentModule sinisterDocumentModule)
+            ICompanyModule companyModule)
         {
             _fleetModule = fleetModule;
             _sinisterModule = sinisterModule;
             _transportationModule = transportationModule;
             _warehouseModule = warehouseModule;
-            _companyModule = companyModule;
-            _sinisterDocumentModule = sinisterDocumentModule;
         }
 
         public async Task<ClaimAssetsViewModel> Index(long enterpriseId)
@@ -91,49 +85,33 @@ namespace ClientApp.Controllers
 
             try
             {
-                var dataModel = new CompanySinisterDataModel
+                var businessModel = new CompanySinisterBusinessModel
                 {
                     AssetType = viewModel.AssetType,
-                    CreatedDate = DateTime.UtcNow,
                     Description = viewModel.Description,
                     EntrepriseFleetId = viewModel.EntrepriseFleetId,
                     EntrepriseId = enterpriseId,
                     EntrepriseMerchandiseTransportationId = viewModel.EntrepriseMerchandiseTransportationId,
                     EntrepriseWarehouseId = viewModel.EntrepriseWarehouseId,
                     EstimatedAmount = viewModel.EstimatedAmount,
-                    LastModifiedDate = DateTime.UtcNow,
                     SinisterDate = viewModel.SinisterDate,
                     SinisterId = viewModel.SinisterId,
                     Status = "Pending"
                 };
 
-                var sinisterId = await _sinisterModule.AddSinisterAsync(dataModel);
-
-                foreach (var doc in documents.Where(d => d.File != null))
+                var sinisterDocuments = new List<(string FileName, byte[] FileContent, string TypeDocument)>();
+                foreach (var document in documents.Where(d => d.File != null))
                 {
-                    try
-                    {
-                        using var stream = doc.File!.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
-                        using var ms = new MemoryStream();
-                        await stream.CopyToAsync(ms);
-                        var fileContent = ms.ToArray();
-                        await _sinisterDocumentModule.AddDocumentAsync(
-                            enterpriseId,
-                            sinisterId,
-                            doc.File.Name,
-                            fileContent,
-                            doc.TypeDocument);
-                    }
-                    catch (Exception ex)
-                    {
-                        result.Errors.Add($"Failed to upload {doc.File?.Name}: {ex.Message}");
-                    }
+                    using var stream = document.File!.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+                    using var ms = new MemoryStream();
+                    await stream.CopyToAsync(ms);
+                    sinisterDocuments.Add((document.File.Name, ms.ToArray(), document.TypeDocument));
                 }
 
-                result.Message = result.Errors.Any()
-                    ? "Claim submitted with document upload errors."
-                    : "Claim submitted successfully!";
-                result.Success = !result.Errors.Any();
+                var sinisterId = await _sinisterModule.AddSinisterAsync(businessModel, sinisterDocuments);
+
+                result.Message = "Claim submitted successfully!";
+                result.Success = true;
             }
             catch (Exception ex)
             {

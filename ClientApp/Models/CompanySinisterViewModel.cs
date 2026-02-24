@@ -4,6 +4,8 @@ namespace ClientApp.Models
     {
         public long Id { get; set; }
 
+        public List<string> AccidentPhotoDataUrls { get; set; } = new();
+
         public string AssetType { get; set; } = string.Empty;
 
         public DateTime CreatedDate { get; set; }
