@@ -23,11 +23,13 @@ namespace ClientApp.Components.Pages.Routed
         protected long selectedAssetId = 0;
         protected string successMessage = string.Empty;
         protected string errorMessage = string.Empty;
+        protected List<long> selectedSinisterTypeIds = new();
 
         protected CompanySinisterViewModel sinisterModel = new();
         protected List<EntrepriseFleetViewModel> fleets = new();
         protected List<TransportationViewModel> transportations = new();
         protected List<WarehouseViewModel> warehouses = new();
+        protected List<SinisterTypeViewModel> availableSinisterTypes = new();
 
         protected override async Task OnInitializedAsync()
         {
@@ -54,6 +56,7 @@ namespace ClientApp.Components.Pages.Routed
                     fleets = assets.Fleets;
                     transportations = assets.Transportations;
                     warehouses = assets.Warehouses;
+                    availableSinisterTypes = assets.SinisterTypes;
 
                     isLoadingAssets = false;
                 }
@@ -95,6 +98,23 @@ namespace ClientApp.Components.Pages.Routed
             attachedDocuments.Remove(doc);
         }
 
+        protected void ToggleSinisterType(long typeId)
+        {
+            if (selectedSinisterTypeIds.Contains(typeId))
+            {
+                selectedSinisterTypeIds.Remove(typeId);
+            }
+            else
+            {
+                selectedSinisterTypeIds.Add(typeId);
+            }
+        }
+
+        protected bool IsSinisterTypeSelected(long typeId)
+        {
+            return selectedSinisterTypeIds.Contains(typeId);
+        }
+
         private async Task HandleSubmit()
         {
             try
@@ -109,6 +129,12 @@ namespace ClientApp.Components.Pages.Routed
                     return;
                 }
 
+                if (!selectedSinisterTypeIds.Any())
+                {
+                    errorMessage = Localizer["SinisterTypeRequired"];
+                    return;
+                }
+
                 isSubmitting = true;
 
                 // Assign asset ID based on type
@@ -116,6 +142,7 @@ namespace ClientApp.Components.Pages.Routed
                 sinisterModel.AssetType = selectedAssetType;
                 sinisterModel.ResolvedAmount = null;
                 sinisterModel.Status = "Pending";
+                sinisterModel.SelectedSinisterTypeIds = selectedSinisterTypeIds;
 
                 switch (selectedAssetType)
                 {
@@ -146,6 +173,7 @@ namespace ClientApp.Components.Pages.Routed
                     attachedDocuments.Clear();
                     selectedAssetType = string.Empty;
                     selectedAssetId = 0;
+                    selectedSinisterTypeIds.Clear();
 
                     // Redirect after 2 seconds
                     await Task.Delay(2000);

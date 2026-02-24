@@ -105,6 +105,35 @@
                     </div>
                 </div>
 
+                <!-- Sinister Types -->
+                @if (!string.IsNullOrEmpty(selectedAssetType))
+                {
+                    <div class="form-group">
+                        <label>@Localizer["SinisterType"] *</label>
+                        <div class="tags-container">
+                            @if (availableSinisterTypes.Any())
+                            {
+                                @foreach (var type in availableSinisterTypes)
+                                {
+                                    <button type="button" 
+                                            class="@(IsSinisterTypeSelected(type.Id) ? "tag tag-selected" : "tag")"
+                                            @onclick="() => ToggleSinisterType(type.Id)">
+                                        @type.TypeName
+                                    </button>
+                                }
+                            }
+                            else
+                            {
+                                <p class="no-types">@Localizer["NoSinisterTypesAvailable"]</p>
+                            }
+                        </div>
+                        @if (!selectedSinisterTypeIds.Any())
+                        {
+                            <div class="validation-error">@Localizer["SinisterTypeRequired"]</div>
+                        }
+                    </div>
+                }
+
                 <!-- Description -->
                 <div class="form-group">
                     <label for="description">@Localizer["Description"] *</label>

@@ -46,6 +46,15 @@ namespace ClientApp.Controllers
         {
             var viewModel = MapToViewModel(m);
             viewModel.AccidentPhotoDataUrls = await _sinisterDocumentModule.GetAccidentPhotoDataUrlsAsync(m.Id);
+            
+            // Load sinister types
+            var sinisterTypes = await _sinisterModule.GetSinisterTypesBySinisterIdAsync(m.Id);
+            viewModel.SinisterTypes = sinisterTypes.Select(st => new SinisterTypeViewModel
+            {
+                Id = st.Id,
+                TypeName = st.TypeName
+            }).ToList();
+            
             return viewModel;
         }
 

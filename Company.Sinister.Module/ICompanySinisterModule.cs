@@ -4,7 +4,7 @@ namespace Company.Sinister.Module
 {
     public interface ICompanySinisterModule
     {
-        Task<long> AddSinisterAsync(CompanySinisterBusinessModel sinister, IReadOnlyList<(string FileName, byte[] FileContent, string TypeDocument)> documents);
+        Task<long> AddSinisterAsync(CompanySinisterBusinessModel sinister, IReadOnlyList<(string FileName, byte[] FileContent, string TypeDocument)> documents, IEnumerable<long> sinisterTypeIds);
 
         Task DeleteSinisterAsync(long id);
 
@@ -21,6 +21,10 @@ namespace Company.Sinister.Module
         Task<IEnumerable<CompanySinisterBusinessModel>> GetSinistersByTransportationAsync(long transportationId);
 
         Task<IEnumerable<CompanySinisterBusinessModel>> GetSinistersByWarehouseAsync(long warehouseId);
+
+        Task<List<SinisterTypeBusinessModel>> GetSinisterTypesAsync();
+
+        Task<List<SinisterTypeBusinessModel>> GetSinisterTypesBySinisterIdAsync(long sinisterId);
 
         Task SetSinisterAsync(CompanySinisterBusinessModel sinister);
     }

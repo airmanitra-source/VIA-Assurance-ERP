@@ -83,6 +83,9 @@ builder.Services.AddScoped<ISinisterPolicyReadWrite, FileTable.Infrastructure.Fi
 // Company sinister (claims) providers
 builder.Services.AddScoped<ICompanySinisterReadOnly, CompanySinisterReadOnly>();
 builder.Services.AddScoped<ICompanySinisterReadWrite, CompanySinisterReadWrite>();
+builder.Services.AddScoped<ICompanySinisterTypeReadonly, CompanySinisterTypeReadOnly>();
+builder.Services.AddScoped<ICompanySinisterTypeReadWrite, CompanySinisterTypeReadWrite>();
+builder.Services.AddScoped<ISinisterTypeReadonly, SinisterTypeReadOnly>();
 builder.Services.AddScoped<ITransactionDetector, TransactionDetector>();
 builder.Services.AddScoped<ITransactionHandler, TransactionHandler>();
 builder.Services.AddScoped<ICompanyDocumentReadOnly, CompanyDocumentReadOnly>();

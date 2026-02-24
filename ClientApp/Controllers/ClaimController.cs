@@ -35,6 +35,7 @@ namespace ClientApp.Controllers
             var fleets = await _fleetModule.GetCompanyFleetAsync(enterpriseId);
             var transportations = await _transportationModule.GetCompanyTransportationsAsync(enterpriseId);
             var warehouses = await _warehouseModule.GetCompanyWarehousesAsync(enterpriseId);
+            var sinisterTypes = await _sinisterModule.GetSinisterTypesAsync();
 
             return new ClaimAssetsViewModel
             {
@@ -75,6 +76,11 @@ namespace ClientApp.Controllers
                     Address = w.Address,
                     WantsInsurance = w.WantsInsurance,
                     IsInsured = w.IsInsured
+                }).ToList(),
+                SinisterTypes = sinisterTypes.Select(st => new SinisterTypeViewModel
+                {
+                    Id = st.Id,
+                    TypeName = st.TypeName
                 }).ToList()
             };
         }
@@ -108,7 +114,7 @@ namespace ClientApp.Controllers
                     sinisterDocuments.Add((document.File.Name, ms.ToArray(), document.TypeDocument));
                 }
 
-                var sinisterId = await _sinisterModule.AddSinisterAsync(businessModel, sinisterDocuments);
+                var sinisterId = await _sinisterModule.AddSinisterAsync(businessModel, sinisterDocuments, viewModel.SelectedSinisterTypeIds);
 
                 result.Message = "Claim submitted successfully!";
                 result.Success = true;

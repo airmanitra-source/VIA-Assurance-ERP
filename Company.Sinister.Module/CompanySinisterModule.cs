@@ -10,27 +10,39 @@ namespace Company.Sinister.Module
         private readonly ICompanySinisterDocumentModule _documentModule;
         private readonly ICompanySinisterReadOnly _readOnlyProvider;
         private readonly ICompanySinisterReadWrite _readWriteProvider;
+        private readonly ICompanySinisterTypeReadonly _sinisterTypeReadProvider;
+        private readonly ICompanySinisterTypeReadWrite _sinisterTypeReadWriteProvider;
+        private readonly ISinisterTypeReadonly _sinisterTypeRefProvider;
         private readonly ITransactionDetector _transactionDetector;
         private readonly ITransactionHandler _transactionHandler;
 
         private ICompanySinisterReadOnly ReadProvider =>
            _transactionDetector.IsTransactionActive() ? _readWriteProvider : _readOnlyProvider;
 
+        private ICompanySinisterTypeReadonly SinisterTypeReadProvider =>
+           _transactionDetector.IsTransactionActive() ? _sinisterTypeReadWriteProvider : _sinisterTypeReadProvider;
+
         public CompanySinisterModule(
             ICompanySinisterReadOnly readOnlyProvider,
             ICompanySinisterReadWrite readWriteProvider,
             ICompanySinisterDocumentModule documentModule,
+            ICompanySinisterTypeReadonly sinisterTypeReadProvider,
+            ICompanySinisterTypeReadWrite sinisterTypeReadWriteProvider,
+            ISinisterTypeReadonly sinisterTypeRefProvider,
             ITransactionDetector transactionDetector,
             ITransactionHandler transactionHandler)
         {
             _documentModule = documentModule;
             _readOnlyProvider = readOnlyProvider;
             _readWriteProvider = readWriteProvider;
+            _sinisterTypeReadProvider = sinisterTypeReadProvider;
+            _sinisterTypeReadWriteProvider = sinisterTypeReadWriteProvider;
+            _sinisterTypeRefProvider = sinisterTypeRefProvider;
             _transactionDetector = transactionDetector;
             _transactionHandler = transactionHandler;
         }
 
-        public async Task<long> AddSinisterAsync(CompanySinisterBusinessModel sinister, IReadOnlyList<(string FileName, byte[] FileContent, string TypeDocument)> documents)
+        public async Task<long> AddSinisterAsync(CompanySinisterBusinessModel sinister, IReadOnlyList<(string FileName, byte[] FileContent, string TypeDocument)> documents, IEnumerable<long> sinisterTypeIds)
         {
             return await _transactionHandler.ExecuteInTransactionAsync(async () =>
             {
@@ -42,6 +54,11 @@ namespace Company.Sinister.Module
                 foreach (var doc in documents)
                 {
                     await _documentModule.AddDocumentAsync(sinister.EntrepriseId, sinisterId, doc.FileName, doc.FileContent, doc.TypeDocument);
+                }
+
+                if (sinisterTypeIds != null && sinisterTypeIds.Any())
+                {
+                    await _sinisterTypeReadWriteProvider.CreateSinisterTypesAsync(sinisterId, sinisterTypeIds);
                 }
 
                 return sinisterId;
@@ -93,6 +110,18 @@ namespace Company.Sinister.Module
         {
             var items = await ReadProvider.ReadSinistersByWarehouseAsync(warehouseId);
             return items.Select(CompanySinisterBusinessModel.From);
+        }
+
+        public async Task<List<SinisterTypeBusinessModel>> GetSinisterTypesAsync()
+        {
+            var items = await _sinisterTypeRefProvider.ReadAllAsync();
+            return items.Select(SinisterTypeBusinessModel.From).ToList();
+        }
+
+        public async Task<List<SinisterTypeBusinessModel>> GetSinisterTypesBySinisterIdAsync(long sinisterId)
+        {
+            var items = await SinisterTypeReadProvider.ReadSinisterTypesBySinisterIdAsync(sinisterId);
+            return items.Select(SinisterTypeBusinessModel.From).ToList();
         }
 
         public async Task SetSinisterAsync(CompanySinisterBusinessModel sinister)

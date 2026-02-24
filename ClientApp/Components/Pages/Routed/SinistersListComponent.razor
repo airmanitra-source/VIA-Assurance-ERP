@@ -60,7 +60,7 @@
                         <th>Type d'actif</th>
                         <th>Description</th>
                         <th>Montant estimé</th>
-                        <th>Montant résolu</th>
+                        <th>Types de sinistre</th>
                         <th>Statut</th>
                         <th>Actions</th>
                     </tr>
@@ -87,14 +87,19 @@
                                 @(s.Description.Length > 60 ? s.Description[..60] + "…" : s.Description)
                             </td>
                             <td class="amount">@s.EstimatedAmount.ToString("N2") Ar</td>
-                            <td class="amount">
-                                @if (s.Status == "Pending" || s.Status == "InProgress")
+                            <td class="sinister-types-cell">
+                                @if (s.SinisterTypes.Any())
                                 {
-                                    <InputNumber @bind-Value="s.ResolvedAmount" class="form-input-inline" />
+                                    <div class="tags-container-compact">
+                                        @foreach (var type in s.SinisterTypes)
+                                        {
+                                            <span class="tag-compact">@type.TypeName</span>
+                                        }
+                                    </div>
                                 }
                                 else
                                 {
-                                    @(s.ResolvedAmount.HasValue ? s.ResolvedAmount.Value.ToString("N2") + " Ar" : "-")
+                                    <span class="text-muted">—</span>
                                 }
                             </td>
                             <td>

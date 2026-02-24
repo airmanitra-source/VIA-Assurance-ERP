@@ -291,6 +291,50 @@
     padding: 8px;
 }
 
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.tag {
+    padding: 8px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 20px;
+    background: white;
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.tag:hover {
+    border-color: #667eea;
+    background: #f5f7ff;
+    transform: translateY(-2px);
+}
+
+.tag-selected {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #667eea;
+}
+
+.tag-selected:hover {
+    background: linear-gradient(135deg, #5a6dd8 0%, #6a4292 100%);
+    transform: translateY(-2px);
+}
+
+.no-types {
+    margin: 8px 0 0;
+    font-size: 13px;
+    color: #999;
+    font-style: italic;
+}
+
 @media (max-width: 600px) {
     .fill-claims-container {
         padding: 10px;

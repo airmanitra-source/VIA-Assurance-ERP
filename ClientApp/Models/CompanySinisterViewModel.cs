@@ -26,9 +26,13 @@ namespace ClientApp.Models
 
         public decimal? ResolvedAmount { get; set; }
 
+        public List<long> SelectedSinisterTypeIds { get; set; } = new();
+
         public DateTime SinisterDate { get; set; } = DateTime.UtcNow;
 
         public long? SinisterId { get; set; }
+
+        public List<SinisterTypeViewModel> SinisterTypes { get; set; } = new();
 
         public string Status { get; set; } = "Pending";
     }
