@@ -55,19 +55,19 @@ namespace ClientApp.Controllers
                 else
                 {
                     fleetId = await _fleetModule.AddFleetItemAsync(businessModel);
-                    businessModel.Id = fleetId; // Ensure Id is set on business model
+                    businessModel.Id = fleetId;
                     result.Message = "Fleet added successfully!";
                 }
 
                 if (viewModel.WantsInsurance && !viewModel.IsInsured)
                 {
-                    // Generate and link policy confirmation using the module logic
-                    // This updates businessModel.PolicyNumber internally if needed
+                    // Supprimer les anciennes confirmations non signées pour éviter la redondance
+                    await _documentModule.RemoveUnsignedDocumentsForAssetAsync(enterpriseId, fleetId: fleetId);
+                    
+                    // Générer et lier le document de confirmation d'assurance
+                    // Le véhicule reste en statut "en attente" (WantsInsurance=true, IsInsured=false)
+                    // IsInsured ne passera à true que lorsque le document sera SIGNÉ
                     await _documentModule.GenerateAndLinkPolicyConfirmationAsync(enterpriseId, businessModel, companyRaisonSocial ?? "Company");
-
-                    // Mark as insured and update
-                    businessModel.IsInsured = true;
-                    await _fleetModule.SetFleetItemAsync(businessModel);
                 }
 
                 result.Success = true;
@@ -83,17 +83,10 @@ namespace ClientApp.Controllers
         /// <summary>
         /// REST: Destroy - Delete a fleet item
         /// </summary>
-        public async Task<bool> Destroy(long id)
+        public async Task Destroy(long id)
         {
-            try
-            {
-                await _fleetModule.RemoveFleetItemAsync(id);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            // Délégation simple au module - la protection est gérée dans CompanyFleetModule
+            await _fleetModule.RemoveFleetItemAsync(id);
         }
 
         #region Mapping
@@ -111,12 +104,14 @@ namespace ClientApp.Controllers
                 InsuranceStartDate = b.InsuranceStartDate,
                 IsInsured = b.IsInsured,
                 IsWorking = b.IsWorking,
+                LicensePlate = b.LicensePlate,
                 Make = b.Make,
                 Mileage = b.Mileage,
                 Model = b.Model,
                 PolicyNumber = b.PolicyNumber,
                 Power = b.Power,
                 Type = b.Type,
+                VIN = b.VIN,
                 WantsInsurance = b.WantsInsurance,
                 Year = b.Year
             };
@@ -136,12 +131,14 @@ namespace ClientApp.Controllers
                 InsuranceStartDate = vm.InsuranceStartDate,
                 IsInsured = vm.IsInsured,
                 IsWorking = vm.IsWorking,
+                LicensePlate = vm.LicensePlate,
                 Make = vm.Make,
                 Mileage = vm.Mileage,
                 Model = vm.Model,
                 PolicyNumber = vm.PolicyNumber,
                 Power = vm.Power,
                 Type = vm.Type,
+                VIN = vm.VIN,
                 WantsInsurance = vm.WantsInsurance,
                 Year = vm.Year
             };

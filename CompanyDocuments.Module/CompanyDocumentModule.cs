@@ -50,6 +50,29 @@ namespace CompanyDocuments.Module
             await _companyDocumentReadWrite.DeleteCompanyDocumentAsync(entrepriseId, streamId);
         }
 
+        public async Task RemoveUnsignedDocumentsForAssetAsync(long entrepriseId, long? fleetId = null, long? warehouseId = null, long? transportationId = null)
+        {
+            // Récupérer tous les documents de l'entreprise
+            var allDocs = await _companyDocumentReadOnly.ReadDocumentsByEntrepriseIdAsync(entrepriseId);
+            
+            // Filtrer pour trouver les documents non signés liés à l'actif spécifié
+            var unsignedDocsToDelete = allDocs.Where(doc => 
+                !doc.IsSigned && // Document non signé
+                doc.TypeDocument == "Confirmation Police" && // Type confirmation d'assurance
+                (
+                    (fleetId.HasValue && doc.EntrepriseFleetID == fleetId.Value) ||
+                    (warehouseId.HasValue && doc.EntrepriseWarehouseID == warehouseId.Value) ||
+                    (transportationId.HasValue && doc.EntrepriseMerchandiseTransportationID == transportationId.Value)
+                )
+            ).ToList();
+
+            // Supprimer chaque document trouvé
+            foreach (var doc in unsignedDocsToDelete)
+            {
+                await _companyDocumentReadWrite.DeleteCompanyDocumentAsync(entrepriseId, doc.StreamId);
+            }
+        }
+
         public async Task<Guid> UploadAndLinkDocumentAsync(long entrepriseId, string fileName, byte[] fileContent, string? typeDocument, long? fleetId = null, long? warehouseId = null, long? transportationId = null)
         {
             var streamId = await _companyDocumentReadWrite.AddCompanyFileIntoDocumentsAsync(fileName, fileContent);
@@ -79,6 +102,8 @@ namespace CompanyDocuments.Module
                 fleetItem.PolicyNumber = policyNumber;
             }
 
+            var (fleetDeductible, fleetDeductibleDisplay) = CalculateDeductible(fleetItem.FranchiseType, fleetItem.FranchiseAmount, fleetItem.FranchisePercentage, null);
+
             var policyData = new PolicyConfirmationModel
             {
                 Title = "Confirmation Assurance auto/moto",
@@ -88,15 +113,25 @@ namespace CompanyDocuments.Module
                 InsuredName = companyName,
                 Address = "N/A",
                 VehicleDescription = $"{fleetItem.Make} {fleetItem.Model} ({fleetItem.Year}) {fleetItem.Type}",
-                VIN = "N/A",
+                VIN = !string.IsNullOrEmpty(fleetItem.VIN) ? fleetItem.VIN : "Non renseigné",
+                LicensePlate = !string.IsNullOrEmpty(fleetItem.LicensePlate) ? fleetItem.LicensePlate : "Non renseignée",
                 VehicleCoverages = new List<CoverageModel>
                 {
+                    // Responsabilité civile obligatoire
+                    new CoverageModel
+                    {
+                        Description = "Responsabilité Civile",
+                        Deductible = 0,
+                        Amount = 10_000_000 // 10 000 000 Ariary
+                    },
+                    // Garantie principale avec franchise
                     new CoverageModel
                     {
                         Description = fleetItem.FranchiseType == "Fixed"
-                            ? "Comprehensive Coverage"
-                            : $"Comprehensive Coverage (Franchise {fleetItem.FranchiseType} {(fleetItem.FranchisePercentage ?? 0)}%)",
-                        Deductible = fleetItem.FranchiseType == "Fixed" ? (fleetItem.FranchiseAmount ?? 0) : 0,
+                            ? "Couverture Tous Risques - Franchise fixe"
+                            : $"Couverture Tous Risques - Franchise {fleetItem.FranchiseType} ({fleetItem.FranchisePercentage ?? 0}%)",
+                        Deductible = fleetDeductible,
+                        DeductibleDisplay = fleetDeductibleDisplay,
                         Amount = 0
                     }
                 }
@@ -124,11 +159,16 @@ namespace CompanyDocuments.Module
                 Address = warehouse.Address,
                 VehicleDescription = $"Warehouse: {warehouse.Name} ({warehouse.SizeM2} m²)",
                 VIN = "N/A",
-                Coverages = materials.Where(m => m.WantsInsurance).Select(m => new CoverageModel
+                Coverages = materials.Where(m => m.WantsInsurance).Select(m =>
                 {
-                    Description = m.Description,
-                    Deductible = warehouse.FranchiseType == "Fixed" ? (warehouse.FranchiseAmount ?? 0) : 0,
-                    Amount = m.ApproximateValue
+                    var (deductible, deductibleDisplay) = CalculateDeductible(warehouse.FranchiseType, warehouse.FranchiseAmount, warehouse.FranchisePercentage, m.ApproximateValue);
+                    return new CoverageModel
+                    {
+                        Description = m.Description,
+                        Deductible = deductible,
+                        DeductibleDisplay = deductibleDisplay,
+                        Amount = m.ApproximateValue
+                    };
                 }).ToList()
             };
 
@@ -143,6 +183,8 @@ namespace CompanyDocuments.Module
                 policyNumber = "TRN-" + transportation.Id + "-" + DateTime.Now.Ticks.ToString().Substring(12);
                 transportation.PolicyNumber = policyNumber;
             }
+
+            var (transportDeductible, transportDeductibleDisplay) = CalculateDeductible(transportation.FranchiseType, transportation.FranchiseAmount, transportation.FranchisePercentage, transportation.Value);
 
             var policyData = new PolicyConfirmationModel
             {
@@ -161,7 +203,8 @@ namespace CompanyDocuments.Module
                         Description = transportation.FranchiseType == "Fixed"
                             ? "Cargo Insurance"
                             : $"Cargo Insurance (Franchise {transportation.FranchiseType} {(transportation.FranchisePercentage ?? 0)}%)",
-                        Deductible = transportation.FranchiseType == "Fixed" ? (transportation.FranchiseAmount ?? 0) : 0,
+                        Deductible = transportDeductible,
+                        DeductibleDisplay = transportDeductibleDisplay,
                         Amount = transportation.Value
                     }
                 }
@@ -208,6 +251,23 @@ namespace CompanyDocuments.Module
                 EntrepriseWarehouseID = dataModel.EntrepriseWarehouseID,
                 EntrepriseMerchandiseTransportationID = dataModel.EntrepriseMerchandiseTransportationID
             };
+        }
+
+        private static (decimal Deductible, string? DeductibleDisplay) CalculateDeductible(string? franchiseType, decimal? franchiseAmount, decimal? franchisePercentage, decimal? insuredAmount)
+        {
+            if (string.Equals(franchiseType, "Fixed", StringComparison.OrdinalIgnoreCase))
+            {
+                return (franchiseAmount ?? 0, null);
+            }
+
+            var percentage = franchisePercentage ?? 0;
+            if (insuredAmount.HasValue && insuredAmount.Value > 0 && percentage > 0)
+            {
+                var deductible = Math.Round(insuredAmount.Value * percentage / 100m, 0);
+                return (deductible, null);
+            }
+
+            return (0, percentage > 0 ? $"{percentage:0.##} %" : "-");
         }
     }
 }

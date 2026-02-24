@@ -2,6 +2,9 @@ using ClientApp.Models;
 using CompanyDocuments.Module;
 using CompanyDocuments.Module.Business;
 using Microsoft.AspNetCore.Mvc;
+using Company.Fleet.Module;
+using Company.Warehouse.Module;
+using Company.Transportation.Module;
 
 namespace ClientApp.Controllers
 {
@@ -11,10 +14,20 @@ namespace ClientApp.Controllers
     public class CompanyDocumentsController : ControllerBase
     {
         private readonly ICompanyDocumentModule _documentModule;
+        private readonly ICompanyFleetModule _fleetModule;
+        private readonly ICompanyWarehouseModule _warehouseModule;
+        private readonly ICompanyTransportationModule _transportationModule;
 
-        public CompanyDocumentsController(ICompanyDocumentModule documentModule)
+        public CompanyDocumentsController(
+            ICompanyDocumentModule documentModule,
+            ICompanyFleetModule fleetModule,
+            ICompanyWarehouseModule warehouseModule,
+            ICompanyTransportationModule transportationModule)
         {
             _documentModule = documentModule;
+            _fleetModule = fleetModule;
+            _warehouseModule = warehouseModule;
+            _transportationModule = transportationModule;
         }
 
         // --- Service methods (called directly by Blazor components) ---
@@ -43,7 +56,45 @@ namespace ClientApp.Controllers
 
         public async Task Sign(long enterpriseId, Guid streamId, string signerName, string signatureDataUrl)
         {
+            // 1. Signer le document
             await _documentModule.SignDocumentAsync(enterpriseId, streamId, signerName, signatureDataUrl);
+            
+            // 2. Récupérer le document pour vérifier s'il est lié à un actif
+            var document = await _documentModule.GetDocumentByIdAsync(streamId);
+            
+            if (document == null)
+            {
+                throw new InvalidOperationException("Document introuvable après signature.");
+            }
+
+            // 3. Marquer l'actif comme assuré selon le type
+            try
+            {
+                if (document.EntrepriseFleetID.HasValue)
+                {
+                    // Véhicule de la flotte
+                    await _fleetModule.MarkAsInsuredAsync(document.EntrepriseFleetID.Value);
+                }
+                else if (document.EntrepriseWarehouseID.HasValue)
+                {
+                    // Entrepôt
+                    await _warehouseModule.MarkAsInsuredAsync(document.EntrepriseWarehouseID.Value);
+                }
+                else if (document.EntrepriseMerchandiseTransportationID.HasValue)
+                {
+                    // Transport de marchandises
+                    await _transportationModule.MarkAsInsuredAsync(document.EntrepriseMerchandiseTransportationID.Value);
+                }
+                // Si aucun ID d'actif, c'est un document générique (pas de marquage nécessaire)
+            }
+            catch (InvalidOperationException ex)
+            {
+                // L'actif n'existe pas ou autre erreur - on log mais on ne bloque pas la signature
+                Console.WriteLine($"Erreur lors du marquage de l'actif comme assuré: {ex.Message}");
+                // On pourrait aussi laisser l'exception remonter si on veut être strict
+                throw new InvalidOperationException(
+                    $"Document signé avec succès, mais erreur lors du marquage de l'actif: {ex.Message}", ex);
+            }
         }
 
         // --- REST API Endpoints ---

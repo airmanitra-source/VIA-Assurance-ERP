@@ -9,5 +9,6 @@ namespace Company.Transportation.Module
         Task<long> AddTransportationAsync(EntrepriseMerchandiseTransportationBusinessModel transportation);
         Task SetTransportationAsync(EntrepriseMerchandiseTransportationBusinessModel transportation);
         Task RemoveTransportationAsync(long id);
+        Task MarkAsInsuredAsync(long id);
     }
 }

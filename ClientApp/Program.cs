@@ -33,6 +33,8 @@ using Company.Sinister.Module;
 using Company.Sinister.Module.Data.Providers;
 using FileTable.Infrastructure.FileTableDb.DataProviders;
 using ModelContextProtocol.Server;
+using CompanySinisterDocument.Module;
+using CompanySinisterDocument.Module.Data.Providers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -82,6 +84,8 @@ builder.Services.AddScoped<ICompanySinisterReadOnly, CompanySinisterReadOnly>();
 builder.Services.AddScoped<ICompanySinisterReadWrite, CompanySinisterReadWrite>();
 builder.Services.AddScoped<ICompanyDocumentReadOnly, CompanyDocumentReadOnly>();
 builder.Services.AddScoped<ICompanyDocumentReadWrite, CompanyDocumentReadWrite>();
+builder.Services.AddScoped<ICompanySinisterDocumentReadOnly, CompanySinisterDocumentReadOnly>();
+builder.Services.AddScoped<ICompanySinisterDocumentReadWrite, CompanySinisterDocumentReadWrite>();
 builder.Services.AddScoped<ISinisterModule, SinisterModule>();
 builder.Services.AddScoped<ICompanySinisterModule, CompanySinisterModule>();
 builder.Services.AddScoped<IEmployeeDocumentModule, EmployeeDocumentModule>();
@@ -93,6 +97,7 @@ builder.Services.AddScoped<ICompanyFleetModule, CompanyFleetModule>();
 builder.Services.AddScoped<ICompanyWarehouseModule, CompanyWarehouseModule>();
 builder.Services.AddScoped<ICompanyTransportationModule, CompanyTransportationModule>();
 builder.Services.AddScoped<ICompanyDocumentModule, CompanyDocumentModule>();
+builder.Services.AddScoped<ICompanySinisterDocumentModule, CompanySinisterDocumentModule>();
 builder.Services.AddScoped<IPolicyGenerator, PolicyGenerator>();
 builder.Services.AddScoped<ISignatureService, SignatureService>();
 // UI Controllers - handle mapping and non-business logic for Razor components

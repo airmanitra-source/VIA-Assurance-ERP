@@ -14,7 +14,6 @@ namespace FileTable.Infrastructure.FileTableDb.Entities
 
         public int? FiscalPower { get; set; }
 
-
         public DateTime? InsuranceEndDate { get; set; }
 
         public DateTime? InsuranceStartDate { get; set; }
@@ -22,6 +21,8 @@ namespace FileTable.Infrastructure.FileTableDb.Entities
         public bool IsInsured { get; set; }
 
         public bool IsWorking { get; set; }
+
+        public string? LicensePlate { get; set; }
 
         public string Make { get; set; } = string.Empty;
 
@@ -32,6 +33,8 @@ namespace FileTable.Infrastructure.FileTableDb.Entities
         public int? Power { get; set; }
 
         public string Type { get; set; } = string.Empty;
+
+        public string? VIN { get; set; }
 
         public bool WantsInsurance { get; set; }
 

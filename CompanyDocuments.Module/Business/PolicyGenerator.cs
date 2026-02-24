@@ -69,11 +69,21 @@ namespace CompanyDocuments.Module.Business
                             row.ConstantItem(150).Text("Description :");
                             row.RelativeItem().Text(model.VehicleDescription ?? "N/A");
                         });
-                        if (!string.IsNullOrEmpty(model.VIN) && model.VIN != "N/A")
+                        
+                        if (!string.IsNullOrEmpty(model.LicensePlate) && model.LicensePlate != "Non renseignée")
                         {
                             col.Item().Row(row =>
                             {
-                                row.ConstantItem(150).Text("Numéro d'identification :");
+                                row.ConstantItem(150).Text("Plaque d'immatriculation :");
+                                row.RelativeItem().Text(model.LicensePlate);
+                            });
+                        }
+                        
+                        if (!string.IsNullOrEmpty(model.VIN) && model.VIN != "N/A" && model.VIN != "Non renseigné")
+                        {
+                            col.Item().Row(row =>
+                            {
+                                row.ConstantItem(150).Text("Numéro VIN :");
                                 row.RelativeItem().Text(model.VIN);
                             });
                         }
@@ -119,22 +129,27 @@ namespace CompanyDocuments.Module.Business
                 table.ColumnsDefinition(columns =>
                 {
                     columns.RelativeColumn();
-                    columns.ConstantColumn(100);
-                    columns.ConstantColumn(100);
+                    columns.ConstantColumn(120);
+                    columns.ConstantColumn(120);
                 });
 
                 table.Header(header =>
                 {
-                    header.Cell().Text(title).SemiBold();
-                    header.Cell().AlignRight().Text("Franchise ($)").SemiBold();
-                    header.Cell().AlignRight().Text("Montant ($)").SemiBold();
+                    header.Cell().Background("#0051ba").Padding(5).Text(title).SemiBold().FontColor(Colors.White);
+                    header.Cell().Background("#0051ba").Padding(5).AlignRight().Text("Franchise (Ar)").SemiBold().FontColor(Colors.White);
+                    header.Cell().Background("#0051ba").Padding(5).AlignRight().Text("Limite (Ar)").SemiBold().FontColor(Colors.White);
                 });
 
                 foreach (var item in coverages)
                 {
-                    table.Cell().Text(item.Description);
-                    table.Cell().AlignRight().Text(item.Deductible > 0 ? $"{item.Deductible:N0} $" : "-");
-                    table.Cell().AlignRight().Text(item.Amount > 0 ? $"{item.Amount:N0} $" : "-");
+                    table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5).Text(item.Description);
+                    var deductibleText = !string.IsNullOrWhiteSpace(item.DeductibleDisplay)
+                        ? item.DeductibleDisplay
+                        : (item.Deductible > 0 ? $"{item.Deductible:N0} Ar" : "-");
+                    table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5).AlignRight()
+                        .Text(deductibleText);
+                    table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5).AlignRight()
+                        .Text(item.Amount > 0 ? $"{item.Amount:N0} Ar" : "Illimitée");
                 }
             });
         }

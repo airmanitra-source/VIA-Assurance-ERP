@@ -44,11 +44,13 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
                 InsuranceStartDate = entity.InsuranceStartDate,
                 IsInsured = entity.IsInsured,
                 IsWorking = entity.IsWorking,
+                LicensePlate = entity.LicensePlate,
                 Make = entity.Make,
                 Mileage = entity.Mileage,
                 Model = entity.Model,
                 Power = entity.Power,
                 Type = entity.Type,
+                VIN = entity.VIN,
                 WantsInsurance = entity.WantsInsurance,
                 Year = entity.Year
             };

@@ -768,4 +768,7 @@
   <data name="FranchisePercentage" xml:space="preserve">
     <value>Franchise (%)</value>
   </data>
+  <data name="ClaimsList" xml:space="preserve">
+    <value>Sinistres déclarés</value>
+  </data>
 </root>

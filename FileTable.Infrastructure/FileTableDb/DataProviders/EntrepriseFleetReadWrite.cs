@@ -17,8 +17,10 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         {
             using var connection = _dbContext.CreateConnection();
             var sql = @"
-                INSERT INTO [documentdb].[dbo].[EntrepriseFleet] (EntrepriseId, FranchiseAmount, FranchisePercentage, FranchiseType, FiscalPower, InsuranceEndDate, InsuranceStartDate, IsInsured, IsWorking, Make, Mileage, Model, PolicyNumber, Power, Type, WantsInsurance, Year)
-                VALUES (@EntrepriseId, @FranchiseAmount, @FranchisePercentage, @FranchiseType, @FiscalPower, @InsuranceEndDate, @InsuranceStartDate, @IsInsured, @IsWorking, @Make, @Mileage, @Model, @PolicyNumber, @Power, @Type, @WantsInsurance, @Year);
+                INSERT INTO [documentdb].[dbo].[EntrepriseFleet] 
+                (EntrepriseId, FranchiseAmount, FranchisePercentage, FranchiseType, FiscalPower, InsuranceEndDate, InsuranceStartDate, IsInsured, IsWorking, LicensePlate, Make, Mileage, Model, PolicyNumber, Power, Type, VIN, WantsInsurance, Year)
+                VALUES 
+                (@EntrepriseId, @FranchiseAmount, @FranchisePercentage, @FranchiseType, @FiscalPower, @InsuranceEndDate, @InsuranceStartDate, @IsInsured, @IsWorking, @LicensePlate, @Make, @Mileage, @Model, @PolicyNumber, @Power, @Type, @VIN, @WantsInsurance, @Year);
                 SELECT CAST(SCOPE_IDENTITY() as bigint);";
 
             return await connection.ExecuteScalarAsync<long>(sql, fleetItem);
@@ -38,12 +40,14 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
                     InsuranceStartDate = @InsuranceStartDate,
                     IsInsured = @IsInsured,
                     IsWorking = @IsWorking,
+                    LicensePlate = @LicensePlate,
                     Make = @Make,
                     Mileage = @Mileage,
                     Model = @Model,
                     PolicyNumber = @PolicyNumber,
                     Power = @Power,
                     Type = @Type,
+                    VIN = @VIN,
                     WantsInsurance = @WantsInsurance,
                     Year = @Year
                 WHERE Id = @Id";

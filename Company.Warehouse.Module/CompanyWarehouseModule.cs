@@ -37,7 +37,36 @@ namespace Company.Warehouse.Module
 
         public async Task RemoveWarehouseAsync(long id)
         {
+            // Protection: vérifier si le warehouse est assuré avant de permettre la suppression
+            var warehouse = await _warehouseProvider.GetWarehouseByIdAsync(id);
+            
+            if (warehouse != null && warehouse.IsInsured)
+            {
+                throw new InvalidOperationException(
+                    "Impossible de supprimer cet entrepôt car il est assuré. " +
+                    "La confirmation d'assurance a été signée et l'entrepôt ne peut plus être supprimé.");
+            }
+
             await _warehouseProvider.DeleteWarehouseAsync(id);
+        }
+
+        public async Task MarkAsInsuredAsync(long id)
+        {
+            var warehouse = await _warehouseProvider.GetWarehouseByIdAsync(id);
+            
+            if (warehouse == null)
+            {
+                throw new InvalidOperationException($"Entrepôt avec ID {id} introuvable.");
+            }
+
+            if (warehouse.IsInsured)
+            {
+                // Déjà assuré, pas besoin de mettre à jour
+                return;
+            }
+
+            warehouse.IsInsured = true;
+            await _warehouseProvider.UpdateWarehouseAsync(warehouse);
         }
 
         public async Task<EntrepriseWarehouseMaterialBusinessModel?> GetMaterialAsync(long id)

@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-
 namespace ClientApp.Components.Layout
 {
     public partial class NavMenu

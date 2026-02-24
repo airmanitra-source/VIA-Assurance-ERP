@@ -25,5 +25,9 @@ namespace Company.Warehouse.Module
         Task RemoveWarehouseAsync(long id);
         Task RemoveMaterialAsync(long id);
         #endregion
+
+        #region Insure
+        Task MarkAsInsuredAsync(long id);
+        #endregion
     }
 }

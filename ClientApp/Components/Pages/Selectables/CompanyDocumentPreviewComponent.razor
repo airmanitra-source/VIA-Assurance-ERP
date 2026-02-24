@@ -1,0 +1,206 @@
+@rendermode InteractiveServer
+@namespace ClientApp.Components
+@using ClientApp.Models
+
+<div class="preview-container">
+    @if (Document != null && !Document.IsDirectory)
+    {
+        @if (IsImageFile())
+        {
+            <div class="image-preview">
+                <img src="@GetApiUrl()" alt="@Document.Name" />
+            </div>
+        }
+        else if (IsPdfFile())
+        {
+            <div class="pdf-preview">
+                <embed src="@GetApiUrl()" type="application/pdf" width="100%" height="600px" />
+            </div>
+        }
+        else if (IsWordFile())
+        {
+            <div class="word-preview" style="min-height: 600px; overflow: auto; border: 1px solid #ccc; border-radius: 4px;">
+                <WordDocumentPreviewComponent Document="Document" />
+            </div>
+        }
+        else if (IsTextFile())
+        {
+            <div class="text-preview">
+                <iframe src="@GetApiUrl()" width="100%" height="600px" style="border: 1px solid #ccc; background: white;"></iframe>
+            </div>
+        }
+        else if (IsVideoFile())
+        {
+            <div class="video-preview">
+                <video controls width="100%">
+                    <source src="@GetApiUrl()" type="@GetMimeType()" />
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        }
+        else if (IsAudioFile())
+        {
+            <div class="audio-preview">
+                <audio controls style="width: 100%;">
+                    <source src="@GetApiUrl()" type="@GetMimeType()" />
+                    Your browser does not support the audio tag.
+                </audio>
+            </div>
+        }
+        else
+        {
+            <div class="no-preview">
+                <div class="no-preview-icon">📄</div>
+                <p>@Localizer["NoPreviewAvailable"]</p>
+                <p class="file-info">@Localizer["FileTypeInfo"] @(Document.FileType ?? "Unknown")</p>
+                <div class="action-row" style="display: flex; gap: 10px; align-items: center; justify-content: center; margin-top: 10px;">
+                    <a href="@GetDownloadUrl()" class="btn btn-primary" download="@Document.Name">
+                        ⬇️ @Localizer["DownloadFile"]
+                    </a>
+                    @if (Document.IsSigned)
+                    {
+                        <span class="text-success" style="font-weight: bold;">✅ @Localizer["Signed"]</span>
+                    }
+                    else
+                    {
+                        <button class="btn btn-outline-primary" @onclick="OnSignRequested" disabled="@IsSigning">
+                            @if (IsSigning) { <span class="spinner-border spinner-border-sm"></span> }
+                            ✍️ @Localizer["SignNow"]
+                        </button>
+                    }
+                </div>
+            </div>
+        }
+        
+        @if (IsImageFile() || IsPdfFile() || IsWordFile() || IsTextFile() || IsVideoFile() || IsAudioFile())
+        {
+             <div class="preview-actions" style="margin-top: 1rem; display: flex; gap: 10px; align-items: center; justify-content: center;">
+                <a href="@GetDownloadUrl()" class="btn btn-primary" download="@Document.Name">
+                    ⬇️ @Localizer["DownloadFile"]
+                </a>
+                @if (Document.IsSigned)
+                {
+                    <span class="text-success" style="font-weight: bold;">✅ @Localizer["Signed"]</span>
+                }
+                else
+                {
+                    <button class="btn btn-outline-primary" @onclick="() => OnSignRequested.InvokeAsync()" disabled="@IsSigning">
+                        @if (IsSigning) { <span class="spinner-border spinner-border-sm"></span> }
+                        ✍️ @Localizer["SignNow"]
+                    </button>
+                }
+             </div>
+        }
+    }
+    else if (Document != null && Document.IsDirectory)
+    {
+        <div class="no-preview">
+            <div class="no-preview-icon">📁</div>
+            <p>@Localizer["IsDirectory"]</p>
+            <p class="file-info">@string.Format(Localizer["ContainsItems"].Value, Document.Children.Count)</p>
+        </div>
+    }
+    else
+    {
+        <div class="no-preview">
+            <p>@Localizer["SelectFileToPreview"]</p>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public CompanyDocumentViewModel? Document { get; set; }
+
+    [Parameter]
+    public bool IsSigning { get; set; }
+
+    [Parameter]
+    public EventCallback OnSignRequested { get; set; }
+
+    private string GetApiUrl()
+    {
+        if (Document == null) return "#";
+        return $"/api/CompanyDocuments/{Document.StreamId}/content";
+    }
+
+    private string GetDownloadUrl()
+    {
+        if (Document == null) return "#";
+        return $"/api/CompanyDocuments/{Document.StreamId}/content?download=true";
+    }
+
+    private string GetExtension()
+    {
+        return Document?.FileType?.TrimStart('.').ToLowerInvariant() ?? "";
+    }
+
+    private bool IsImageFile()
+    {
+        var ext = GetExtension();
+        return ext == "jpg" || ext == "jpeg" || ext == "png" || ext == "gif" ||
+               ext == "bmp" || ext == "webp" || ext == "svg" || ext == "ico";
+    }
+
+    private bool IsPdfFile()
+    {
+        return GetExtension() == "pdf";
+    }
+
+    private bool IsWordFile()
+    {
+        var ext = GetExtension();
+        return ext == "docx" || ext == "doc";
+    }
+
+    private bool IsTextFile()
+    {
+        var ext = GetExtension();
+        return ext == "txt" || ext == "md" || ext == "json" || ext == "xml" ||
+               ext == "csv" || ext == "log" || ext == "cs" || ext == "html" ||
+               ext == "css" || ext == "js" || ext == "sql" || ext == "config" ||
+               ext == "ini" || ext == "yaml" || ext == "yml";
+    }
+
+    private bool IsVideoFile()
+    {
+        var ext = GetExtension();
+        return ext == "mp4" || ext == "webm" || ext == "ogg" || ext == "mov";
+    }
+
+    private bool IsAudioFile()
+    {
+        var ext = GetExtension();
+        return ext == "mp3" || ext == "wav" || ext == "ogg" || ext == "m4a";
+    }
+
+    private string GetMimeType()
+    {
+        var ext = GetExtension();
+        return ext switch
+        {
+            "jpg" or "jpeg" => "image/jpeg",
+            "png" => "image/png",
+            "gif" => "image/gif",
+            "bmp" => "image/bmp",
+            "webp" => "image/webp",
+            "svg" => "image/svg+xml",
+            "ico" => "image/x-icon",
+            "pdf" => "application/pdf",
+            "txt" => "text/plain",
+            "html" => "text/html",
+            "css" => "text/css",
+            "js" => "text/javascript",
+            "json" => "application/json",
+            "xml" => "application/xml",
+            "mp4" => "video/mp4",
+            "webm" => "video/webm",
+            "ogg" => "video/ogg",
+            "mov" => "video/quicktime",
+            "mp3" => "audio/mpeg",
+            "wav" => "audio/wav",
+            "m4a" => "audio/mp4",
+            _ => "application/octet-stream"
+        };
+    }
+}

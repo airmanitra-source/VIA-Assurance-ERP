@@ -15,19 +15,19 @@ namespace ClientApp.Controllers
 
         public async Task<List<CompanySinisterViewModel>> IndexAsync(long entrepriseId)
         {
-            var items = await _sinisterModule.ReadCompanySinistersAsync(entrepriseId);
+            var items = await _sinisterModule.GetCompanySinistersAsync(entrepriseId);
             return items.Select(MapToViewModel).OrderByDescending(s => s.CreatedDate).ToList();
         }
 
         public async Task<List<CompanySinisterViewModel>> IndexByStatusAsync(long entrepriseId, string status)
         {
-            var items = await _sinisterModule.ReadSinistersByStatusAsync(entrepriseId, status);
+            var items = await _sinisterModule.GetSinistersByStatusAsync(entrepriseId, status);
             return items.Select(MapToViewModel).OrderByDescending(s => s.CreatedDate).ToList();
         }
 
         public async Task<bool> StoreApprovalAsync(long id, bool approved, decimal? resolvedAmount)
         {
-            var sinister = await _sinisterModule.ReadSinisterByIdAsync(id);
+            var sinister = await _sinisterModule.GetSinisterByIdAsync(id);
             if (sinister == null) return false;
 
             sinister.Status = approved ? "Resolved" : "Rejected";

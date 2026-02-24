@@ -1,0 +1,124 @@
+@page "/fleet-list"
+@inherits AuthenticatedComponentBase
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "developer")]
+@rendermode InteractiveServer
+@using ClientApp.Models
+@using ClientApp.Services
+@using Company.Fleet.Module
+@using Company.Module
+@using Microsoft.AspNetCore.Components
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<ClientApp.SharedResource> Localizer
+
+<PageTitle>@Localizer["ManageFleet"] - VIA Assurance</PageTitle>
+
+<div class="manage-fleet-container">
+    <div class="page-header">
+        <div class="header-text">
+            <h1>🚗 @Localizer["ManageFleetTitle"]</h1>
+            <p>@Localizer["ManageFleetDescription"]</p>
+        </div>
+        <button class="btn-add" @onclick='() => Navigation.NavigateTo("/add-fleet")'>
+            <span>+</span> @Localizer["AddFleetItem"]
+        </button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="loading-state">
+            <span class="spinner"></span>
+            <p>@Localizer["LoadingFleet"]</p>
+        </div>
+    }
+    else if (fleetItems == null || !fleetItems.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-icon">📂</div>
+            <h3>@Localizer["NoFleetItemsFoundTitle"]</h3>
+            <p>@Localizer["NoFleetItemsFoundDescription"]</p>
+        </div>
+    }
+    else
+    {
+        <div class="fleet-grid">
+            <table class="fleet-table">
+                <thead>
+                    <tr>
+                        <th>Details</th>
+                        <th>Plaque</th>
+                        <th>VIN</th>
+                        <th>Type</th>
+                        <th>Year</th>
+                        <th>Status</th>
+                        <th>Insurance</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in fleetItems)
+                    {
+                        <tr>
+                            <td>
+                                <div class="item-details">
+                                    <strong>@item.Make @item.Model</strong>
+                                    <span>@item.Mileage.ToString("N0") km</span>
+                                </div>
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.LicensePlate))
+                                {
+                                    <span class="license-plate">@item.LicensePlate</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.VIN))
+                                {
+                                    <span class="vin-code" title="@item.VIN">@item.VIN.Substring(0, Math.Min(8, item.VIN.Length))...</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="type-badge">@item.Type</span>
+                            </td>
+                            <td>@item.Year</td>
+                            <td>
+                                <span class="status-dot @(item.IsWorking ? "active" : "inactive")"></span>
+                                @(item.IsWorking ? Localizer["Working"] : Localizer["OutofOrder"])
+                            </td>
+                            <td>
+                                @if (item.IsInsured)
+                                {
+                                    <span class="badge badge-insured">🛡️ @Localizer["Insured"]</span>
+                                }
+                                else if (item.WantsInsurance)
+                                {
+                                    <span class="badge badge-pending">⏳ @Localizer["Pending"]</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-none">@Localizer["NotInsured"]</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon" title="Edit" @onclick="() => EditItem(item)">✏️</button>
+                                    <button class="btn-icon delete" title="@(item.IsInsured ? "Cannot delete insured vehicle" : "Delete")" 
+                                            @onclick="() => DeleteItemAsync(item)" 
+                                            disabled="@item.IsInsured">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

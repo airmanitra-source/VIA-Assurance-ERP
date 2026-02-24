@@ -12,12 +12,14 @@ namespace Company.Fleet.Module.Data.Models
         public DateTime? InsuranceStartDate { get; set; }
         public bool IsInsured { get; set; }
         public bool IsWorking { get; set; }
+        public string? LicensePlate { get; set; }
         public string Make { get; set; } = string.Empty;
         public int Mileage { get; set; }
         public string Model { get; set; } = string.Empty;
         public string? PolicyNumber { get; set; }
         public int? Power { get; set; }
         public string Type { get; set; } = string.Empty; // 'Auto' or 'Moto'
+        public string? VIN { get; set; }
         public bool WantsInsurance { get; set; }
         public int Year { get; set; }
     }

@@ -83,6 +83,9 @@ namespace ClientApp.Controllers
                 // Policy generation if requested
                 if (viewModel.WantsInsurance && !viewModel.IsInsured)
                 {
+                    // Supprimer les anciennes confirmations non signées pour éviter la redondance
+                    await _documentModule.RemoveUnsignedDocumentsForAssetAsync(enterpriseId, warehouseId: warehouseId);
+                    
                     // Map view models to business models for generation
                     var materialBusinessModels = materials.Select(m => new EntrepriseWarehouseMaterialBusinessModel
                     {
@@ -92,16 +95,13 @@ namespace ClientApp.Controllers
                         WantsInsurance = m.WantsInsurance
                     }).ToList();
 
-                    // Generate and link using new overload
+                    // Générer et lier le document de confirmation d'assurance
+                    // L'entrepôt reste en statut "en attente" (WantsInsurance=true, IsInsured=false)
+                    // IsInsured ne passera à true que lorsque le document sera SIGNÉ
                     await _documentModule.GenerateAndLinkPolicyConfirmationAsync(enterpriseId, businessModel, materialBusinessModels, companyRaisonSocial ?? "Company");
-
-                    // Re-update marker
-                    businessModel.Id = warehouseId;
-                    businessModel.IsInsured = true;
-                    // businessModel.PolicyNumber updated in method
-                    await _warehouseModule.SetWarehouseAsync(businessModel);
-
-                    result.Success = true;
+                    
+                    // NE PAS marquer comme assuré automatiquement
+                    // Le statut "assuré" sera appliqué uniquement après signature du document
                 }
 
                 result.Success = true;

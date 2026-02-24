@@ -61,13 +61,16 @@ namespace ClientApp.Controllers
 
                 if (viewModel.WantsInsurance && !viewModel.IsInsured)
                 {
-                    // Call the overload that handles logic internally
+                    // Supprimer les anciennes confirmations non signées pour éviter la redondance
+                    await _documentModule.RemoveUnsignedDocumentsForAssetAsync(enterpriseId, transportationId: transId);
+                    
+                    // Générer et lier le document de confirmation d'assurance
+                    // Le transport reste en statut "en attente" (WantsInsurance=true, IsInsured=false)
+                    // IsInsured ne passera à true que lorsque le document sera SIGNÉ
                     await _documentModule.GenerateAndLinkPolicyConfirmationAsync(enterpriseId, businessModel, companyRaisonSocial ?? "Company");
                     
-                    // Set is insured
-                    businessModel.IsInsured = true;
-                    // PolicyNumber is updated inside GenerateAndLinkPolicyConfirmationAsync (passed by reference)
-                    await _transportationModule.SetTransportationAsync(businessModel);
+                    // NE PAS marquer comme assuré automatiquement
+                    // Le statut "assuré" sera appliqué uniquement après signature du document
                 }
 
                 result.Success = true;

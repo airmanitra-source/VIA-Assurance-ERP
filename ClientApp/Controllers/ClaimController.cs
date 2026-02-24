@@ -6,6 +6,7 @@ using Company.Sinister.Module.Data.Models;
 using Company.Transportation.Module;
 using Company.Warehouse.Module;
 using Microsoft.AspNetCore.Authorization;
+using CompanySinisterDocument.Module;
 
 namespace ClientApp.Controllers
 {
@@ -13,6 +14,7 @@ namespace ClientApp.Controllers
     public class ClaimController
     {
         private readonly ICompanyFleetModule _fleetModule;
+        private readonly ICompanySinisterDocumentModule _sinisterDocumentModule;
         private readonly ICompanySinisterModule _sinisterModule;
         private readonly ICompanyTransportationModule _transportationModule;
         private readonly ICompanyWarehouseModule _warehouseModule;
@@ -23,13 +25,15 @@ namespace ClientApp.Controllers
             ICompanySinisterModule sinisterModule,
             ICompanyTransportationModule transportationModule,
             ICompanyWarehouseModule warehouseModule,
-            ICompanyModule companyModule)
+            ICompanyModule companyModule,
+            ICompanySinisterDocumentModule sinisterDocumentModule)
         {
             _fleetModule = fleetModule;
             _sinisterModule = sinisterModule;
             _transportationModule = transportationModule;
             _warehouseModule = warehouseModule;
             _companyModule = companyModule;
+            _sinisterDocumentModule = sinisterDocumentModule;
         }
 
         public async Task<ClaimAssetsViewModel> Index(long enterpriseId)
@@ -81,8 +85,10 @@ namespace ClientApp.Controllers
             };
         }
 
-        public async Task<StoreResult> Store(CompanySinisterViewModel viewModel, long enterpriseId)
+        public async Task<StoreResult> Store(CompanySinisterViewModel viewModel, long enterpriseId, List<CompanySinisterAttachedDocumentViewModel> documents)
         {
+            var result = new StoreResult();
+
             try
             {
                 var dataModel = new CompanySinisterDataModel
@@ -101,13 +107,41 @@ namespace ClientApp.Controllers
                     Status = "Pending"
                 };
 
-                await _sinisterModule.AddSinisterAsync(dataModel);
-                return new StoreResult { Message = "Claim submitted successfully!", Success = true };
+                var sinisterId = await _sinisterModule.AddSinisterAsync(dataModel);
+
+                foreach (var doc in documents.Where(d => d.File != null))
+                {
+                    try
+                    {
+                        using var stream = doc.File!.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+                        using var ms = new MemoryStream();
+                        await stream.CopyToAsync(ms);
+                        var fileContent = ms.ToArray();
+                        await _sinisterDocumentModule.AddDocumentAsync(
+                            enterpriseId,
+                            sinisterId,
+                            doc.File.Name,
+                            fileContent,
+                            doc.TypeDocument);
+                    }
+                    catch (Exception ex)
+                    {
+                        result.Errors.Add($"Failed to upload {doc.File?.Name}: {ex.Message}");
+                    }
+                }
+
+                result.Message = result.Errors.Any()
+                    ? "Claim submitted with document upload errors."
+                    : "Claim submitted successfully!";
+                result.Success = !result.Errors.Any();
             }
             catch (Exception ex)
             {
-                return new StoreResult { Message = $"Failed to submit claim: {ex.Message}", Success = false };
+                result.Errors.Add($"Failed to submit claim: {ex.Message}");
+                result.Success = false;
             }
+
+            return result;
         }
     }
 }

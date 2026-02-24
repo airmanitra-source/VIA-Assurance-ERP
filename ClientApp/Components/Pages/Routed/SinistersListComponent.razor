@@ -1,0 +1,206 @@
+@page "/list-sinisters"
+@inherits AuthenticatedComponentBase
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "developer")]
+
+<PageTitle>Sinistres - VIA Assurance</PageTitle>
+
+<div class="sinisters-container">
+    <div class="page-header">
+        <div class="header-text">
+            <h1>🚨 Gestion des Sinistres</h1>
+            <p>Consulter et approuver les sinistres déclarés par les entreprises</p>
+        </div>
+        <button class="btn-add" @onclick='() => Navigation.NavigateTo("/fill-claims")'>
+            <span>+</span> Déclarer un sinistre
+        </button>
+    </div>
+
+    <div class="filter-bar">
+        <label for="statusFilter">Filtrer par statut :</label>
+        <select id="statusFilter" class="form-control-filter" @onchange="OnFilterChangedAsync">
+            <option value="">Tous</option>
+            <option value="Pending">⏳ En attente</option>
+            <option value="InProgress">🔄 En cours</option>
+            <option value="Resolved">✅ Approuvé</option>
+            <option value="Rejected">❌ Rejeté</option>
+        </select>
+    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+
+    @if (isLoading)
+    {
+        <div class="loading-state">
+            <span class="spinner"></span>
+            <p>Chargement des sinistres...</p>
+        </div>
+    }
+    else if (!sinisters.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <h3>Aucun sinistre trouvé</h3>
+            <p>Aucun sinistre déclaré pour le moment.</p>
+        </div>
+    }
+    else
+    {
+        <div class="sinisters-grid">
+            <table class="sinisters-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>#</th>
+                        <th>Date sinistre</th>
+                        <th>Type d'actif</th>
+                        <th>Description</th>
+                        <th>Montant estimé</th>
+                        <th>Montant résolu</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in sinisters)
+                    {
+                        <tr>
+                            <td class="accordion-cell">
+                                <button class="accordion-toggle" @onclick="() => ToggleExpanded(s.Id)" aria-expanded="@IsExpanded(s.Id)">
+                                    @(IsExpanded(s.Id) ? "▾" : "▸")
+                                </button>
+                            </td>
+                            <td><strong>#@s.Id</strong></td>
+                            <td>@s.SinisterDate.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <span class="asset-type">
+                                    @(s.AssetType == "Fleet" ? "🚗 Flotte" :
+                                      s.AssetType == "Transportation" ? "🚚 Transport" :
+                                      s.AssetType == "Warehouse" ? "🏭 Entrepôt" : s.AssetType)
+                                </span>
+                            </td>
+                            <td class="description-cell" title="@s.Description">
+                                @(s.Description.Length > 60 ? s.Description[..60] + "…" : s.Description)
+                            </td>
+                            <td class="amount">@s.EstimatedAmount.ToString("N2") Ar</td>
+                            <td class="amount">
+                                @if (s.Status == "Pending" || s.Status == "InProgress")
+                                {
+                                    <InputNumber @bind-Value="s.ResolvedAmount" class="form-input-inline" />
+                                }
+                                else
+                                {
+                                    @(s.ResolvedAmount.HasValue ? s.ResolvedAmount.Value.ToString("N2") + " Ar" : "-")
+                                }
+                            </td>
+                            <td>
+                                <span class="badge @GetStatusBadgeClass(s.Status)">
+                                    @GetStatusIcon(s.Status) @s.Status
+                                </span>
+                            </td>
+                            <td>
+                                @if (s.Status == "Pending" || s.Status == "InProgress")
+                                {
+                                    <div class="action-buttons">
+                                        <button class="btn-approve" title="Approuver"
+                                                @onclick="() => OpenApprovalModal(s, true)">
+                                            ✅ Approuver
+                                        </button>
+                                        <button class="btn-reject" title="Rejeter"
+                                                @onclick="() => OpenApprovalModal(s, false)">
+                                            ❌ Rejeter
+                                        </button>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </td>
+                        </tr>
+                        @if (IsExpanded(s.Id))
+                        {
+                            <tr class="accordion-row">
+                                <td colspan="9">
+                                    <div class="accordion-content">
+                                        <div>
+                                            <strong>Description complète :</strong>
+                                            <div>@s.Description</div>
+                                        </div>
+                                        <div class="accordion-details">
+                                            <div><strong>Date de création :</strong> @s.CreatedDate.ToString("dd/MM/yyyy")</div>
+                                            <div><strong>Dernière modification :</strong> @s.LastModifiedDate.ToString("dd/MM/yyyy")</div>
+                                            <div>
+                                                <strong>Montant résolu :</strong>
+                                                @if (s.Status == "Pending" || s.Status == "InProgress")
+                                                {
+                                                    <InputNumber @bind-Value="s.ResolvedAmount" class="form-input-inline" />
+                                                }
+                                                else
+                                                {
+                                                    <span>@(s.ResolvedAmount.HasValue ? s.ResolvedAmount.Value.ToString("N2") + " Ar" : "-")</span>
+                                                }
+                                            </div>
+                                            <div><strong>Référence sinistre :</strong> @(s.SinisterId?.ToString() ?? "-")</div>
+                                            <div><strong>Actif flotte :</strong> @(s.EntrepriseFleetId?.ToString() ?? "-")</div>
+                                            <div><strong>Actif transport :</strong> @(s.EntrepriseMerchandiseTransportationId?.ToString() ?? "-")</div>
+                                            <div><strong>Actif entrepôt :</strong> @(s.EntrepriseWarehouseId?.ToString() ?? "-")</div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@if (showApprovalModal && selectedSinister != null)
+{
+    <div class="modal-overlay" @onclick="CloseApprovalModal">
+        <div class="modal-card" @onclick:stopPropagation>
+            <div class="modal-header @(successOperation ? "header-approve" : "header-reject")">
+                <h3>@(successOperation ? "✅ Approuver le sinistre" : "❌ Rejeter le sinistre")</h3>
+                <button class="btn-close" @onclick="CloseApprovalModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Sinistre #@selectedSinister.Id</strong></p>
+                <p>@selectedSinister.Description</p>
+                <p>Montant estimé : <strong>@selectedSinister.EstimatedAmount.ToString("N2") Ar</strong></p>
+
+                @if (successOperation)
+                {
+                    <div class="form-group">
+                        <label for="resolvedAmount">Montant approuvé (Ar)</label>
+                        <input type="number" id="resolvedAmount" class="form-control"
+                               @bind="resolvedAmountInput" min="0" step="0.01" />
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger">@errorMessage</div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" @onclick="CloseApprovalModal" disabled="@isProcessing">
+                    Annuler
+                </button>
+                <button class="@(successOperation ? "btn-approve" : "btn-reject")"
+                        @onclick="ConfirmApprovalAsync" disabled="@isProcessing">
+                    @if (isProcessing)
+                    {
+                        <span class="spinner-sm"></span>
+                    }
+                    @(successOperation ? "Confirmer l'approbation" : "Confirmer le rejet")
+                </button>
+            </div>
+        </div>
+    </div>
+}

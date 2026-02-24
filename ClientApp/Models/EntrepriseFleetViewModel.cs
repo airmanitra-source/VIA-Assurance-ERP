@@ -29,6 +29,9 @@ namespace ClientApp.Models
 
         public bool IsWorking { get; set; } = true;
 
+        [StringLength(20, ErrorMessage = "La plaque d'immatriculation ne peut pas dépasser 20 caractères")]
+        public string? LicensePlate { get; set; }
+
         [Required(ErrorMessage = "Marque de voiture requise")]
         public string Make { get; set; } = string.Empty;
 
@@ -44,6 +47,10 @@ namespace ClientApp.Models
 
         [Required(ErrorMessage = "Type is required")]
         public string Type { get; set; } = "Auto"; // 'Auto' or 'Moto'
+
+        [StringLength(17, MinimumLength = 17, ErrorMessage = "Le numéro VIN doit contenir exactement 17 caractères")]
+        [RegularExpression("^[A-HJ-NPR-Z0-9]{17}$", ErrorMessage = "Le numéro VIN est invalide (lettres A-Z sauf I, O, Q et chiffres 0-9)")]
+        public string? VIN { get; set; }
 
         public bool WantsInsurance { get; set; }
 
@@ -65,11 +72,13 @@ namespace ClientApp.Models
                InsuranceStartDate = x.InsuranceStartDate,
                IsInsured = x.IsInsured,
                IsWorking = x.IsWorking,
+               LicensePlate = x.LicensePlate,
                Make = x.Make,
                Mileage = x.Mileage,
                Model = x.Model,
                Power = x.Power,
                Type = x.Type,
+               VIN = x.VIN,
                WantsInsurance = x.WantsInsurance,
                Year = x.Year
            }).ToList();

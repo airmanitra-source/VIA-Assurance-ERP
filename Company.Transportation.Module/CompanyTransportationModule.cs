@@ -37,7 +37,36 @@ namespace Company.Transportation.Module
 
         public async Task RemoveTransportationAsync(long id)
         {
+            // Protection: vérifier si le transport est assuré avant de permettre la suppression
+            var transportation = await _transportationProvider.GetTransportationByIdAsync(id);
+            
+            if (transportation != null && transportation.IsInsured)
+            {
+                throw new InvalidOperationException(
+                    "Impossible de supprimer ce transport car il est assuré. " +
+                    "La confirmation d'assurance a été signée et le transport ne peut plus être supprimé.");
+            }
+
             await _transportationProvider.DeleteTransportationAsync(id);
+        }
+
+        public async Task MarkAsInsuredAsync(long id)
+        {
+            var transportation = await _transportationProvider.GetTransportationByIdAsync(id);
+            
+            if (transportation == null)
+            {
+                throw new InvalidOperationException($"Transport avec ID {id} introuvable.");
+            }
+
+            if (transportation.IsInsured)
+            {
+                // Déjà assuré, pas besoin de mettre à jour
+                return;
+            }
+
+            transportation.IsInsured = true;
+            await _transportationProvider.UpdateTransportationAsync(transportation);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿
-using Company.Fleet.Module.Data.Models;
+﻿using Company.Fleet.Module.Data.Models;
 
 namespace Company.Fleet.Module.Business
 {
@@ -25,6 +24,8 @@ namespace Company.Fleet.Module.Business
 
         public bool IsWorking { get; set; }
 
+        public string? LicensePlate { get; set; }
+
         public string Make { get; set; } = string.Empty;
 
         public int Mileage { get; set; }
@@ -36,6 +37,8 @@ namespace Company.Fleet.Module.Business
         public int? Power { get; set; }
 
         public string Type { get; set; } = string.Empty; // 'Auto' or 'Moto'
+
+        public string? VIN { get; set; }
 
         public bool WantsInsurance { get; set; }
 
@@ -56,12 +59,14 @@ namespace Company.Fleet.Module.Business
                 InsuranceStartDate = fleetDataModel.InsuranceStartDate,
                 IsInsured = fleetDataModel.IsInsured,
                 IsWorking = fleetDataModel.IsWorking,
+                LicensePlate = fleetDataModel.LicensePlate,
                 Make = fleetDataModel.Make,
                 Mileage = fleetDataModel.Mileage,
                 Model = fleetDataModel.Model,
                 PolicyNumber = fleetDataModel.PolicyNumber,
                 Power = fleetDataModel.Power,
                 Type = fleetDataModel.Type,
+                VIN = fleetDataModel.VIN,
                 WantsInsurance = fleetDataModel.WantsInsurance,
                 Year = fleetDataModel.Year
             };
@@ -81,12 +86,14 @@ namespace Company.Fleet.Module.Business
                 InsuranceStartDate = InsuranceStartDate,
                 IsInsured = IsInsured,
                 IsWorking = IsWorking,
+                LicensePlate = LicensePlate,
                 Make = Make,
                 Mileage = Mileage,
                 Model = Model,
                 PolicyNumber = PolicyNumber,
                 Power = Power,
                 Type = Type,
+                VIN = VIN,
                 WantsInsurance = WantsInsurance,
                 Year = Year
             };

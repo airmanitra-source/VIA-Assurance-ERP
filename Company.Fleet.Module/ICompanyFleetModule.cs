@@ -9,5 +9,6 @@ namespace Company.Fleet.Module
         Task<long> AddFleetItemAsync(EntrepriseFleetBusinessModel fleetItem);
         Task SetFleetItemAsync(EntrepriseFleetBusinessModel fleetItem);
         Task RemoveFleetItemAsync(long id);
+        Task MarkAsInsuredAsync(long id);
     }
 }

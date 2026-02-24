@@ -12,6 +12,7 @@ namespace CompanyDocuments.Module
         Task<byte[]?> GetFileContentAsync(Guid streamId);
         Task<List<CompanyDocumentBusinessModel>> GetDocumentsByEntrepriseIdAsync(long entrepriseId);
         Task RemoveDocumentAsync(long entrepriseId, Guid streamId);
+        Task RemoveUnsignedDocumentsForAssetAsync(long entrepriseId, long? fleetId = null, long? warehouseId = null, long? transportationId = null);
         Task<Guid> UploadAndLinkDocumentAsync(long entrepriseId, string fileName, byte[] fileContent, string? typeDocument, long? fleetId = null, long? warehouseId = null, long? transportationId = null);
         Task<Guid> GenerateAndLinkPolicyConfirmationAsync(long entrepriseId, string typeInsurance, PolicyConfirmationModel data, long? itemId = null);
         Task<Guid> GenerateAndLinkPolicyConfirmationAsync(long entrepriseId, EntrepriseFleetBusinessModel fleetItem, string companyName);

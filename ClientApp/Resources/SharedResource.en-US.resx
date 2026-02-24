@@ -768,4 +768,7 @@
   <data name="FranchisePercentage" xml:space="preserve">
     <value>Franchise Percentage</value>
   </data>
+  <data name="ClaimsList" xml:space="preserve">
+    <value>Claims List</value>
+  </data>
 </root>

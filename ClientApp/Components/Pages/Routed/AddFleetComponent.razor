@@ -1,0 +1,223 @@
+@page "/add-fleet"
+@inherits AuthenticatedComponentBase
+@rendermode InteractiveServer
+@using ClientApp.Models
+@using ClientApp.Services
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Forms
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> Localizer
+
+<PageTitle>@(Id.HasValue ? Localizer["EditFleet"] : Localizer["AddFleet"]) - VIA Assurance Dashboard</PageTitle>
+
+<div class="add-fleet-container">
+    <div class="add-fleet-card">
+        <div class="header">
+            <h1>@(Id.HasValue ? "✏️ " + Localizer["Edit"] : "🚗 " + Localizer["AddNew"]) @Localizer["FleetItem"]</h1>
+            <p>@(Id.HasValue ? Localizer["UpdateVehicleInfo"] : Localizer["RegisterNewVehicle"])</p>
+        </div>
+
+        @if (isLoadingCompany || isLoadingItem)
+        {
+            <div class="loading-state">
+                <span class="spinner"></span>
+                <p>@Localizer["Loading"]...</p>
+            </div>
+        }
+        else if (currentCompany == null)
+        {
+            <div class="error-list">
+                <div class="error-message">⚠️ @Localizer["CouldNotRetrieveEnterprise"]</div>
+            </div>
+            <button class="btn-back" @onclick='() => Navigation.NavigateTo("/login")'>Back to Login</button>
+        }
+        else
+        {
+            <div class="enterprise-info">
+                <span>@Localizer["Enterprise"]: <strong>@currentCompany.RaisonSocial</strong></span>
+            </div>
+
+            @if (isFormLocked)
+            {
+                <div class="alert alert-warning">
+                    <strong>🔒 Formulaire verrouillé</strong>
+                    <p>Ce véhicule est actuellement assuré. Les modifications ne sont plus autorisées car la confirmation d'assurance a été signée.</p>
+                </div>
+            }
+
+            <EditForm Model="@fleetModel" OnValidSubmit="@HandleSubmit" class="fleet-form">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="type">@Localizer["VehicleType"]</label>
+                        <InputSelect id="type" @bind-Value="fleetModel.Type" class="form-input" disabled="@isFormLocked">
+                            <option value="Auto">Automobile</option>
+                            <option value="Moto">Motorcycle</option>
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="year">@Localizer["Year"]</label>
+                        <InputNumber id="year" @bind-Value="fleetModel.Year" class="form-input" disabled="@isFormLocked" />
+                        <ValidationMessage For="@(() => fleetModel.Year)" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="make">@Localizer["Make"]</label>
+                        <InputText id="make" @bind-Value="fleetModel.Make" class="form-input" placeholder="e.g. Toyota" disabled="@isFormLocked" />
+                        <ValidationMessage For="@(() => fleetModel.Make)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="model">@Localizer["Model"]</label>
+                        <InputText id="model" @bind-Value="fleetModel.Model" class="form-input" placeholder="e.g. Corolla" disabled="@isFormLocked" />
+                        <ValidationMessage For="@(() => fleetModel.Model)" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="licensePlate">@Localizer["LicensePlate"]</label>
+                        <InputText id="licensePlate" @bind-Value="fleetModel.LicensePlate" class="form-input" placeholder="e.g. ABC-123-XY" maxlength="20" disabled="@isFormLocked" />
+                        <ValidationMessage For="@(() => fleetModel.LicensePlate)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vin">@Localizer["VIN"]</label>
+                        <InputText id="vin" @bind-Value="fleetModel.VIN" class="form-input" placeholder="17 caractères" maxlength="17" disabled="@isFormLocked" />
+                        <ValidationMessage For="@(() => fleetModel.VIN)" />
+                        <small class="form-hint">Numéro d'identification du véhicule (17 caractères)</small>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="mileage">@Localizer["Mileage"] (km)</label>
+                        <InputNumber id="mileage" @bind-Value="fleetModel.Mileage" class="form-input" disabled="@isFormLocked" />
+                        <ValidationMessage For="@(() => fleetModel.Mileage)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <InputCheckbox @bind-Value="fleetModel.IsWorking" disabled="@isFormLocked" />
+                            <span>@Localizer["InWorkingCondition"]</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="power">@Localizer["Power"] (HP/kW)</label>
+                        <InputNumber id="power" @bind-Value="fleetModel.Power" class="form-input" disabled="@isFormLocked" />
+                        <ValidationMessage For="@(() => fleetModel.Power)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fiscalPower">@Localizer["FiscalPower"] (CV)</label>
+                        <InputNumber id="fiscalPower" @bind-Value="fleetModel.FiscalPower" class="form-input" disabled="@isFormLocked" />
+                        <ValidationMessage For="@(() => fleetModel.FiscalPower)" />
+                    </div>
+                </div>
+
+                <div class="insurance-section @(fleetModel.IsEligibleForInsurance ? "eligible" : "ineligible")">
+                    <h3>🛡️ @Localizer["Insurance"]</h3>
+
+                    @if (fleetModel.IsEligibleForInsurance)
+                    {
+                        <div class="form-group subscription-toggle">
+                            <label class="switch-container">
+                                <span class="switch-label">@Localizer["WantsInsurance"]</span>
+                                <div class="switch">
+                                    <InputCheckbox @bind-Value="fleetModel.WantsInsurance" disabled="@isFormLocked" />
+                                    <span class="slider round"></span>
+                                </div>
+                            </label>
+                        </div>
+
+                        @if (fleetModel.WantsInsurance)
+                        {
+                            <div class="form-row subscription-period animated-fade-in">
+                                <div class="form-group">
+                                    <label>@Localizer["StartDate"]</label>
+                                    <InputDate @bind-Value="fleetModel.InsuranceStartDate" class="form-input" disabled="@isFormLocked" />
+                                </div>
+                                <div class="form-group">
+                                    <label>@Localizer["EndDate"]</label>
+                                    <InputDate @bind-Value="fleetModel.InsuranceEndDate" class="form-input" disabled="@isFormLocked" />
+                                </div>
+                            </div>
+
+                            <div class="form-row animated-fade-in">
+                                <div class="form-group">
+                                    <label>@Localizer["FranchiseType"]</label>
+                                    <InputSelect @bind-Value="fleetModel.FranchiseType" class="form-input" disabled="@isFormLocked">
+                                        <option value="Fixed">@Localizer["FixedDeductible"]</option>
+                                        <option value="Relative">@Localizer["RelativeDeductible"]</option>
+                                        <option value="Proportional">@Localizer["ProportionalDeductible"]</option>
+                                    </InputSelect>
+                                </div>
+                                <div class="form-group">
+                                    <label>@Localizer["FranchiseAmount"]</label>
+                                    <InputNumber @bind-Value="fleetModel.FranchiseAmount" class="form-input" disabled="@(isFormLocked || fleetModel.FranchiseType != "Fixed")" />
+                                </div>
+                                <div class="form-group">
+                                    <label>@Localizer["FranchisePercentage"]</label>
+                                    <InputNumber @bind-Value="fleetModel.FranchisePercentage" class="form-input" disabled="@(isFormLocked || fleetModel.FranchiseType == "Fixed")" />
+                                </div>
+                            </div>
+                        }
+
+                        <p class="eligibility-hint">✅ @Localizer["EligibleForInsurance"]</p>
+                    }
+                    else
+                    {
+                        <div class="ineligible-notice">
+                            <p>⚠️ @Localizer["IneligibleForInsurance"]</p>
+                            <ul>
+                                @if (!fleetModel.IsWorking) { <li>@Localizer["VehicleMustBeWorking"]</li> }
+                                @if (fleetModel.Year < (DateTime.Now.Year - 20)) { <li>@Localizer["VehicleIsTooOld"]</li> }
+                            </ul>
+                        </div>
+                    }
+                </div>
+
+                @if (errors.Any())
+                {
+                    <div class="error-list">
+                        @foreach (var error in errors)
+                        {
+                            <div class="error-message">⚠️ @error</div>
+                        }
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(successMessage))
+                {
+                    <div class="success-message">✅ @successMessage</div>
+                }
+
+                <div class="actions">
+                    <button type="button" class="btn-secondary" @onclick='() => Navigation.NavigateTo("/fleet-list")'>@Localizer["Cancel"]</button>
+                    <button type="submit" class="btn-primary" disabled="@(isSubmitting || isFormLocked)">
+                        @if (isSubmitting)
+                        {
+                            <span class="spinner-small"></span>
+                            <span>@Localizer["Saving"]...</span>
+                        }
+                        else if (isFormLocked)
+                        {
+                            <span>🔒 @Localizer["FormLocked"]</span>
+                        }
+                        else
+                        {
+                            <span>@(Id.HasValue ? Localizer["Update"] : Localizer["Add"])</span>
+                        }
+                    </button>
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>

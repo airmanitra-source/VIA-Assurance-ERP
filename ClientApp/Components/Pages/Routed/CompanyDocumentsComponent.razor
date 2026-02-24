@@ -1,0 +1,130 @@
+@page "/company-documents"
+@inherits AuthenticatedComponentBase
+@using Microsoft.AspNetCore.Authorization
+@using ClientApp.Models
+@attribute [Authorize(Roles = "directeur,RH,auditeur,admin,developer")]
+@rendermode InteractiveServer
+
+<PageTitle>@Localizer["CompanyDocumentsTitle"] - VIA Assurance Dashboard</PageTitle>
+
+<div class="document-explorer">
+    <div class="header">
+        <div class="header-left">
+            <h1>🏢 @Localizer["CompanyDocumentsTitle"]</h1>
+            <span class="user-badge">👤 @CurrentUserEmail</span>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-secondary" @onclick="LoadDocumentsAsync">
+                🔄 @Localizer["Refresh"]
+            </button>
+        </div>
+    </div>
+
+    <div class="explorer-container">
+        <div class="tree-panel">
+            <h3>@Localizer["CompanyDocumentsTitle"]</h3>
+            @if (isLoading)
+            {
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>@Localizer["LoadingDocuments"]</p>
+                </div>
+            }
+            else if (documents != null && documents.Any())
+            {
+                <div class="tree-view">
+                    @foreach (var doc in documents)
+                    {
+                        <div class="tree-node @(selectedNode == doc ? "selected" : "")" @onclick="() => SelectNode(doc)">
+                            <span>@(doc.IsDirectory ? "📁" : "📄") @doc.Name</span>
+                            @if (!doc.IsDirectory && doc.IsSigned)
+                            {
+                                <span class="badge badge-success" style="margin-left: 5px; font-size: 0.7em;">✅ @Localizer["Signed"]</span>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <p>@Localizer["NoDocumentsFound"]</p>
+                </div>
+            }
+        </div>
+
+        <div class="details-panel">
+            @if (selectedNode != null)
+            {
+                <div class="tab-content" style="padding-top: 10px;">
+                    <CompanyDocumentPreviewComponent 
+                        Document="selectedNode" 
+                        @key="selectedNode.StreamId"
+                        IsSigning="isSigning"
+                        OnSignRequested="SignDocumentAsync" />
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <p>@Localizer["SelectDocumentToView"]</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (showSignaturePad)
+{
+    <div class="signature-modal-overlay">
+        <div class="signature-modal">
+            <div class="modal-header">
+                <h3>✍️ @Localizer["SignDocument"]</h3>
+                <button type="button" class="btn-close" @onclick='() => showSignaturePad = false'></button>
+            </div>
+            <div class="modal-body">
+                <p>@Localizer["DrawSignaturePrompt"]</p>
+                <SignaturePad @ref="signaturePad" CanvasId="company-doc-sig" />
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick='() => showSignaturePad = false'>@Localizer["Cancel"]</button>
+                <button class="btn btn-primary" @onclick="ConfirmSignatureAsync">@Localizer["ConfirmSignature"]</button>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .signature-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+    .signature-modal {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        width: 450px;
+    }
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 15px;
+    }
+</style>
+

@@ -21,6 +21,7 @@
     <ProjectReference Include="..\Sinister.Module\Sinister.Module.csproj" />
     <ProjectReference Include="..\Company.Sinister.Module\Company.Sinister.Module.csproj" />
     <ProjectReference Include="..\CompanyDocuments.Module\CompanyDocuments.Module.csproj" />
+    <ProjectReference Include="..\CompanySinisterDocument.Module\CompanySinisterDocument.Module.csproj" />
   </ItemGroup>
 
 </Project>
