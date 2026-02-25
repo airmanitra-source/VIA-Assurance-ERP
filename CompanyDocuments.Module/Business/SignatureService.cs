@@ -26,7 +26,7 @@ namespace CompanyDocuments.Module.Business
                     <h4 style='color: #0051ba; margin: 0 0 5px 0;'>ELECTRONIC SIGNATURE</h4>
                     <p style='margin: 0; font-size: 14px;'><b>Signed by:</b> {signerName}</p>
                     <p style='margin: 0; font-size: 12px;'><b>Date:</b> {DateTime.Now:yyyy-MM-dd HH:mm:ss}</p>
-                    <p style='margin: 5px 0 0 0; font-size: 10px; color: #666;'>Verified by VIA Assurance Dashboard</p>";
+                    <p style='margin: 5px 0 0 0; font-size: 10px; color: #666;'>Verified by Ny Havana Dashboard</p>";
             }
 
             // Create a simple signature stamp

@@ -27,6 +27,8 @@
     <EmbeddedResource Include="FileTableDb\Migrations\20260211_create_souscription.sql" />
     <EmbeddedResource Include="FileTableDb\Migrations\20260217_create_CompanyDocuments.sql" />
     <EmbeddedResource Include="FileTableDb\Migrations\20260224_create_CompanySinisterDocuments.sql" />
+    <EmbeddedResource Include="FileTableDb\Migrations\20260226_create_SinisterType.sql" />
+    <EmbeddedResource Include="FileTableDb\Migrations\20260226_populate_SinisterType.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,7 +45,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EmployeeDocuments.Module\EmployeeDocuments.Module.csproj" />
-    <ProjectReference Include="..\FileTable.Module\FileTable.Module.csproj" />
     <ProjectReference Include="..\Employee.Module\Employee.Module.csproj" />
     <ProjectReference Include="..\Company.Module\Company.Module.csproj" />
     <ProjectReference Include="..\Subscription.Module\Subscription.Module.csproj" />

@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using FileTable.Infrastructure.FileTableDb.Entities;
-using FileTable.Module.Data.Providers;
 using EmployeeDocuments.Module.Data.Models;
 using EmployeeDocuments.Module.Data.Providers;
 
