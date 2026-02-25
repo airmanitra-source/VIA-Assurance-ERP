@@ -28,7 +28,7 @@ public class EmailService : IEmailService
             var encodedToken = HttpUtility.UrlEncode(resetToken);
             var fullResetUrl = $"{resetUrl}?token={encodedToken}&email={HttpUtility.UrlEncode(email)}";
 
-            var subject = "Password Reset Request - Ny Havana";
+            var subject = "Password Reset Request - ERP ASSUR";
             var defaultPassword = _configuration["UserDefaults:DefaultPassword"]?.Trim() ?? string.Empty;
             if (string.IsNullOrWhiteSpace(defaultPassword))
             {
@@ -53,7 +53,7 @@ public class EmailService : IEmailService
     {
         try
         {
-            var subject = "Password Reset Confirmation - Ny Havana";
+            var subject = "Password Reset Confirmation - ERP ASSUR";
             var htmlBody = GeneratePasswordResetConfirmationEmailHtml(userName);
 
             await SendEmailAsync(email, subject, htmlBody);
@@ -77,7 +77,7 @@ public class EmailService : IEmailService
             var smtpPort = int.Parse(_configuration["Email:SmtpPort"] ?? "587");
             var senderEmail = _configuration["Email:SenderEmail"] ?? "airmanitra@gmail.com";
             var senderPassword = _configuration["Email:SenderPassword"];
-            var senderName = _configuration["Email:SenderName"] ?? "Ny Havana";
+            var senderName = _configuration["Email:SenderName"] ?? "ERP ASSUR";
 
             if (string.IsNullOrWhiteSpace(senderPassword))
             {
@@ -141,12 +141,12 @@ public class EmailService : IEmailService
 <body>
     <div class='container'>
         <div class='header'>
-            <h1>Ny Havana</h1>
+            <h1>ERP ASSUR</h1>
             <p>Password Reset Request</p>
         </div>
         <div class='content'>
             <p>Hello {userName},</p>
-            <p>You have been created as a user in the Ny Havana system. To activate your account and set your password, please click the button below:</p>
+            <p>You have been created as a user in the ERP ASSUR system. To activate your account and set your password, please click the button below:</p>
             
             <center>
                 <a href='{resetUrl}' class='button'>Reset Your Password</a>
@@ -161,10 +161,10 @@ public class EmailService : IEmailService
                 <strong>⚠️ Important:</strong> This link will expire in 24 hours for security reasons. If you did not request this, please contact the administrator.
             </div>
             
-            <p>Best regards,<br/>Ny Havana Team</p>
+            <p>Best regards,<br/>ERP ASSUR Team</p>
         </div>
         <div class='footer'>
-            <p>&copy; 2026 Ny Havana. All rights reserved.</p>
+            <p>&copy; 2026 ERP ASSUR. All rights reserved.</p>
             <p>This is an automated message. Please do not reply to this email.</p>
         </div>
     </div>
@@ -190,7 +190,7 @@ public class EmailService : IEmailService
 <body>
     <div class='container'>
         <div class='header'>
-            <h1>Ny Havana</h1>
+            <h1>ERP ASSUR</h1>
             <p>Password Reset Confirmation</p>
         </div>
         <div class='content'>
@@ -199,10 +199,10 @@ public class EmailService : IEmailService
             
             <p>If you did not initiate this change, please contact the administrator immediately.</p>
             
-            <p>Best regards,<br/>Ny Havana Team</p>
+            <p>Best regards,<br/>ERP ASSUR Team</p>
         </div>
         <div class='footer'>
-            <p>&copy; 2026 Ny Havana. All rights reserved.</p>
+            <p>&copy; 2026 ERP ASSUR. All rights reserved.</p>
             <p>This is an automated message. Please do not reply to this email.</p>
         </div>
     </div>

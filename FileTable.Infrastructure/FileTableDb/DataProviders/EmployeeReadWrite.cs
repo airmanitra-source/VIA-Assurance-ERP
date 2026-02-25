@@ -13,15 +13,37 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
             _dbContext = dbContext;
         }
 
-        public async Task<long> CreateEmployeeAsync(EmployeeDataModel employee)
+        public async Task<long> CreateEmployeeAsync(EmployeeDataModel employee, int? projectId = null)
         {
             using var connection = _dbContext.CreateConnection();
-            var sql = @"
-                INSERT INTO [documentdb].[dbo].[Employee] (Nom, Prenom, Age, Sexe, NomPoste, Fonctions, NombreMoisPoste, StatutEmploye, EntrepriseID, IsActive, NumeroMatricule, DateFinContrat, Email, VouloirSouscrire)
-                VALUES (@Nom, @Prenom, @Age, @Sexe, @NomPoste, @Fonctions, @NombreMoisPoste, @StatutEmploye, @EntrepriseID, @IsActive, @NumeroMatricule, @DateFinContrat, @Email, @VouloirSouscrire);
-                SELECT CAST(SCOPE_IDENTITY() as int);";
+            await connection.OpenAsync();
+            using var transaction = connection.BeginTransaction();
 
-            return await connection.ExecuteScalarAsync<long>(sql, employee);
+            var insertEmployeeSql = @"
+                INSERT INTO [documentdb].[dbo].[Employee] (Nom, Prenom, Age, Sexe, NomPoste, Fonctions, NombreMoisPoste, StatutEmploye, EntrepriseID, IsActive, NumeroMatricule, DateEmbauche, DateFinContrat, Email, VouloirSouscrire)
+                VALUES (@Nom, @Prenom, @Age, @Sexe, @NomPoste, @Fonctions, @NombreMoisPoste, @StatutEmploye, @EntrepriseID, @IsActive, @NumeroMatricule, @DateEmbauche, @DateFinContrat, @Email, @VouloirSouscrire);
+                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+
+            var employeeId = await connection.ExecuteScalarAsync<long>(insertEmployeeSql, employee, transaction);
+
+            int? resolvedProjectId = projectId;
+            if (!resolvedProjectId.HasValue)
+            {
+                var onBoardingProjectIdSql = "SELECT ProjectID FROM [documentdb].[dbo].[Project] WHERE ProjectName = 'On Boarding'";
+                resolvedProjectId = await connection.ExecuteScalarAsync<int?>(onBoardingProjectIdSql, transaction: transaction);
+            }
+
+            if (resolvedProjectId.HasValue)
+            {
+                var insertProjectSql = @"
+                    INSERT INTO [documentdb].[dbo].[EmployeeProject] (EmployeeID, ProjectID, Role, AssignedDate, IsActive, CreatedDate)
+                    VALUES (@employeeId, @projectId, 'Employee', GETDATE(), 1, GETDATE());";
+
+                await connection.ExecuteAsync(insertProjectSql, new { employeeId, projectId = resolvedProjectId.Value }, transaction);
+            }
+
+            transaction.Commit();
+            return employeeId;
         }
 
         public async Task<IEnumerable<EmployeeDataModel>> ReadEmployeesByEnterpriseAsync(long enterpriseId)
@@ -46,6 +68,7 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
                     StatutEmploye = @StatutEmploye,
                     IsActive = @IsActive,
                     NumeroMatricule = @NumeroMatricule,
+                    DateEmbauche = @DateEmbauche,
                     DateFinContrat = @DateFinContrat,
                     Email = @Email,
                     VouloirSouscrire = @VouloirSouscrire

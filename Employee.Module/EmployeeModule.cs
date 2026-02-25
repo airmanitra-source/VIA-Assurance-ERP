@@ -13,10 +13,10 @@ namespace Employee.Module
             _employeeReadWrite = employeeReadWrite;
         }
 
-        public async Task<long> AddEmployeeAsync(EmployeeBusinessModel employee)
+        public async Task<long> AddEmployeeAsync(EmployeeBusinessModel employee, int? projectId = null)
         {
             var dataModel = MapToDataModel(employee);
-            return await _employeeReadWrite.CreateEmployeeAsync(dataModel);
+            return await _employeeReadWrite.CreateEmployeeAsync(dataModel, projectId);
         }
 
         public async Task<IEnumerable<EmployeeBusinessModel>> GetEmployeesByEnterpriseIdAsync(long enterpriseId)
@@ -48,7 +48,13 @@ namespace Employee.Module
 
         public async Task<EmployeeBusinessModel?> GetEmployeeByIdAsync(int id)
         {
-            var employee = await _employeeReadWrite.GetEmployeeByIdAsync(id);
+            var employee = await _employeeReadWrite.ReadEmployeeByIdAsync(id);
+            return employee != null ? MapToBusinessModel(employee) : null;
+        }
+
+        public async Task<EmployeeBusinessModel?> GetEmployeeByEmailAsync(string email)
+        {
+            var employee = await _employeeReadWrite.ReadEmployeeByEmailAsync(email);
             return employee != null ? MapToBusinessModel(employee) : null;
         }
 
@@ -57,6 +63,7 @@ namespace Employee.Module
             return new EmployeeDataModel
             {
                 Age = businessModel.Age,
+                DateEmbauche = businessModel.DateEmbauche,
                 DateFinContrat = businessModel.DateFinContrat,
                 EmployeeID = businessModel.EmployeeID,
                 Email = businessModel.Email,
@@ -79,6 +86,7 @@ namespace Employee.Module
             return new EmployeeBusinessModel
             {
                 Age = dataModel.Age,
+                DateEmbauche = dataModel.DateEmbauche,
                 DateFinContrat = dataModel.DateFinContrat,
                 EmployeeID = dataModel.EmployeeID,
                 Email = dataModel.Email,

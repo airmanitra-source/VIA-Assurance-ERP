@@ -151,7 +151,7 @@
     <value>Language</value>
   </data>
   <data name="WelcomeTitle" xml:space="preserve">
-    <value>Welcome to Ny Havana</value>
+    <value>Welcome to ERP ASSUR</value>
   </data>
   <data name="HomeSubtitle" xml:space="preserve">
     <value>Insurance your investments seamlessly</value>
@@ -277,7 +277,7 @@
     <value>Select a file to preview.</value>
   </data>
   <data name="DocumentsTitle" xml:space="preserve">
-    <value>Ny Havana Documents</value>
+    <value>ERP ASSUR Documents</value>
   </data>
   <data name="DocumentTreeTitle" xml:space="preserve">
     <value>Document Tree</value>

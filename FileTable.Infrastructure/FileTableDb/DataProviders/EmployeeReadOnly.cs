@@ -14,7 +14,15 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
             _dbContext = dbContext;
         }
 
-        public async Task<EmployeeDataModel?> GetEmployeeByIdAsync(int id)
+        public async Task<EmployeeDataModel?> ReadEmployeeByEmailAsync(string email)
+        {
+            using var connection = _dbContext.CreateConnection();
+            var sql = "SELECT * FROM [documentdb].[dbo].[Employee] WHERE Email = @email";
+            var entity = await connection.QueryFirstOrDefaultAsync<EmployeeEntity>(sql, new { email });
+            return entity != null ? MapToModel(entity) : null;
+        }
+
+        public async Task<EmployeeDataModel?> ReadEmployeeByIdAsync(int id)
         {
             using var connection = _dbContext.CreateConnection();
             var sql = "SELECT * FROM [documentdb].[dbo].[Employee] WHERE EmployeeID = @Id";
@@ -22,7 +30,7 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
             return entity != null ? MapToModel(entity) : null;
         }
 
-        public async Task<List<EmployeeDataModel>> GetEmployeesByEntrepriseIdAsync(long entrepriseId)
+        public async Task<List<EmployeeDataModel>> ReadEmployeesByEntrepriseIdAsync(long entrepriseId)
         {
             using var connection = _dbContext.CreateConnection();
             var sql = "SELECT * FROM [documentdb].[dbo].[Employee] WHERE EntrepriseID = @EntrepriseID";
@@ -36,6 +44,7 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
             {
                 EmployeeID = entity.EmployeeID,
                 Age = entity.Age,
+                DateEmbauche = entity.DateEmbauche,
                 DateFinContrat = entity.DateFinContrat,
                 Email = entity.Email,
                 EntrepriseID = entity.EntrepriseID,

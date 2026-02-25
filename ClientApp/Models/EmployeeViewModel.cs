@@ -10,6 +10,8 @@ namespace ClientApp.Models
         [Range(18, 100, ErrorMessage = "Age must be between 18 and 100")]
         public int Age { get; set; } = 18;
 
+        public DateTime? DateEmbauche { get; set; }
+
         public DateTime? DateFinContrat { get; set; }
 
         [EmailAddress(ErrorMessage = "Email must be valid")]
@@ -34,6 +36,8 @@ namespace ClientApp.Models
 
         [Required(ErrorMessage = "Prenom is required")]
         public string Prenom { get; set; } = string.Empty;
+
+        public int? SelectedProjectId { get; set; }
 
         [Required(ErrorMessage = "Sexe is required")]
         public string Sexe { get; set; } = "M";

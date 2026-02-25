@@ -1,5 +1,5 @@
 using ClientApp.Services;
-using Company.Module;
+using ClientApp.Controllers;
 using Company.Module.Business;
 using Microsoft.AspNetCore.Components;
 
@@ -9,7 +9,7 @@ namespace ClientApp.Components.Shared
     {
         [Inject] protected NavigationManager Navigation { get; set; } = default!;
         [Inject] protected AuthenticationService AuthService { get; set; } = default!;
-        [Inject] protected ICompanyModule CompanyModule { get; set; } = default!;
+        [Inject] protected CompanyController CompanyController { get; set; } = default!;
 
         protected long? CurrentEnterpriseId => AuthService.GetCurrentEntrepriseId();
         protected string? CurrentUserEmail => AuthService.GetCurrentUserEmail();
@@ -44,7 +44,7 @@ namespace ClientApp.Components.Shared
             var id = CurrentEnterpriseId;
             if (id.HasValue)
             {
-                return await CompanyModule.GetCompanyByIdAsync(id.Value);
+                return await CompanyController.Show(id.Value);
             }
             return null;
         }

@@ -4,11 +4,12 @@ namespace Employee.Module
 {
     public interface IEmployeeModule
     {
-        Task<long> AddEmployeeAsync(EmployeeBusinessModel employee);
-        Task<IEnumerable<EmployeeBusinessModel>> GetEmployeesByEnterpriseIdAsync(long enterpriseId);
-        Task SetEmployeeAsync(EmployeeBusinessModel employee);
-        Task SetEmployeeActiveStatusAsync(long employeeId, bool isActive, DateTime? dateFinContrat = null);
-        Task<IEnumerable<EmployeeBusinessModel>> GetEmployeesByUserIdAsync(string userId); // UserId = Company owner User Id
+        Task<long> AddEmployeeAsync(EmployeeBusinessModel employee, int? projectId = null);
+        Task<EmployeeBusinessModel?> GetEmployeeByEmailAsync(string email);
         Task<EmployeeBusinessModel?> GetEmployeeByIdAsync(int id);
+        Task<IEnumerable<EmployeeBusinessModel>> GetEmployeesByEnterpriseIdAsync(long enterpriseId);
+        Task<IEnumerable<EmployeeBusinessModel>> GetEmployeesByUserIdAsync(string userId);
+        Task SetEmployeeActiveStatusAsync(long employeeId, bool isActive, DateTime? dateFinContrat = null);
+        Task SetEmployeeAsync(EmployeeBusinessModel employee);
     }
 }

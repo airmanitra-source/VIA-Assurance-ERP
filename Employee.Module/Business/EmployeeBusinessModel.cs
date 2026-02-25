@@ -6,6 +6,8 @@ namespace Employee.Module.Business
 
         public int Age { get; set; }
 
+        public DateTime? DateEmbauche { get; set; }
+
         public DateTime? DateFinContrat { get; set; }
 
         public string? Email { get; set; }

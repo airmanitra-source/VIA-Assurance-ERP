@@ -23,6 +23,7 @@ namespace ClientApp.Components.Pages.Routed
         protected bool isLoadingCompany = true;
         protected bool isLoadingEmployee = false;
         protected bool isSubmitting = false;
+        protected List<ProjectViewModel> projects = new();
         protected string selectedDocumentType = "CV";
         protected string successMessage = string.Empty;
 
@@ -30,6 +31,7 @@ namespace ClientApp.Components.Pages.Routed
         protected override async Task OnInitializedAuthenticatedAsync()
         {
             await LoadCurrentCompanyAsync();
+            await LoadProjectsAsync();
 
             if (Id.HasValue && currentCompany != null)
             {
@@ -99,6 +101,18 @@ namespace ClientApp.Components.Pages.Routed
         }
 
         #region Private Helpers
+        private async Task LoadProjectsAsync()
+        {
+            try
+            {
+                projects = await Controller.IndexProjectsAsync();
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"Error loading projects: {ex.Message}");
+            }
+        }
+
         private async Task LoadCurrentCompanyAsync()
         {
             isLoadingCompany = true;

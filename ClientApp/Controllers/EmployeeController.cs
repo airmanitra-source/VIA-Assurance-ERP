@@ -3,20 +3,24 @@ using Employee.Module;
 using Employee.Module.Business;
 using EmployeeDocuments.Module;
 using EmployeeDocuments.Module.Business;
+using Project.Module;
 
 namespace ClientApp.Controllers
 {
     public class EmployeeController
     {
-        private readonly IEmployeeModule _employeeModule;
         private readonly IEmployeeDocumentModule _employeeDocumentModule;
+        private readonly IEmployeeModule _employeeModule;
+        private readonly IProjectModule _projectModule;
 
         public EmployeeController(
+            IEmployeeDocumentModule employeeDocumentModule,
             IEmployeeModule employeeModule,
-            IEmployeeDocumentModule employeeDocumentModule)
+            IProjectModule projectModule)
         {
-            _employeeModule = employeeModule;
             _employeeDocumentModule = employeeDocumentModule;
+            _employeeModule = employeeModule;
+            _projectModule = projectModule;
         }
 
         /// <summary>
@@ -29,6 +33,17 @@ namespace ClientApp.Controllers
                 .Select(MapBusinessModelToViewModel)
                 .OrderBy(e => e.Nom)
                 .ThenBy(e => e.Prenom)
+                .ToList();
+        }
+
+        /// <summary>
+        /// REST: Index - Get all active projects for the project selector
+        /// </summary>
+        public async Task<List<ProjectViewModel>> IndexProjectsAsync()
+        {
+            var projects = await _projectModule.GetActiveProjectsAsync();
+            return projects
+                .Select(p => new ProjectViewModel { ProjectID = p.ProjectID, ProjectName = p.ProjectName })
                 .ToList();
         }
 
@@ -82,7 +97,7 @@ namespace ClientApp.Controllers
                 }
                 else
                 {
-                    savedEmployeeId = await _employeeModule.AddEmployeeAsync(businessModel);
+                    savedEmployeeId = await _employeeModule.AddEmployeeAsync(businessModel, viewModel.SelectedProjectId);
                     result.Message = $"Employee {viewModel.Prenom} {viewModel.Nom} added successfully!";
                 }
 
@@ -163,6 +178,7 @@ namespace ClientApp.Controllers
             {
                 EmployeeID = business.EmployeeID,
                 Age = business.Age,
+                DateEmbauche = business.DateEmbauche,
                 DateFinContrat = business.DateFinContrat,
                 Email = business.Email,
                 EntrepriseId = business.EntrepriseID,
@@ -187,6 +203,7 @@ namespace ClientApp.Controllers
             return new EmployeeBusinessModel
             {
                 Age = viewModel.Age,
+                DateEmbauche = viewModel.DateEmbauche,
                 DateFinContrat = null, // Ensure nulled if saved as active
                 Email = viewModel.Email,
                 EmployeeID = employeeId ?? 0,

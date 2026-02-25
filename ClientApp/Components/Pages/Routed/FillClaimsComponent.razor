@@ -1,5 +1,6 @@
 @page "/fill-claims"
 @using Microsoft.AspNetCore.Authorization
+@using ClientApp.Components.Shared
 @attribute [Authorize(Roles = "developer")]
 @rendermode InteractiveServer
 @using ClientApp.Models
@@ -10,9 +11,11 @@
 @using Company.Module
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Forms
+@using ClientApp.Controllers
+@inherits AuthenticatedComponentBase
 @inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> Localizer
 
-<PageTitle>@Localizer["FillClaim"] - Ny Havana Dashboard</PageTitle>
+<PageTitle>@Localizer["FillClaim"] - ERP ASSUR Dashboard</PageTitle>
 
 <div class="fill-claims-container">
     <div class="fill-claims-card">
@@ -21,7 +24,7 @@
             <p>@Localizer["ReportIncidentOrDamage"]</p>
         </div>
 
-        @if (isLoadingCompany || isLoadingAssets)
+        @if (isLoadingAssets)
         {
             <div class="loading-state">
                 <span class="spinner"></span>
@@ -54,7 +57,7 @@
                         <option value="Transportation">@Localizer["GoodsTransportation"]</option>
                         <option value="Warehouse">@Localizer["Warehouse"]</option>
                     </InputSelect>
-                    @if (string.IsNullOrEmpty(selectedAssetType))
+                    @if (hasAttemptedSubmit && string.IsNullOrEmpty(selectedAssetType))
                     {
                         <div class="validation-error">@Localizer["AssetTypeRequired"]</div>
                     }
@@ -89,7 +92,7 @@
                                 }
                             }
                         </InputSelect>
-                        @if (selectedAssetId == 0)
+                        @if (hasAttemptedSubmit && selectedAssetId == 0)
                         {
                             <div class="validation-error">@Localizer["AssetRequired"]</div>
                         }
@@ -127,7 +130,7 @@
                                 <p class="no-types">@Localizer["NoSinisterTypesAvailable"]</p>
                             }
                         </div>
-                        @if (!selectedSinisterTypeIds.Any())
+                        @if (hasAttemptedSubmit && !selectedSinisterTypeIds.Any())
                         {
                             <div class="validation-error">@Localizer["SinisterTypeRequired"]</div>
                         }

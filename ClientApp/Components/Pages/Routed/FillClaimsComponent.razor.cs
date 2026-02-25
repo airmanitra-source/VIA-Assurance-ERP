@@ -1,24 +1,20 @@
+using ClientApp.Components.Shared;
 using ClientApp.Models;
-using ClientApp.Services;
-using Company.Module;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using ClientApp.Controllers;
 
 namespace ClientApp.Components.Pages.Routed
 {
-    public partial class FillClaimsComponent : ComponentBase
+    public partial class FillClaimsComponent : AuthenticatedComponentBase
     {
-        [Inject] protected NavigationManager Navigation { get; set; } = default!;
-        [Inject] AuthenticationService AuthService { get; set; } = default!;
         [Inject] protected ClaimController ClaimController { get; set; } = default!;
-        [Inject] protected ICompanyModule CompanyModule { get; set; } = default!;
 
-        protected bool isLoadingCompany = true;
         protected bool isLoadingAssets = true;
         protected bool isSubmitting = false;
-        protected List<CompanySinisterAttachedDocumentViewModel> attachedDocuments = new();
+        protected bool hasAttemptedSubmit = false;
         protected Company.Module.Business.EntrepriseBusinessModel? currentCompany;
+        protected List<CompanySinisterAttachedDocumentViewModel> attachedDocuments = new();
         protected string selectedAssetType = string.Empty;
         protected long selectedAssetId = 0;
         protected string successMessage = string.Empty;
@@ -31,39 +27,31 @@ namespace ClientApp.Components.Pages.Routed
         protected List<WarehouseViewModel> warehouses = new();
         protected List<SinisterTypeViewModel> availableSinisterTypes = new();
 
-        protected override async Task OnInitializedAsync()
+        protected override async Task OnInitializedAuthenticatedAsync()
         {
-            if (!AuthService.IsAuthenticated())
-            {
-                Navigation.NavigateTo("/login");
-                return;
-            }
-
             try
             {
-                isLoadingCompany = true;
-                var entrepriseId = AuthService.GetCurrentEntrepriseId();
-                if (entrepriseId.HasValue)
-                {
-                    currentCompany = await CompanyModule.GetCompanyByIdAsync(entrepriseId.Value);
-                }
+                isLoadingAssets = true;
 
-                if (currentCompany != null)
-                {
-                    isLoadingAssets = true;
+                // Load company details
+                currentCompany = await GetOrLoadCurrentCompanyAsync();
 
-                    var assets = await ClaimController.Index(currentCompany.Id);
+                // Load assets and types
+                if (CurrentEnterpriseId.HasValue)
+                {
+                    var assets = await ClaimController.Index(CurrentEnterpriseId.Value);
                     fleets = assets.Fleets;
                     transportations = assets.Transportations;
                     warehouses = assets.Warehouses;
                     availableSinisterTypes = assets.SinisterTypes;
-
-                    isLoadingAssets = false;
                 }
+
+                isLoadingAssets = false;
             }
-            finally
+            catch (Exception ex)
             {
-                isLoadingCompany = false;
+                errorMessage = $"Error loading assets: {ex.Message}";
+                isLoadingAssets = false;
             }
         }
 
@@ -75,6 +63,7 @@ namespace ClientApp.Components.Pages.Routed
             sinisterModel.EntrepriseFleetId = null;
             sinisterModel.EntrepriseMerchandiseTransportationId = null;
             sinisterModel.EntrepriseWarehouseId = null;
+            hasAttemptedSubmit = false; // Réinitialiser les erreurs de validation
         }
 
         protected void OnPhotoSelected(InputFileChangeEventArgs e)
@@ -121,6 +110,8 @@ namespace ClientApp.Components.Pages.Routed
             {
                 successMessage = string.Empty;
                 errorMessage = string.Empty;
+
+                hasAttemptedSubmit = true;
 
                 // Validate selection
                 if (string.IsNullOrEmpty(selectedAssetType) || selectedAssetId == 0)

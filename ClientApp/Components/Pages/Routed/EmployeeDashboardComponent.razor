@@ -1,0 +1,237 @@
+@page "/employee-dashboard"
+@inherits AuthenticatedComponentBase
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "employee")]
+
+<PageTitle>Mon Espace Employé - ERP ASSUR</PageTitle>
+
+<div class="dashboard-container">
+    <div class="page-header">
+        <div class="header-text">
+            <h1>👤 Mon Espace Employé</h1>
+            @if (profile != null)
+            {
+                <p>Bienvenue, <strong>@profile.Prenom @profile.Nom</strong></p>
+            }
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="loading-state">
+            <span class="spinner"></span>
+            <p>Chargement...</p>
+        </div>
+    }
+    else if (profile == null)
+    {
+        <div class="empty-state">
+            <div class="empty-icon">⚠️</div>
+            <h3>Profil introuvable</h3>
+            <p>Votre compte employé n'a pas été trouvé. Contactez votre responsable RH.</p>
+        </div>
+    }
+    else
+    {
+        <div class="tabs">
+            <button class="tab-btn @(activeTab == "profile" ? "active" : "")" @onclick='() => activeTab = "profile"'>
+                👤 Mon Profil
+            </button>
+            <button class="tab-btn @(activeTab == "timesheet" ? "active" : "")" @onclick='() => activeTab = "timesheet"'>
+                ⏱️ Mes Lignes de Temps
+            </button>
+            <button class="tab-btn @(activeTab == "payroll" ? "active" : "")" @onclick='() => activeTab = "payroll"'>
+                💰 Mes Bulletins de Paie
+            </button>
+        </div>
+
+        @if (activeTab == "profile")
+        {
+            <div class="section-card">
+                <h2>Informations Personnelles</h2>
+                <div class="profile-grid">
+                    <div class="profile-field">
+                        <label>Prénom</label>
+                        <span>@profile.Prenom</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Nom</label>
+                        <span>@profile.Nom</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Matricule</label>
+                        <span>@profile.NumeroMatricule</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Poste</label>
+                        <span>@(profile.NomPoste ?? "—")</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Fonctions</label>
+                        <span>@(profile.Fonctions ?? "—")</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Âge</label>
+                        <span>@profile.Age ans</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Sexe</label>
+                        <span>@(profile.Sexe == "M" ? "Homme" : "Femme")</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Statut</label>
+                        <span class="badge @(profile.StatutEmploye == "CDI" ? "badge-cdi" : "badge-cdd")">@profile.StatutEmploye</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Ancienneté</label>
+                        <span>@profile.NombreMoisPoste mois</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Email</label>
+                        <span>@(profile.Email ?? "—")</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Date d'embauche</label>
+                        <span>@(profile.DateEmbauche.HasValue ? profile.DateEmbauche.Value.ToString("dd/MM/yyyy") : "—")</span>
+                    </div>
+                    @if (profile.DateFinContrat.HasValue)
+                    {
+                        <div class="profile-field">
+                            <label>Fin de contrat</label>
+                            <span>@profile.DateFinContrat.Value.ToString("dd/MM/yyyy")</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        @if (activeTab == "timesheet")
+        {
+            <div class="section-card">
+                <h2>Ajouter une Ligne de Temps</h2>
+                <EditForm Model="newTimesheet" OnValidSubmit="HandleTimesheetSubmitAsync">
+                    <DataAnnotationsValidator />
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label>Date de travail *</label>
+                            <InputDate @bind-Value="newTimesheet.WorkDate" class="form-control" />
+                            <ValidationMessage For="() => newTimesheet.WorkDate" />
+                        </div>
+                        <div class="form-field">
+                            <label>Heures travaillées *</label>
+                            <InputNumber @bind-Value="newTimesheet.HoursWorked" class="form-control" step="0.5" />
+                            <ValidationMessage For="() => newTimesheet.HoursWorked" />
+                        </div>
+                        <div class="form-field">
+                            <label>Heures supplémentaires</label>
+                            <InputNumber @bind-Value="newTimesheet.OvertimeHours" class="form-control" step="0.5" />
+                            <ValidationMessage For="() => newTimesheet.OvertimeHours" />
+                        </div>
+                        <div class="form-field full-width">
+                            <label>Description de la tâche</label>
+                            <InputTextArea @bind-Value="newTimesheet.TaskDescription" class="form-control" rows="3" />
+                            <ValidationMessage For="() => newTimesheet.TaskDescription" />
+                        </div>
+                        <div class="form-field full-width">
+                            <label>Commentaires</label>
+                            <InputTextArea @bind-Value="newTimesheet.Comments" class="form-control" rows="2" />
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(timesheetMessage))
+                    {
+                        <div class="@(timesheetSuccess ? "alert-success" : "alert-error")">@timesheetMessage</div>
+                    }
+                    <button type="submit" class="btn-primary" disabled="@isSubmitting">
+                        @(isSubmitting ? "Enregistrement..." : "Ajouter la ligne")
+                    </button>
+                </EditForm>
+            </div>
+
+            <div class="section-card">
+                <h2>Mes Lignes de Temps</h2>
+                @if (timesheets == null || !timesheets.Any())
+                {
+                    <div class="empty-state-inline">Aucune ligne de temps enregistrée.</div>
+                }
+                else
+                {
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Heures</th>
+                                <th>H. Supp.</th>
+                                <th>Tâche</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var ts in timesheets)
+                            {
+                                <tr>
+                                    <td>@ts.WorkDate.ToString("dd/MM/yyyy")</td>
+                                    <td>@ts.HoursWorked h</td>
+                                    <td>@ts.OvertimeHours h</td>
+                                    <td>@(ts.TaskDescription ?? "—")</td>
+                                    <td><span class="status-badge status-@ts.Status.ToLower()">@ts.Status</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        }
+
+        @if (activeTab == "payroll")
+        {
+            <div class="section-card">
+                <h2>Bulletins de Paie — 3 Derniers Mois</h2>
+                @if (payrolls == null || !payrolls.Any())
+                {
+                    <div class="empty-state-inline">Aucun bulletin de paie disponible pour le moment.</div>
+                }
+                else
+                {
+                    @foreach (var p in payrolls)
+                    {
+                        <div class="payroll-card">
+                            <div class="payroll-header">
+                                <h3>📄 @p.PeriodLabel</h3>
+                                <span class="payroll-date">Payé le @p.PaymentDate.ToString("dd/MM/yyyy")</span>
+                            </div>
+                            <div class="payroll-details">
+                                <div class="payroll-line">
+                                    <span>Salaire de base</span>
+                                    <span>@p.BaseSalary.ToString("N2") Ar</span>
+                                </div>
+                                @if (p.Bonus > 0)
+                                {
+                                    <div class="payroll-line bonus">
+                                        <span>Bonus</span>
+                                        <span>+ @p.Bonus.ToString("N2") Ar</span>
+                                    </div>
+                                }
+                                @if (p.Deductions > 0)
+                                {
+                                    <div class="payroll-line deduction">
+                                        <span>Déductions</span>
+                                        <span>- @p.Deductions.ToString("N2") Ar</span>
+                                    </div>
+                                }
+                                <div class="payroll-line net">
+                                    <span><strong>Salaire Net</strong></span>
+                                    <span><strong>@p.NetSalary.ToString("N2") Ar</strong></span>
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrEmpty(p.Notes))
+                            {
+                                <div class="payroll-notes">📝 @p.Notes</div>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+        }
+    }
+</div>

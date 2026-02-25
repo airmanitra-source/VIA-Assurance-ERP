@@ -27,7 +27,7 @@ namespace CompanyDocuments.Module.Business
                         {
                             row.RelativeItem().Column(col =>
                             {
-                                col.Item().Text("Ny Havana").FontSize(20).SemiBold().FontColor("#0051ba");
+                                col.Item().Text("ERP ASSUR").FontSize(20).SemiBold().FontColor("#0051ba");
                                 col.Item().Text("Votre partenaire confiance").FontSize(10).Italic();
                             });
                         });
