@@ -34,8 +34,6 @@ using CompanyDocuments.Module.Business;
 using Company.Sinister.Module;
 using Company.Sinister.Module.Data.Providers;
 using FileTable.Infrastructure.Abstractions;
-using FileTable.Infrastructure.FileTableDb.DataProviders;
-using ModelContextProtocol.Server;
 using CompanySinisterDocument.Module;
 using CompanySinisterDocument.Module.Data.Providers;
 
@@ -73,7 +71,7 @@ builder.Services.AddScoped<IEmployeeReadWrite, EmployeeReadWrite>();
 builder.Services.AddScoped<IReadEmployeeTimesheet, EmployeeTimesheetReadWrite>();
 builder.Services.AddScoped<IReadWriteEmployeeTimesheet, EmployeeTimesheetReadWrite>();
 builder.Services.AddScoped<IReadEmployeePayroll, EmployeePayrollReadOnly>();
-builder.Services.AddScoped<IReadProject, ProjectReadOnly>();
+builder.Services.AddScoped<IProjectReadOnly, ProjectReadOnly>();
 builder.Services.AddScoped<ISouscriptionReadOnly, SouscriptionReadOnly>();
 builder.Services.AddScoped<ISouscriptionReadWrite, SouscriptionReadWrite>();
 builder.Services.AddScoped<IEntrepriseReadOnly, EntrepriseReadOnly>();

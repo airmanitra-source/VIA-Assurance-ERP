@@ -7,28 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="FileTableDb\Migrations\20260204_create_entreprises.sql" />
-    <None Remove="FileTableDb\Migrations\20260206_alter_entreprises.sql" />
-    <None Remove="FileTableDb\Migrations\20260211_alter_Employee.sql" />
-    <None Remove="FileTableDb\Migrations\20260211_create_souscription.sql" />
+    <Compile Remove="FileTableDb.Migrations\**" />
+    <Compile Remove="FileTableDb\Migrations\**" />
+    <EmbeddedResource Remove="FileTableDb.Migrations\**" />
+    <EmbeddedResource Remove="FileTableDb.Migrations\**" />
+    <None Remove="FileTableDb.Migrations\**" />
+    <None Remove="FileTableDb.Migrations\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="FileTableDb\Migrations\20260101_initial_script.sql" />
-    <EmbeddedResource Include="FileTableDb\Migrations\20260204_create_entreprises.sql" />
-    <EmbeddedResource Include="FileTableDb\Migrations\20260210_alter_EmployeeDocuments.sql" />
-    <EmbeddedResource Include="FileTableDb\Migrations\20260210_alter_Employee.sql" />
-    <EmbeddedResource Include="FileTableDb\Migrations\20260207_alter_Employee.sql" />
-    <EmbeddedResource Include="FileTableDb\Migrations\20260207_create_EmployeeDocuments.sql" />
-    <EmbeddedResource Include="FileTableDb\Migrations\20260206_create_Employee.sql" />
-    <EmbeddedResource Include="FileTableDb\Migrations\20260206_alter_entreprises.sql" />
-    <EmbeddedResource Include="FileTableDb\Migrations\20260211_alter_Employee.sql" />
-    <EmbeddedResource Include="FileTableDb\Migrations\20260212_alter_souscription.sql" />
-    <EmbeddedResource Include="FileTableDb\Migrations\20260211_create_souscription.sql" />
-    <EmbeddedResource Include="FileTableDb\Migrations\20260217_create_CompanyDocuments.sql" />
-    <EmbeddedResource Include="FileTableDb\Migrations\20260224_create_CompanySinisterDocuments.sql" />
-    <EmbeddedResource Include="FileTableDb\Migrations\20260226_create_SinisterType.sql" />
-    <EmbeddedResource Include="FileTableDb\Migrations\20260226_populate_SinisterType.sql" />
+    <EmbeddedResource Include="FileTableDb.Migrations\*.sql" />
+    <EmbeddedResource Include="FileTableDb.Migrations\*.sql" />
+    <None Include="FileTableDb.Migrations\*.sql" />
+    <None Include="FileTableDb.Migrations\*.sql" />
   </ItemGroup>
 
   <ItemGroup>

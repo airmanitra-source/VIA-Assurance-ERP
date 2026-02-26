@@ -48,26 +48,34 @@ namespace ClientApp.Controllers
         }
 
         /// <summary>
-        /// REST: Show - Get a single employee with documents
+        /// REST: Show - Get a single employee with documents and project
         /// </summary>
         public async Task<EmployeeDetailViewModel?> Show(long employeeId, long enterpriseId)
         {
-            var employees = await _employeeModule.GetEmployeesByEnterpriseIdAsync(enterpriseId);
-            var emp = employees.FirstOrDefault(e => e.EmployeeID == employeeId);
-            
-            if (emp == null)
+            // All business logic delegated to module
+            var employeeDetail = await _employeeModule.GetEmployeeByIdAndEnterpriseAsync(employeeId, enterpriseId);
+
+            if (employeeDetail == null)
                 return null;
 
-            var docs = await _employeeDocumentModule.GetDocumentsByEmployeeIdAsync(employeeId);
+            var employeeViewModel = MapBusinessModelToViewModel(employeeDetail.Employee);
+
+            if (employeeDetail.Project != null)
+            {
+                employeeViewModel.ProjectID = employeeDetail.Project.ProjectID;
+                employeeViewModel.SelectedProjectId = employeeDetail.Project.ProjectID;
+            }
 
             return new EmployeeDetailViewModel
             {
-                Employee = MapBusinessModelToViewModel(emp),
-                Documents = docs.Select(d => new AttachedDocumentViewModel
-                {
-                    ExistingDocument = d,
-                    TypeDocument = d.TypeDocument ?? "Autre"
-                }).ToList()
+                Employee = employeeViewModel,
+                Documents = employeeDetail.Documents
+                    .Select(d => new AttachedDocumentViewModel
+                    {
+                        ExistingDocument = d,
+                        TypeDocument = d.TypeDocument ?? "Autre"
+                    })
+                    .ToList()
             };
         }
 
@@ -189,6 +197,7 @@ namespace ClientApp.Controllers
                 NomPoste = business.NomPoste ?? string.Empty,
                 NumeroMatricule = business.NumeroMatricule ?? string.Empty,
                 Prenom = business.Prenom,
+                Salaire = business.Salaire,
                 Sexe = business.Sexe,
                 StatutEmploye = business.StatutEmploye,
                 VouloirSouscrire = business.VouloirSouscrire
@@ -215,6 +224,7 @@ namespace ClientApp.Controllers
                 NomPoste = viewModel.NomPoste,
                 NumeroMatricule = viewModel.NumeroMatricule,
                 Prenom = viewModel.Prenom,
+                Salaire = viewModel.Salaire,
                 Sexe = viewModel.Sexe,
                 StatutEmploye = viewModel.StatutEmploye,
                 VouloirSouscrire = viewModel.VouloirSouscrire

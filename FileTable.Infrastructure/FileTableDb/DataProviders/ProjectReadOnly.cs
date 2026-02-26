@@ -5,7 +5,7 @@ using FileTable.Infrastructure.FileTableDb.Entities;
 
 namespace FileTable.Infrastructure.FileTableDb.DataProviders
 {
-    public class ProjectReadOnly : IReadProject
+    public class ProjectReadOnly : IProjectReadOnly
     {
         private readonly FileTableDbContext _dbContext;
 
@@ -25,6 +25,21 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
 
             var entities = await connection.QueryAsync<ProjectEntity>(sql);
             return entities.Select(MapToModel).ToList();
+        }
+
+        public async Task<ProjectDataModel?> ReadProjectByEmployeeIdAsync(long employeeId)
+        {
+            using var connection = _dbContext.CreateConnection();
+            var sql = @"
+                SELECT TOP 1 p.ProjectID, p.ProjectName, p.Description, p.StartDate, p.EndDate, p.Status, p.CreatedDate
+                FROM [documentdb].[dbo].[Project] p
+                INNER JOIN [documentdb].[dbo].[EmployeeProject] ep ON p.ProjectID = ep.ProjectID
+                WHERE ep.EmployeeID = @EmployeeID
+                AND ep.IsActive = 1
+                ORDER BY ep.AssignedDate DESC";
+
+            var entity = await connection.QueryFirstOrDefaultAsync<ProjectEntity>(sql, new { EmployeeID = employeeId });
+            return entity != null ? MapToModel(entity) : null;
         }
 
         private static ProjectDataModel MapToModel(ProjectEntity e)

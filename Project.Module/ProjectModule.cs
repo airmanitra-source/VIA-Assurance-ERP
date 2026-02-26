@@ -5,9 +5,9 @@ namespace Project.Module
 {
     public class ProjectModule : IProjectModule
     {
-        private readonly IReadProject _projectReadOnly;
+        private readonly IProjectReadOnly _projectReadOnly;
 
-        public ProjectModule(IReadProject projectReadOnly)
+        public ProjectModule(IProjectReadOnly projectReadOnly)
         {
             _projectReadOnly = projectReadOnly;
         }
@@ -16,6 +16,12 @@ namespace Project.Module
         {
             var items = await _projectReadOnly.ReadActiveProjectsAsync();
             return items.Select(ProjectBusinessModel.FromDataModel).ToList();
+        }
+
+        public async Task<ProjectBusinessModel?> GetProjectByEmployeeIdAsync(long employeeId)
+        {
+            var project = await _projectReadOnly.ReadProjectByEmployeeIdAsync(employeeId);
+            return project != null ? ProjectBusinessModel.FromDataModel(project) : null;
         }
     }
 }

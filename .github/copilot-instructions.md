@@ -38,6 +38,8 @@ Modules encapsulate the business logic. Each module is divided into 'Business' a
 
 * Dependency Rule: Data Models must remain "pure"; they should not depend on, or have knowledge of, Business Logic or Entities.
 
+* Transactions: Methods calling multiple operations such as Create, Update, Delete or Add, Remove or Set must utilize a transaction to ensure data integrity.
+
 ## ClientApp Project
 
 This is the UI layer.
@@ -45,6 +47,6 @@ This is the UI layer.
 * Components: Razor UI components must exclusively use ViewModels located in the Models folder.
 Separation of Concerns: Razor markup, C# code-behind, and CSS must be kept in separate files. Razor code should only handle state and events.
 
-* Controllers: All other logic is handled by them. Each view is managed by a controller responsible for mapping Business Models into ViewModels and non business logic such as sorting, ordering, mapping back to business model when submitting from the UI.
+* Controllers: All other logic is handled by them. Each view is managed by a controller responsible for mapping Business Models into ViewModels and non-business logic such as sorting, ordering, mapping back to business model when submitting from the UI.
 
-Controllers must follow REST Conventions especially for the Urls and its methods must be named `Index`, `Show`, `Store`, or `Destroy`.
+Controllers must follow REST Conventions especially for the URLs and its methods must be named `Index`, `Show`, `Store`, or `Destroy`.

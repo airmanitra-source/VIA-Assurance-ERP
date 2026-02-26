@@ -28,6 +28,8 @@ namespace Employee.Module.Business
 
         public string Prenom { get; set; } = string.Empty;
 
+        public decimal? Salaire { get; set; }
+
         public string Sexe { get; set; } = string.Empty;
 
         public string StatutEmploye { get; set; } = string.Empty;

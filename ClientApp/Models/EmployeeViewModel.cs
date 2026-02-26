@@ -37,6 +37,11 @@ namespace ClientApp.Models
         [Required(ErrorMessage = "Prenom is required")]
         public string Prenom { get; set; } = string.Empty;
 
+        public int? ProjectID { get; set; }
+
+        [Range(0, double.MaxValue, ErrorMessage = "Salaire must be positive")]
+        public decimal? Salaire { get; set; }
+
         public int? SelectedProjectId { get; set; }
 
         [Required(ErrorMessage = "Sexe is required")]
@@ -53,6 +58,7 @@ namespace ClientApp.Models
             {
                 EmployeeID = employee.EmployeeID,
                 Age = employee.Age,
+                DateEmbauche = employee.DateEmbauche,
                 DateFinContrat = employee.DateFinContrat,
                 Email = employee.Email,
                 Fonctions = employee.Fonctions,
@@ -62,6 +68,7 @@ namespace ClientApp.Models
                 NomPoste = employee.NomPoste,
                 NumeroMatricule = employee.NumeroMatricule,
                 Prenom = employee.Prenom,
+                Salaire = employee.Salaire,
                 Sexe = employee.Sexe,
                 StatutEmploye = employee.StatutEmploye,
                 VouloirSouscrire = employee.VouloirSouscrire

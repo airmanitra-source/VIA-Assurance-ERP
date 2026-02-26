@@ -20,8 +20,8 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
             using var transaction = connection.BeginTransaction();
 
             var insertEmployeeSql = @"
-                INSERT INTO [documentdb].[dbo].[Employee] (Nom, Prenom, Age, Sexe, NomPoste, Fonctions, NombreMoisPoste, StatutEmploye, EntrepriseID, IsActive, NumeroMatricule, DateEmbauche, DateFinContrat, Email, VouloirSouscrire)
-                VALUES (@Nom, @Prenom, @Age, @Sexe, @NomPoste, @Fonctions, @NombreMoisPoste, @StatutEmploye, @EntrepriseID, @IsActive, @NumeroMatricule, @DateEmbauche, @DateFinContrat, @Email, @VouloirSouscrire);
+                INSERT INTO [documentdb].[dbo].[Employee] (Nom, Prenom, Age, Sexe, Salaire, NomPoste, Fonctions, NombreMoisPoste, StatutEmploye, EntrepriseID, IsActive, NumeroMatricule, DateEmbauche, DateFinContrat, Email, VouloirSouscrire)
+                VALUES (@Nom, @Prenom, @Age, @Sexe, @Salaire, @NomPoste, @Fonctions, @NombreMoisPoste, @StatutEmploye, @EntrepriseID, @IsActive, @NumeroMatricule, @DateEmbauche, @DateFinContrat, @Email, @VouloirSouscrire);
                 SELECT CAST(SCOPE_IDENTITY() as bigint);";
 
             var employeeId = await connection.ExecuteScalarAsync<long>(insertEmployeeSql, employee, transaction);
@@ -62,6 +62,7 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
                     Prenom = @Prenom,
                     Age = @Age,
                     Sexe = @Sexe,
+                    Salaire = @Salaire,
                     NomPoste = @NomPoste,
                     Fonctions = @Fonctions,
                     NombreMoisPoste = @NombreMoisPoste,

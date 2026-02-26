@@ -1,16 +1,25 @@
 using Employee.Module.Business;
 using Employee.Module.Data.Models;
 using Employee.Module.Data.Providers;
+using EmployeeDocuments.Module;
+using Project.Module;
 
 namespace Employee.Module
 {
     public class EmployeeModule : IEmployeeModule
     {
+        private readonly IEmployeeDocumentModule _employeeDocumentModule;
         private readonly IEmployeeReadWrite _employeeReadWrite;
+        private readonly IProjectModule _projectModule;
 
-        public EmployeeModule(IEmployeeReadWrite employeeReadWrite)
+        public EmployeeModule(
+            IEmployeeDocumentModule employeeDocumentModule,
+            IEmployeeReadWrite employeeReadWrite,
+            IProjectModule projectModule)
         {
+            _employeeDocumentModule = employeeDocumentModule;
             _employeeReadWrite = employeeReadWrite;
+            _projectModule = projectModule;
         }
 
         public async Task<long> AddEmployeeAsync(EmployeeBusinessModel employee, int? projectId = null)
@@ -23,6 +32,29 @@ namespace Employee.Module
         {
             var employees = await _employeeReadWrite.ReadEmployeesByEnterpriseAsync(enterpriseId);
             return employees.Select(MapToBusinessModel);
+        }
+
+        public async Task<EmployeeDetailBusinessModel?> GetEmployeeByIdAndEnterpriseAsync(long employeeId, long enterpriseId)
+        {
+            // Get employee from enterprise
+            var employees = await _employeeReadWrite.ReadEmployeesByEnterpriseAsync(enterpriseId);
+            var emp = employees.FirstOrDefault(e => e.EmployeeID == employeeId);
+
+            if (emp == null)
+                return null;
+
+            // Get documents and project in parallel
+            var docsTask = _employeeDocumentModule.GetDocumentsByEmployeeIdAsync(employeeId);
+            var projectTask = _projectModule.GetProjectByEmployeeIdAsync(employeeId);
+
+            await Task.WhenAll(docsTask, projectTask);
+
+            return new EmployeeDetailBusinessModel
+            {
+                Documents = docsTask.Result.ToList(),
+                Employee = MapToBusinessModel(emp),
+                Project = projectTask.Result
+            };
         }
 
         public async Task SetEmployeeAsync(EmployeeBusinessModel employee)
@@ -75,6 +107,7 @@ namespace Employee.Module
                 NomPoste = businessModel.NomPoste,
                 NumeroMatricule = businessModel.NumeroMatricule,
                 Prenom = businessModel.Prenom,
+                Salaire = businessModel.Salaire,
                 Sexe = businessModel.Sexe,
                 StatutEmploye = businessModel.StatutEmploye,
                 VouloirSouscrire = businessModel.VouloirSouscrire
@@ -98,6 +131,7 @@ namespace Employee.Module
                 NomPoste = dataModel.NomPoste,
                 NumeroMatricule = dataModel.NumeroMatricule,
                 Prenom = dataModel.Prenom,
+                Salaire = dataModel.Salaire,
                 Sexe = dataModel.Sexe,
                 StatutEmploye = dataModel.StatutEmploye,
                 VouloirSouscrire = dataModel.VouloirSouscrire

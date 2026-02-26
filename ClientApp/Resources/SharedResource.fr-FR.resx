@@ -730,7 +730,7 @@
     <value>Date de début souhaité</value>
   </data>
   <data name="EndDate" xml:space="preserve">
-    <value>Date de fin souhaité (inclusivement)</value>
+    <value>Date de fin souhaité (inclusively)</value>
   </data>
   <data name="InsuranceStartDate" xml:space="preserve">
     <value>Date de Début d'Assurance</value>
@@ -770,5 +770,20 @@
   </data>
   <data name="ClaimsList" xml:space="preserve">
     <value>Sinistres déclarés</value>
+  </data>
+  <data name="CurrentProjectAssigned" xml:space="preserve">
+    <value>Projet actuel assigné à cet employé</value>
+  </data>
+  <data name="DateOfHiring" xml:space="preserve">
+    <value>Date d'embauche</value>
+  </data>
+  <data name="MonthlySalary" xml:space="preserve">
+    <value>Salaire mensuel</value>
+  </data>
+  <data name="ProjectAssignmentDefault" xml:space="preserve">
+    <value>Si aucun projet n'est sélectionné, l'employé sera affecté au projet "On Boarding".</value>
+  </data>
+  <data name="Salary" xml:space="preserve">
+    <value>Salaire</value>
   </data>
 </root>

@@ -71,7 +71,7 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="dateEmbauche">Date d'embauche</label>
+                        <label for="dateEmbauche">@Localizer["DateOfHiring"]</label>
                         <InputDate id="dateEmbauche" @bind-Value="employeeModel.DateEmbauche" class="form-input" />
                     </div>
 
@@ -108,6 +108,12 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="salaire">@Localizer["MonthlySalary"]</label>
+                        <InputNumber id="salaire" @bind-Value="employeeModel.Salaire" class="form-input" step="0.01" />
+                        <ValidationMessage For="@(() => employeeModel.Salaire)" />
+                    </div>
+
+                    <div class="form-group">
                         <label for="statut">Status</label>
                         <InputSelect id="statut" @bind-Value="employeeModel.StatutEmploye" class="form-input">
                             <option value="CDI">CDI</option>
@@ -132,20 +138,26 @@
                     </label>
                 </div>
 
-                @if (!Id.HasValue)
-                {
-                    <div class="form-group">
-                        <label for="project">Projet d'affectation</label>
-                        <InputSelect id="project" @bind-Value="employeeModel.SelectedProjectId" class="form-input">
-                            <option value="">— On Boarding (par défaut) —</option>
-                            @foreach (var project in projects)
-                            {
-                                <option value="@project.ProjectID">@project.ProjectName</option>
-                            }
-                        </InputSelect>
-                        <small class="form-hint">Si aucun projet n'est sélectionné, l'employé sera affecté au projet "On Boarding".</small>
-                    </div>
-                }
+                <div class="form-group">
+                    <label for="project">Projet d'affectation</label>
+                    <InputSelect id="project" @bind-Value="employeeModel.SelectedProjectId" class="form-input">
+                        <option value="">— On Boarding (par défaut) —</option>
+                        @foreach (var project in projects)
+                        {
+                            <option value="@project.ProjectID">@project.ProjectName</option>
+                        }
+                    </InputSelect>
+                    <small class="form-hint">
+                        @if (Id.HasValue && employeeModel.ProjectID.HasValue)
+                        {
+                            <span>@Localizer["CurrentProjectAssigned"]</span>
+                        }
+                        else if (!Id.HasValue)
+                        {
+                            <span>@Localizer["ProjectAssignmentDefault"]</span>
+                        }
+                    </small>
+                </div>
 
                 <div class="documents-section">
                     <h3>📎 @Localizer["AttachedDocuments"]</h3>

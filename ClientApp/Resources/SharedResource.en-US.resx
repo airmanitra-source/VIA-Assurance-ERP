@@ -771,4 +771,19 @@
   <data name="ClaimsList" xml:space="preserve">
     <value>Claims List</value>
   </data>
+  <data name="CurrentProjectAssigned" xml:space="preserve">
+    <value>Current project assigned to this employee</value>
+  </data>
+  <data name="DateOfHiring" xml:space="preserve">
+    <value>Date of Hiring</value>
+  </data>
+  <data name="MonthlySalary" xml:space="preserve">
+    <value>Monthly Salary</value>
+  </data>
+  <data name="ProjectAssignmentDefault" xml:space="preserve">
+    <value>If no project is selected, the employee will be assigned to the "On Boarding" project.</value>
+  </data>
+  <data name="Salary" xml:space="preserve">
+    <value>Salary</value>
+  </data>
 </root>
