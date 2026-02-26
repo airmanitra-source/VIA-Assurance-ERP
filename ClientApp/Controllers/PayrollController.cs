@@ -191,6 +191,26 @@ namespace ClientApp.Controllers
                 .ToList();
         }
 
+        /// <summary>
+        /// Get employees without payslips for a specific period
+        /// </summary>
+        public async Task<List<EmployeeViewModel>> IndexEmployeesWithoutPaySlipAsync(long enterpriseId, int periodId)
+        {
+            var employees = await _employeeModule.GetEmployeesWithoutPaySlipForPeriodAsync(enterpriseId, periodId);
+            return employees
+                .Select(e => new EmployeeViewModel
+                {
+                    EmployeeID = e.EmployeeID,
+                    Nom = e.Nom,
+                    NomPoste = e.NomPoste,
+                    Prenom = e.Prenom,
+                    Salaire = e.Salaire
+                })
+                .OrderBy(e => e.Nom)
+                .ThenBy(e => e.Prenom)
+                .ToList();
+        }
+
         private static PaySlipViewModel MapToViewModel(PaySlipBusinessModel business)
         {
             return new PaySlipViewModel
@@ -278,6 +298,42 @@ namespace ClientApp.Controllers
             return result
                 .OrderBy(p => p.EmployeeName)
                 .ToList();
+        }
+
+        /// <summary>
+        /// REST: Index - Get pending modification requests for a period
+        /// </summary>
+        public async Task<Dictionary<long, PaySlipModificationRequestViewModel>> IndexModificationRequestsAsync(int periodId, long enterpriseId)
+        {
+            var requests = await _payrollModule.GetModificationRequestsByPeriodAsync(periodId);
+            var employees = await _employeeModule.GetEmployeesByEnterpriseIdAsync(enterpriseId);
+
+            // Group by EmployeeID and take the latest request (by CreatedDate) for each employee
+            return requests
+                .GroupBy(r => r.EmployeeID)
+                .Select(g => g.OrderByDescending(r => r.CreatedDate).First())
+                .ToDictionary(
+                    r => r.EmployeeID,
+                    r =>
+                    {
+                        var emp = employees.FirstOrDefault(e => e.EmployeeID == r.EmployeeID);
+                        return new PaySlipModificationRequestViewModel
+                        {
+                            Bonus = r.Bonus,
+                            Comments = r.Comments,
+                            CreatedDate = r.CreatedDate,
+                            EmployeeID = r.EmployeeID,
+                            EmployeeName = emp != null ? $"{emp.Prenom} {emp.Nom}" : string.Empty,
+                            IndemniteLogement = r.IndemniteLogement,
+                            IndemniteTransport = r.IndemniteTransport,
+                            OvertimeHours = r.OvertimeHours,
+                            PeriodID = r.PeriodID,
+                            PrimeScolarite = r.PrimeScolarite,
+                            RequestID = r.RequestID,
+                            Status = r.Status,
+                            TreiziemeMois = r.TreiziemeMois
+                        };
+                    });
         }
     }
 }

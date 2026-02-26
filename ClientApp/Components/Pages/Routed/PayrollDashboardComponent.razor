@@ -81,11 +81,11 @@
                     <div class="section">
                         <h2>👤 @Localizer["SelectEmployee"]</h2>
                         <div class="form-group">
-                            <select class="form-input" @onchange="OnEmployeeSelected">
+                            <select class="form-input" @bind="selectedEmployeeId" @bind:after="OnEmployeeSelectedAsync">
                                 <option value="">— @Localizer["Select"] —</option>
                                 @foreach (var emp in employees)
                                 {
-                                    <option value="@emp.EmployeeID">@emp.Prenom @emp.Nom — @emp.NomPoste (@(emp.Salaire?.ToString("N2") ?? "0") Ar)</option>
+                                    <option value="@emp.EmployeeID">@emp.Prenom @emp.Nom — @emp.NomPoste</option>
                                 }
                             </select>
                         </div>
@@ -95,44 +95,9 @@
                 @* === SECTION 3: Saisie des variables === *@
                 @if (selectedEmployeeId.HasValue)
                 {
-                    <div class="section">
-                        <h2>📝 @Localizer["PaySlipVariables"]</h2>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Bonus</label>
-                                <input type="number" class="form-input" step="0.01" @bind="paySlipInput.Bonus" />
-                            </div>
-                            <div class="form-group">
-                                <label>@Localizer["SchoolAllowance"]</label>
-                                <input type="number" class="form-input" step="0.01" @bind="paySlipInput.PrimeScolarite" />
-                            </div>
-                            <div class="form-group">
-                                <label>13ème mois</label>
-                                <input type="number" class="form-input" step="0.01" @bind="paySlipInput.TreiziemeMois" />
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>@Localizer["TransportAllowance"]</label>
-                                <input type="number" class="form-input" step="0.01" @bind="paySlipInput.IndemniteTransport" />
-                            </div>
-                            <div class="form-group">
-                                <label>@Localizer["HousingAllowance"]</label>
-                                <input type="number" class="form-input" step="0.01" @bind="paySlipInput.IndemniteLogement" />
-                            </div>
-                            <div class="form-group">
-                                <label>@Localizer["OvertimeHours"]</label>
-                                <input type="number" class="form-input" step="0.5" @bind="paySlipInput.OvertimeHours" />
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group" style="align-self: end;">
-                                <button class="btn-primary" @onclick="GeneratePreviewAsync" disabled="@isGenerating">
-                                    @(isGenerating ? "⏳" : "📊") @Localizer["GeneratePaySlip"]
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <PaySlipVariablesComponent PaySlipInput="paySlipInput" 
+                                               IsGenerating="isGenerating" 
+                                               OnGenerateClick="GeneratePreviewAsync" />
                 }
 
                 @* === SECTION 4: Aperçu bulletin === *@
@@ -200,13 +165,63 @@
                                             <td>@paySlip.EmployeeName</td>
                                             <td>@paySlip.Poste</td>
                                             <td>@paySlip.NetAPayer.ToString("N2") Ar</td>
-                                            
+                                            <td>
+                                                @if (modificationRequests.ContainsKey(paySlip.EmployeeID))
+                                                {
+                                                    <span class="badge-modif">📝 Demande employé</span>
+                                                }
+                                                <button class="btn-secondary" @onclick="() => OpenSavedPaySlipAsync(paySlip)">
+                                                    ✏️ Modifier
+                                                </button>
+                                            </td>
                                         </tr>
                                         @if (IsPaySlipExpanded(paySlip.PayrollID))
                                         {
                                             <tr class="accordion-row">
                                                 <td colspan="5">
                                                     <div class="accordion-content">
+                                                        @{
+                                                            modificationRequests.TryGetValue(paySlip.EmployeeID, out var modifReq);
+                                                        }
+
+                                                        @if (modifReq != null)
+                                                        {
+                                                            <div class="modif-request-banner">
+                                                                <strong>📝 Demande de modification de @(modifReq.EmployeeName)</strong>
+                                                                <span class="modif-date">le @modifReq.CreatedDate.ToString("dd/MM/yyyy HH:mm")</span>
+                                                                @if (!string.IsNullOrEmpty(modifReq.Comments))
+                                                                {
+                                                                    <div class="modif-comments">💬 @modifReq.Comments</div>
+                                                                }
+                                                                <div class="modif-diff-grid">
+                                                                    @if (modifReq.Bonus.HasValue)
+                                                                    {
+                                                                        <div class="modif-diff-item"><span>Bonus</span><span class="modif-value">@modifReq.Bonus.Value.ToString("N2")</span></div>
+                                                                    }
+                                                                    @if (modifReq.PrimeScolarite.HasValue)
+                                                                    {
+                                                                        <div class="modif-diff-item"><span>Prime scolarité</span><span class="modif-value">@modifReq.PrimeScolarite.Value.ToString("N2")</span></div>
+                                                                    }
+                                                                    @if (modifReq.TreiziemeMois.HasValue)
+                                                                    {
+                                                                        <div class="modif-diff-item"><span>13ème mois</span><span class="modif-value">@modifReq.TreiziemeMois.Value.ToString("N2")</span></div>
+                                                                    }
+                                                                    @if (modifReq.IndemniteTransport.HasValue)
+                                                                    {
+                                                                        <div class="modif-diff-item"><span>Indemnité transport</span><span class="modif-value">@modifReq.IndemniteTransport.Value.ToString("N2")</span></div>
+                                                                    }
+                                                                    @if (modifReq.IndemniteLogement.HasValue)
+                                                                    {
+                                                                        <div class="modif-diff-item"><span>Indemnité logement</span><span class="modif-value">@modifReq.IndemniteLogement.Value.ToString("N2")</span></div>
+                                                                    }
+                                                                    @if (modifReq.OvertimeHours.HasValue)
+                                                                    {
+                                                                        <div class="modif-diff-item"><span>Heures supp.</span><span class="modif-value">@modifReq.OvertimeHours.Value.ToString("N1") h</span></div>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        }
+
                                                         <div class="accordion-header">
                                                             <strong>Éléments de paie</strong>
                                                             <span class="accordion-hint">Modifiez les montants puis enregistrez.</span>

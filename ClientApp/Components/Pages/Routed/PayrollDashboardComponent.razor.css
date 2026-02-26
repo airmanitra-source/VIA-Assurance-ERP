@@ -12,7 +12,7 @@
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
     padding: 32px;
     width: 100%;
-    max-width: 960px;
+    max-width: 1000px;
 }
 
 .header {
@@ -327,4 +327,71 @@
     text-align: right;
     font-family: 'Consolas', 'Courier New', monospace;
     font-weight: 500;
+}
+
+.badge-modif {
+    display: inline-block;
+    background: #fefcbf;
+    color: #975a16;
+    border: 1px solid #ecc94b;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+.modif-request-banner {
+    background: #fffff0;
+    border: 1px solid #ecc94b;
+    border-left: 4px solid #d69e2e;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: #744210;
+}
+
+.modif-request-banner strong {
+    color: #975a16;
+}
+
+.modif-date {
+    margin-left: 12px;
+    color: #a0aec0;
+    font-size: 12px;
+}
+
+.modif-comments {
+    margin-top: 8px;
+    font-style: italic;
+    color: #6b7280;
+}
+
+.modif-diff-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.modif-diff-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 10px;
+    background: #fefce8;
+    border: 1px solid #fde68a;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+.modif-diff-item span:first-child {
+    font-weight: 600;
+    color: #92400e;
+}
+
+.modif-value {
+    color: #b45309;
+    font-weight: 700;
+    font-family: 'Consolas', 'Courier New', monospace;
 }

@@ -20,6 +20,7 @@ namespace ClientApp.Components.Pages.Routed
         protected bool isSavingEdits = false;
         protected bool isSubmittingDraft = false;
         protected bool isPaySlipSaved = false;
+        protected Dictionary<long, PaySlipModificationRequestViewModel> modificationRequests = new();
         protected DateTime newPeriodEnd = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
         protected DateTime newPeriodStart = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
         protected PaySlipInputViewModel paySlipInput = new();
@@ -91,6 +92,22 @@ namespace ClientApp.Components.Pages.Routed
                 paySlipPreview = null;
                 isPaySlipSaved = false;
             }
+        }
+
+        protected Task OnEmployeeSelectedAsync()
+        {
+            if (!selectedEmployeeId.HasValue)
+                return Task.CompletedTask;
+
+            var emp = employees.FirstOrDefault(x => x.EmployeeID == selectedEmployeeId.Value);
+            paySlipInput = new PaySlipInputViewModel
+            {
+                EmployeeID = selectedEmployeeId.Value,
+                EmployeeName = emp != null ? $"{emp.Prenom} {emp.Nom}" : string.Empty
+            };
+            paySlipPreview = null;
+            isPaySlipSaved = false;
+            return Task.CompletedTask;
         }
 
         protected async Task SavePaySlipAsync()
@@ -222,6 +239,11 @@ namespace ClientApp.Components.Pages.Routed
             }
 
             savedPaySlips.Clear();
+
+            if (activeTab == "draft" && selectedPeriodId.HasValue)
+            {
+                await LoadEmployeesForPeriodAsync();
+            }
         }
 
         protected Task OpenSavedPaySlipAsync(PaySlipViewModel paySlip)
@@ -271,6 +293,20 @@ namespace ClientApp.Components.Pages.Routed
         {
             if (currentCompany == null) return;
             periods = await Controller.Index(currentCompany.Id);
+            
+            if (!selectedPeriodId.HasValue && periods.Any())
+            {
+                var currentPeriod = periods
+                    .Where(p => p.Status == "Draft")
+                    .OrderByDescending(p => p.PeriodStart)
+                    .FirstOrDefault();
+
+                if (currentPeriod != null)
+                {
+                    selectedPeriodId = currentPeriod.PeriodID;
+                    await OnPeriodSelectedAsync();
+                }
+            }
         }
 
         private async Task LoadSavedPaySlipsAsync()
@@ -282,6 +318,7 @@ namespace ClientApp.Components.Pages.Routed
             try
             {
                 savedPaySlips = await Controller.IndexSavedPaySlipsAsync(currentCompany.Id, selectedPeriodId.Value);
+                modificationRequests = await Controller.IndexModificationRequestsAsync(selectedPeriodId.Value, currentCompany.Id);
                 expandedPaySlipIds.Clear();
             }
             catch (Exception ex)
@@ -291,6 +328,21 @@ namespace ClientApp.Components.Pages.Routed
             finally
             {
                 isLoadingSaved = false;
+            }
+        }
+
+        private async Task LoadEmployeesForPeriodAsync()
+        {
+            if (currentCompany == null || !selectedPeriodId.HasValue)
+                return;
+
+            try
+            {
+                employees = await Controller.IndexEmployeesWithoutPaySlipAsync(currentCompany.Id, selectedPeriodId.Value);
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"Erreur: {ex.Message}");
             }
         }
     }

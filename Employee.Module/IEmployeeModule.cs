@@ -12,5 +12,6 @@ namespace Employee.Module
         Task<IEnumerable<EmployeeBusinessModel>> GetEmployeesByUserIdAsync(string userId);
         Task SetEmployeeActiveStatusAsync(long employeeId, bool isActive, DateTime? dateFinContrat = null);
         Task SetEmployeeAsync(EmployeeBusinessModel employee);
+        Task<List<EmployeeBusinessModel>> GetEmployeesWithoutPaySlipForPeriodAsync(long enterpriseId, int periodId);
     }
 }

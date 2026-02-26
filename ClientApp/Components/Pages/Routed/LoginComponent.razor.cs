@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using ClientApp.Models;
 using ClientApp.Services;
+using System.Security.Claims;
 
 namespace ClientApp.Components.Pages.Routed
 {
@@ -14,6 +15,7 @@ namespace ClientApp.Components.Pages.Routed
 
         [Inject] private NavigationManager Navigation { get; set; } = default!;
         [Inject] private AuthenticationService AuthService { get; set; } = default!;
+        [Inject] private CustomAuthenticationStateProvider AuthStateProvider { get; set; } = default!;
 
         private async Task HandleLogin()
         {
@@ -48,7 +50,19 @@ namespace ClientApp.Components.Pages.Routed
 
             if (shouldNavigate)
             {
-                Navigation.NavigateTo("/list-employees");
+                // Get the user's roles to determine the redirect URL
+                var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+                var user = authState.User;
+                
+                // Check if user has the "employee" role
+                if (user.IsInRole("employee"))
+                {
+                    Navigation.NavigateTo("/employee-dashboard");
+                }
+                else
+                {
+                    Navigation.NavigateTo("/list-employees");
+                }
             }
         }
     }

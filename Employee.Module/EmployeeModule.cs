@@ -34,6 +34,12 @@ namespace Employee.Module
             return employees.Select(MapToBusinessModel);
         }
 
+        public async Task<List<EmployeeBusinessModel>> GetEmployeesWithoutPaySlipForPeriodAsync(long enterpriseId, int periodId)
+        {
+            var data = await _employeeReadWrite.ReadEmployeesWithoutPaySlipForPeriodAsync(enterpriseId, periodId);
+            return data.Select(MapToBusinessModel).ToList();
+        }
+
         public async Task<EmployeeDetailBusinessModel?> GetEmployeeByIdAndEnterpriseAsync(long employeeId, long enterpriseId)
         {
             // Get employee from enterprise

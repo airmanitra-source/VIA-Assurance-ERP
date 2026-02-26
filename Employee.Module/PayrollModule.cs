@@ -8,12 +8,14 @@ namespace Employee.Module
     {
         private readonly ICompanyPayrollSettingsReadOnly _settingsReadOnly;
         private readonly IEmployeeReadWrite _employeeReadWrite;
+        private readonly IPaySlipModificationRequestReadWrite _modificationRequestWrite;
+        private readonly IPaySlipModificationRequestReadOnly _modificationRequestRead;
+        private readonly IEmployeePayrollReadWrite _payrollReadWrite;
+        private readonly IPaySlipReadWrite _paySlipUpdate;
         private readonly IPayrollPeriodReadOnly _periodReadOnly;
         private readonly IPayrollPeriodReadWrite _periodReadWrite;
         private readonly IPaySlipLineReadOnly _lineReadOnly;
         private readonly IPaySlipLineReadWrite _lineReadWrite;
-        private readonly IEmployeePayrollReadWrite _payrollReadWrite;
-        private readonly IPaySlipReadWrite _paySlipUpdate;
 
         public PayrollModule(
             ICompanyPayrollSettingsReadOnly settingsReadOnly,
@@ -23,7 +25,9 @@ namespace Employee.Module
             IPaySlipLineReadOnly lineReadOnly,
             IPaySlipLineReadWrite lineReadWrite,
             IEmployeePayrollReadWrite payrollReadWrite,
-            IPaySlipReadWrite paySlipUpdate)
+            IPaySlipReadWrite paySlipUpdate,
+            IPaySlipModificationRequestReadOnly modificationRequestRead,
+            IPaySlipModificationRequestReadWrite modificationRequestWrite)
         {
             _settingsReadOnly = settingsReadOnly;
             _employeeReadWrite = employeeReadWrite;
@@ -33,6 +37,8 @@ namespace Employee.Module
             _lineReadWrite = lineReadWrite;
             _payrollReadWrite = payrollReadWrite;
             _paySlipUpdate = paySlipUpdate;
+            _modificationRequestRead = modificationRequestRead;
+            _modificationRequestWrite = modificationRequestWrite;
         }
 
         public async Task<int> AddPeriodAsync(long enterpriseId, DateTime periodStart, DateTime periodEnd)
@@ -222,6 +228,41 @@ namespace Employee.Module
             }).ToList();
 
             await _paySlipUpdate.UpdatePaySlipAsync(payrollData, lineDataModels);
+        }
+
+        public async Task<int> AddModificationRequestAsync(PaySlipModificationRequestBusinessModel request)
+        {
+            var dataModel = new PaySlipModificationRequestDataModel
+            {
+                Bonus = request.Bonus,
+                Comments = request.Comments,
+                EmployeeID = request.EmployeeID,
+                IndemniteLogement = request.IndemniteLogement,
+                IndemniteTransport = request.IndemniteTransport,
+                OvertimeHours = request.OvertimeHours,
+                PeriodID = request.PeriodID,
+                PrimeScolarite = request.PrimeScolarite,
+                Status = "Pending",
+                TreiziemeMois = request.TreiziemeMois
+            };
+            return await _modificationRequestWrite.CreateRequestAsync(dataModel);
+        }
+
+        public async Task<PaySlipModificationRequestBusinessModel?> GetModificationRequestAsync(long employeeId, int periodId)
+        {
+            var data = await _modificationRequestRead.ReadPendingByEmployeeAndPeriodAsync(employeeId, periodId);
+            return data != null ? PaySlipModificationRequestBusinessModel.FromDataModel(data) : null;
+        }
+
+        public async Task<List<PaySlipModificationRequestBusinessModel>> GetModificationRequestsByPeriodAsync(int periodId)
+        {
+            var data = await _modificationRequestRead.ReadPendingByPeriodAsync(periodId);
+            return data.Select(PaySlipModificationRequestBusinessModel.FromDataModel).ToList();
+        }
+
+        public async Task SetModificationRequestStatusAsync(int requestId, string status)
+        {
+            await _modificationRequestWrite.UpdateRequestStatusAsync(requestId, status);
         }
     }
 }

@@ -199,6 +199,50 @@
                     }
                 }
             </div>
+
+            <div class="section-card">
+                <h2>📝 Soumettre des modifications de variables</h2>
+                @if (draftPeriods == null || !draftPeriods.Any())
+                {
+                    <div class="empty-state-inline">Aucune période de paie en cours.</div>
+                }
+                else
+                {
+                    <div class="form-field">
+                        <label>Période</label>
+                        <select class="form-control" @bind="selectedModifPeriodId" @bind:after="OnModifPeriodChangedAsync">
+                            <option value="0">— Sélectionner —</option>
+                            @foreach (var p in draftPeriods)
+                            {
+                                <option value="@p.PeriodID">@p.PeriodLabel (@p.Status)</option>
+                            }
+                        </select>
+                    </div>
+
+                    @if (selectedModifPeriodId > 0)
+                    {
+                        @if (existingModifRequest != null)
+                        {
+                            <div class="alert-success">✅ Vous avez déjà soumis une demande pour cette période (statut: @existingModifRequest.Status). Vous pouvez en soumettre une nouvelle pour la remplacer.</div>
+                        }
+
+                        <PaySlipVariablesComponent PaySlipInput="modifInput"
+                                                   IsGenerating="isSubmittingModif"
+                                                   OnGenerateClick="SubmitModificationRequestAsync"
+                                                   ButtonLabel="📧 Soumettre au RH" />
+
+                        <div class="form-field" style="margin-top: 12px;">
+                            <label>Commentaire (optionnel)</label>
+                            <textarea class="form-control" rows="2" @bind="modifComments"></textarea>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(modifMessage))
+                        {
+                            <div class="@(modifSuccess ? "alert-success" : "alert-error")">@modifMessage</div>
+                        }
+                    }
+                }
+            </div>
         }
     }
 </div>

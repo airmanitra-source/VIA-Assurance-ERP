@@ -113,6 +113,101 @@ namespace ClientApp.Controllers
             }
         }
 
+        public async Task<List<PayrollPeriodViewModel>> IndexPeriodsAsync(long enterpriseId)
+        {
+            var periods = await _paySlipModule.GetPeriodsByEnterpriseAsync(enterpriseId);
+            return periods
+                .Where(p => p.Status == "Draft")
+                .OrderByDescending(p => p.PeriodStart)
+                .Select(p => new PayrollPeriodViewModel
+                {
+                    PaymentDate = p.PaymentDate,
+                    PeriodEnd = p.PeriodEnd,
+                    PeriodID = p.PeriodID,
+                    PeriodStart = p.PeriodStart,
+                    Status = p.Status
+                })
+                .ToList();
+        }
+
+        public async Task<PaySlipInputViewModel> ShowPaySlipInputAsync(long employeeId, int periodId, long enterpriseId)
+        {
+            var input = new PaySlipInputViewModel { EmployeeID = employeeId };
+
+            try
+            {
+                var paySlip = await _paySlipModule.GetSavedPaySlipAsync(employeeId, periodId);
+                if (paySlip != null)
+                {
+                    foreach (var line in paySlip.Lines.Where(l => l.LineType == "Gain"))
+                    {
+                        switch (line.Rubrique)
+                        {
+                            case "15000": input.OvertimeHours = line.Nombre; break;
+                            case "17000": input.Bonus = line.GainAmount; break;
+                            case "17100": input.PrimeScolarite = line.GainAmount; break;
+                            case "17200": input.TreiziemeMois = line.GainAmount; break;
+                            case "19400": input.IndemniteTransport = line.GainAmount; break;
+                            case "19500": input.IndemniteLogement = line.GainAmount; break;
+                        }
+                    }
+                }
+            }
+            catch { }
+
+            return input;
+        }
+
+        public async Task<PaySlipModificationRequestViewModel?> ShowModificationRequestAsync(long employeeId, int periodId)
+        {
+            var request = await _paySlipModule.GetModificationRequestAsync(employeeId, periodId);
+            if (request == null)
+                return null;
+
+            return new PaySlipModificationRequestViewModel
+            {
+                Bonus = request.Bonus,
+                Comments = request.Comments,
+                CreatedDate = request.CreatedDate,
+                EmployeeID = request.EmployeeID,
+                IndemniteLogement = request.IndemniteLogement,
+                IndemniteTransport = request.IndemniteTransport,
+                OvertimeHours = request.OvertimeHours,
+                PeriodID = request.PeriodID,
+                PrimeScolarite = request.PrimeScolarite,
+                RequestID = request.RequestID,
+                Status = request.Status,
+                TreiziemeMois = request.TreiziemeMois
+            };
+        }
+
+        public async Task<(bool Success, string Message)> StoreModificationRequestAsync(
+            PaySlipInputViewModel input, long employeeId, int periodId, string? comments)
+        {
+            try
+            {
+                var businessModel = new PaySlipModificationRequestBusinessModel
+                {
+                    Bonus = input.Bonus,
+                    Comments = comments,
+                    EmployeeID = employeeId,
+                    IndemniteLogement = input.IndemniteLogement,
+                    IndemniteTransport = input.IndemniteTransport,
+                    OvertimeHours = input.OvertimeHours,
+                    PeriodID = periodId,
+                    PrimeScolarite = input.PrimeScolarite,
+                    TreiziemeMois = input.TreiziemeMois
+                };
+
+                await _paySlipModule.AddModificationRequestAsync(businessModel);
+                return (true, "Vos modifications ont été soumises au service RH.");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Erreur : {ex.Message}");
+            }
+        }
+
         private static EmployeeViewModel MapToViewModel(EmployeeBusinessModel m)
         {
             return new EmployeeViewModel
