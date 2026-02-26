@@ -12,8 +12,12 @@ namespace ClientApp.Components.Pages.Routed
         protected EntrepriseViewModel? currentCompany;
         protected List<EmployeeViewModel> employees = new();
         protected List<string> errors = new();
+        protected HashSet<int> expandedPaySlipIds = new();
+        protected string activeTab = "draft";
         protected bool isGenerating = false;
         protected bool isLoading = true;
+        protected bool isLoadingSaved = false;
+        protected bool isSavingEdits = false;
         protected bool isSubmittingDraft = false;
         protected bool isPaySlipSaved = false;
         protected DateTime newPeriodEnd = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
@@ -21,6 +25,7 @@ namespace ClientApp.Components.Pages.Routed
         protected PaySlipInputViewModel paySlipInput = new();
         protected PaySlipViewModel? paySlipPreview;
         protected List<PayrollPeriodViewModel> periods = new();
+        protected List<PaySlipViewModel> savedPaySlips = new();
         protected long? selectedEmployeeId;
         protected int? selectedPeriodId;
         protected string successMessage = string.Empty;
@@ -40,6 +45,7 @@ namespace ClientApp.Components.Pages.Routed
                 successMessage = "Période de paie créée avec succès";
                 await LoadPeriodsAsync();
                 selectedPeriodId = periodId;
+                await OnPeriodSelectedAsync();
             }
             catch (Exception ex)
             {
@@ -100,6 +106,11 @@ namespace ClientApp.Components.Pages.Routed
                     paySlipInput);
                 successMessage = "Bulletin de paie enregistré avec succès";
                 isPaySlipSaved = true;
+
+                if (selectedPeriodId.HasValue)
+                {
+                    await LoadSavedPaySlipsAsync();
+                }
             }
             catch (Exception ex)
             {
@@ -134,6 +145,100 @@ namespace ClientApp.Components.Pages.Routed
             }
         }
 
+        protected async Task SetActiveTabAsync(string tab)
+        {
+            activeTab = tab;
+            successMessage = string.Empty;
+            errors.Clear();
+
+            if (activeTab == "saved" && selectedPeriodId.HasValue)
+            {
+                await LoadSavedPaySlipsAsync();
+            }
+        }
+
+        protected Task SetDraftTabAsync()
+        {
+            return SetActiveTabAsync("draft");
+        }
+
+        protected Task SetSavedTabAsync()
+        {
+            return SetActiveTabAsync("saved");
+        }
+
+        protected void TogglePaySlipExpansion(int payrollId)
+        {
+            if (!expandedPaySlipIds.Add(payrollId))
+            {
+                expandedPaySlipIds.Remove(payrollId);
+            }
+        }
+
+        protected bool IsPaySlipExpanded(int payrollId)
+        {
+            return expandedPaySlipIds.Contains(payrollId);
+        }
+
+        protected static bool IsPaySlipLineEditable(PaySlipLineViewModel line)
+        {
+            return line.LineType == "Gain";
+        }
+
+        protected async Task SaveEditedPaySlipAsync(PaySlipViewModel paySlip)
+        {
+            if (currentCompany == null || !selectedPeriodId.HasValue)
+                return;
+
+            isSavingEdits = true;
+            errors.Clear();
+            successMessage = string.Empty;
+
+            try
+            {
+                await Controller.StoreSavedPaySlipAsync(currentCompany.Id, selectedPeriodId.Value, paySlip);
+                successMessage = $"Bulletin mis à jour pour {paySlip.EmployeeName}.";
+                await LoadSavedPaySlipsAsync();
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"Erreur lors de la mise à jour: {ex.Message}");
+            }
+            finally
+            {
+                isSavingEdits = false;
+            }
+        }
+
+        protected async Task OnPeriodSelectedAsync()
+        {
+            paySlipPreview = null;
+            isPaySlipSaved = false;
+
+            if (activeTab == "saved" && selectedPeriodId.HasValue)
+            {
+                await LoadSavedPaySlipsAsync();
+                return;
+            }
+
+            savedPaySlips.Clear();
+        }
+
+        protected Task OpenSavedPaySlipAsync(PaySlipViewModel paySlip)
+        {
+            selectedEmployeeId = paySlip.EmployeeID;
+            selectedPeriodId = paySlip.PeriodID;
+            paySlipPreview = paySlip;
+            paySlipInput = new PaySlipInputViewModel
+            {
+                EmployeeID = paySlip.EmployeeID,
+                EmployeeName = paySlip.EmployeeName
+            };
+            isPaySlipSaved = true;
+            activeTab = "draft";
+            return Task.CompletedTask;
+        }
+
         private async Task LoadDataAsync()
         {
             isLoading = true;
@@ -166,6 +271,27 @@ namespace ClientApp.Components.Pages.Routed
         {
             if (currentCompany == null) return;
             periods = await Controller.Index(currentCompany.Id);
+        }
+
+        private async Task LoadSavedPaySlipsAsync()
+        {
+            if (currentCompany == null || !selectedPeriodId.HasValue)
+                return;
+
+            isLoadingSaved = true;
+            try
+            {
+                savedPaySlips = await Controller.IndexSavedPaySlipsAsync(currentCompany.Id, selectedPeriodId.Value);
+                expandedPaySlipIds.Clear();
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"Erreur: {ex.Message}");
+            }
+            finally
+            {
+                isLoadingSaved = false;
+            }
         }
     }
 }

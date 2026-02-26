@@ -34,6 +34,7 @@ namespace Employee.Module.Business
             int payrollId,
             decimal? bonus = null,
             decimal? primeScolarite = null,
+            decimal? treiziemeMois = null,
             decimal? indemniteTransport = null,
             decimal? indemniteLogement = null,
             decimal? overtimeHours = null)
@@ -96,6 +97,21 @@ namespace Employee.Module.Business
                     PayrollID = payrollId,
                     PeriodID = periodId,
                     Rubrique = "17100",
+                    SortOrder = ++sortOrder
+                });
+            }
+
+            if (treiziemeMois.HasValue && treiziemeMois.Value > 0)
+            {
+                slip.Lines.Add(new PaySlipLineBusinessModel
+                {
+                    EmployeeID = employee.EmployeeID,
+                    GainAmount = treiziemeMois.Value,
+                    Libelle = "13ème mois",
+                    LineType = "Gain",
+                    PayrollID = payrollId,
+                    PeriodID = periodId,
+                    Rubrique = "17200",
                     SortOrder = ++sortOrder
                 });
             }

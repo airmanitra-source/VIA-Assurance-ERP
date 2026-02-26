@@ -72,6 +72,7 @@ namespace ClientApp.Controllers
                 0,
                 bonus: input.Bonus,
                 primeScolarite: input.PrimeScolarite,
+                treiziemeMois: input.TreiziemeMois,
                 indemniteTransport: input.IndemniteTransport,
                 indemniteLogement: input.IndemniteLogement,
                 overtimeHours: input.OvertimeHours);
@@ -113,6 +114,7 @@ namespace ClientApp.Controllers
                 0,
                 bonus: input.Bonus,
                 primeScolarite: input.PrimeScolarite,
+                treiziemeMois: input.TreiziemeMois,
                 indemniteTransport: input.IndemniteTransport,
                 indemniteLogement: input.IndemniteLogement,
                 overtimeHours: input.OvertimeHours);
@@ -122,6 +124,50 @@ namespace ClientApp.Controllers
             DateTime paymentDate = period?.PaymentDate ?? DateTime.Now;
 
             return await _payrollModule.AddPaySlipAsync(paySlip, paymentDate, periodMonth, periodYear);
+        }
+
+        /// <summary>
+        /// REST: Store - Update a saved payslip for an employee
+        /// </summary>
+        public async Task StoreSavedPaySlipAsync(long enterpriseId, int periodId, PaySlipViewModel paySlip)
+        {
+            var periods = await _payrollModule.GetPeriodsByEnterpriseAsync(enterpriseId);
+            var period = periods.FirstOrDefault(p => p.PeriodID == periodId);
+
+            int periodMonth = period?.PeriodStart.Month ?? DateTime.Now.Month;
+            int periodYear = period?.PeriodStart.Year ?? DateTime.Now.Year;
+            DateTime paymentDate = period?.PaymentDate ?? DateTime.Now;
+
+            var business = new PaySlipBusinessModel
+            {
+                BankAccountNumber = paySlip.BankAccountNumber,
+                Classification = paySlip.Classification,
+                Dependents = paySlip.Dependents,
+                EmployeeID = paySlip.EmployeeID,
+                EmployeeName = paySlip.EmployeeName,
+                Lines = paySlip.Lines.Select(l => new PaySlipLineBusinessModel
+                {
+                    Base = l.Base,
+                    EmployeeDeduction = l.EmployeeDeduction,
+                    EmployeeID = paySlip.EmployeeID,
+                    EmployerContribution = l.EmployerContribution,
+                    GainAmount = l.GainAmount,
+                    Libelle = l.Libelle,
+                    LineType = l.LineType,
+                    Nombre = l.Nombre,
+                    PayrollID = paySlip.PayrollID,
+                    PeriodID = paySlip.PeriodID,
+                    Rubrique = l.Rubrique,
+                    SortOrder = l.SortOrder,
+                    Taux = l.Taux
+                }).ToList(),
+                NumeroCnaps = paySlip.NumeroCnaps,
+                PayrollID = paySlip.PayrollID,
+                PeriodID = paySlip.PeriodID,
+                Poste = paySlip.Poste
+            };
+
+            await _payrollModule.SetPaySlipAsync(business, paymentDate, periodMonth, periodYear);
         }
 
         /// <summary>
@@ -201,6 +247,37 @@ namespace ClientApp.Controllers
                 $"{emp.Prenom} {emp.Nom}",
                 periodLabel,
                 portalUrl);
+        }
+
+        /// <summary>
+        /// REST: Index - Get saved payslips for a specific payroll period
+        /// </summary>
+        public async Task<List<PaySlipViewModel>> IndexSavedPaySlipsAsync(long enterpriseId, int periodId)
+        {
+            var employees = await _employeeModule.GetEmployeesByEnterpriseIdAsync(enterpriseId);
+            var period = (await _payrollModule.GetPeriodsByEnterpriseAsync(enterpriseId))
+                .FirstOrDefault(p => p.PeriodID == periodId);
+
+            string periodLabel = period != null
+                ? $"du {period.PeriodStart:dd/MM/yyyy} au {period.PeriodEnd:dd/MM/yyyy}"
+                : $"Période #{periodId}";
+
+            var result = new List<PaySlipViewModel>();
+
+            foreach (var employee in employees.Where(e => e.IsActive))
+            {
+                var paySlip = await _payrollModule.GetSavedPaySlipAsync(employee.EmployeeID, periodId);
+                if (paySlip == null)
+                    continue;
+
+                var viewModel = MapToViewModel(paySlip);
+                viewModel.PeriodLabel = periodLabel;
+                result.Add(viewModel);
+            }
+
+            return result
+                .OrderBy(p => p.EmployeeName)
+                .ToList();
         }
     }
 }

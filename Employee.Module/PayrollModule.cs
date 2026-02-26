@@ -13,6 +13,7 @@ namespace Employee.Module
         private readonly IPaySlipLineReadOnly _lineReadOnly;
         private readonly IPaySlipLineReadWrite _lineReadWrite;
         private readonly IEmployeePayrollReadWrite _payrollReadWrite;
+        private readonly IPaySlipReadWrite _paySlipUpdate;
 
         public PayrollModule(
             ICompanyPayrollSettingsReadOnly settingsReadOnly,
@@ -21,7 +22,8 @@ namespace Employee.Module
             IPayrollPeriodReadWrite periodReadWrite,
             IPaySlipLineReadOnly lineReadOnly,
             IPaySlipLineReadWrite lineReadWrite,
-            IEmployeePayrollReadWrite payrollReadWrite)
+            IEmployeePayrollReadWrite payrollReadWrite,
+            IPaySlipReadWrite paySlipUpdate)
         {
             _settingsReadOnly = settingsReadOnly;
             _employeeReadWrite = employeeReadWrite;
@@ -30,6 +32,7 @@ namespace Employee.Module
             _lineReadOnly = lineReadOnly;
             _lineReadWrite = lineReadWrite;
             _payrollReadWrite = payrollReadWrite;
+            _paySlipUpdate = paySlipUpdate;
         }
 
         public async Task<int> AddPeriodAsync(long enterpriseId, DateTime periodStart, DateTime periodEnd)
@@ -158,9 +161,67 @@ namespace Employee.Module
             return PaySlipBusinessModel.Generate(businessEmp, settings, periodId, 0);
         }
 
+        public async Task<PaySlipBusinessModel?> GetSavedPaySlipAsync(long employeeId, int periodId)
+        {
+            var existingLines = await _lineReadOnly.ReadByPeriodAndEmployeeAsync(periodId, employeeId);
+            if (!existingLines.Any())
+                return null;
+
+            var employee = await _employeeReadWrite.ReadEmployeeByIdAsync((int)employeeId);
+            return new PaySlipBusinessModel
+            {
+                BankAccountNumber = employee?.BankAccountNumber,
+                Classification = employee?.Classification,
+                Dependents = employee?.Dependents ?? 0,
+                EmployeeID = employeeId,
+                EmployeeName = employee != null ? $"{employee.Prenom} {employee.Nom}" : string.Empty,
+                Lines = existingLines.Select(PaySlipLineBusinessModel.FromDataModel).ToList(),
+                NumeroCnaps = employee?.NumeroCnaps,
+                PayrollID = existingLines.First().PayrollID,
+                PeriodID = periodId,
+                Poste = employee?.NomPoste
+            };
+        }
+
         public async Task SetPeriodStatusAsync(int periodId, string status)
         {
             await _periodReadWrite.UpdatePeriodStatusAsync(periodId, status);
+        }
+
+        public async Task SetPaySlipAsync(PaySlipBusinessModel paySlip, DateTime paymentDate, int periodMonth, int periodYear)
+        {
+            var payrollData = new EmployeePayrollDataModel
+            {
+                BaseSalary = paySlip.TotalGains,
+                Bonus = 0,
+                Deductions = paySlip.TotalCotisationsEmployee + paySlip.Irsa,
+                EmployeeID = paySlip.EmployeeID,
+                NetSalary = paySlip.NetAPayer,
+                PayrollID = paySlip.PayrollID,
+                PaymentDate = paymentDate,
+                PaymentMethod = "BankTransfer",
+                PayPeriodMonth = periodMonth,
+                PayPeriodYear = periodYear
+            };
+
+            var lineDataModels = paySlip.Lines.Select(l => new PaySlipLineDataModel
+            {
+                Base = l.Base,
+                EmployeeDeduction = l.EmployeeDeduction,
+                EmployeeID = l.EmployeeID,
+                EmployerContribution = l.EmployerContribution,
+                GainAmount = l.GainAmount,
+                Libelle = l.Libelle,
+                LineType = l.LineType,
+                Nombre = l.Nombre,
+                PayrollID = paySlip.PayrollID,
+                PeriodID = l.PeriodID,
+                Rubrique = l.Rubrique,
+                SortOrder = l.SortOrder,
+                Taux = l.Taux
+            }).ToList();
+
+            await _paySlipUpdate.UpdatePaySlipAsync(payrollData, lineDataModels);
         }
     }
 }

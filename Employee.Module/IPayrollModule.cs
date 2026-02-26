@@ -10,5 +10,7 @@ namespace Employee.Module
         Task<CompanyPayrollSettingsBusinessModel> GetSettingsAsync(long enterpriseId);
         Task<int> AddPaySlipAsync(PaySlipBusinessModel paySlip, DateTime paymentDate, int periodMonth, int periodYear);
         Task SetPeriodStatusAsync(int periodId, string status);
+        Task<PaySlipBusinessModel?> GetSavedPaySlipAsync(long employeeId, int periodId);
+        Task SetPaySlipAsync(PaySlipBusinessModel paySlip, DateTime paymentDate, int periodMonth, int periodYear);
     }
 }

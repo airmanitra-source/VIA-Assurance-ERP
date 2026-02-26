@@ -32,6 +32,15 @@
                 <span>@Localizer["Enterprise"]: <strong>@currentCompany.RaisonSocial</strong></span>
             </div>
 
+            <div class="tab-bar">
+                <button class="tab-button @(activeTab == "draft" ? "active" : string.Empty)" @onclick="SetDraftTabAsync">
+                    ✍️ Saisie des bulletins
+                </button>
+                <button class="tab-button @(activeTab == "saved" ? "active" : string.Empty)" @onclick="SetSavedTabAsync">
+                    📄 Bulletins sauvegardés
+                </button>
+            </div>
+
             @* === SECTION 1: Créer une période === *@
             <div class="section">
                 <h2>📅 @Localizer["PayrollPeriod"]</h2>
@@ -53,7 +62,7 @@
                 {
                     <div class="form-group">
                         <label>@Localizer["SelectPeriod"]</label>
-                        <select class="form-input" @bind="selectedPeriodId">
+                        <select class="form-input" @bind="selectedPeriodId" @bind:after="OnPeriodSelectedAsync">
                             <option value="">— @Localizer["Select"] —</option>
                             @foreach (var period in periods)
                             {
@@ -64,77 +73,203 @@
                 }
             </div>
 
-            @* === SECTION 2: Sélectionner un employé === *@
-            @if (selectedPeriodId.HasValue)
+            @if (activeTab == "draft")
             {
-                <div class="section">
-                    <h2>👤 @Localizer["SelectEmployee"]</h2>
-                    <div class="form-group">
-                        <select class="form-input" @onchange="OnEmployeeSelected">
-                            <option value="">— @Localizer["Select"] —</option>
-                            @foreach (var emp in employees)
-                            {
-                                <option value="@emp.EmployeeID">@emp.Prenom @emp.Nom — @emp.NomPoste (@(emp.Salaire?.ToString("N2") ?? "0") Ar)</option>
-                            }
-                        </select>
+                @* === SECTION 2: Sélectionner un employé === *@
+                @if (selectedPeriodId.HasValue)
+                {
+                    <div class="section">
+                        <h2>👤 @Localizer["SelectEmployee"]</h2>
+                        <div class="form-group">
+                            <select class="form-input" @onchange="OnEmployeeSelected">
+                                <option value="">— @Localizer["Select"] —</option>
+                                @foreach (var emp in employees)
+                                {
+                                    <option value="@emp.EmployeeID">@emp.Prenom @emp.Nom — @emp.NomPoste (@(emp.Salaire?.ToString("N2") ?? "0") Ar)</option>
+                                }
+                            </select>
+                        </div>
                     </div>
-                </div>
-            }
+                }
 
-            @* === SECTION 3: Saisie des variables === *@
-            @if (selectedEmployeeId.HasValue)
-            {
-                <div class="section">
-                    <h2>📝 @Localizer["PaySlipVariables"]</h2>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Bonus</label>
-                            <input type="number" class="form-input" step="0.01" @bind="paySlipInput.Bonus" />
+                @* === SECTION 3: Saisie des variables === *@
+                @if (selectedEmployeeId.HasValue)
+                {
+                    <div class="section">
+                        <h2>📝 @Localizer["PaySlipVariables"]</h2>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Bonus</label>
+                                <input type="number" class="form-input" step="0.01" @bind="paySlipInput.Bonus" />
+                            </div>
+                            <div class="form-group">
+                                <label>@Localizer["SchoolAllowance"]</label>
+                                <input type="number" class="form-input" step="0.01" @bind="paySlipInput.PrimeScolarite" />
+                            </div>
+                            <div class="form-group">
+                                <label>13ème mois</label>
+                                <input type="number" class="form-input" step="0.01" @bind="paySlipInput.TreiziemeMois" />
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>@Localizer["SchoolAllowance"]</label>
-                            <input type="number" class="form-input" step="0.01" @bind="paySlipInput.PrimeScolarite" />
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>@Localizer["TransportAllowance"]</label>
+                                <input type="number" class="form-input" step="0.01" @bind="paySlipInput.IndemniteTransport" />
+                            </div>
+                            <div class="form-group">
+                                <label>@Localizer["HousingAllowance"]</label>
+                                <input type="number" class="form-input" step="0.01" @bind="paySlipInput.IndemniteLogement" />
+                            </div>
+                            <div class="form-group">
+                                <label>@Localizer["OvertimeHours"]</label>
+                                <input type="number" class="form-input" step="0.5" @bind="paySlipInput.OvertimeHours" />
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>@Localizer["TransportAllowance"]</label>
-                            <input type="number" class="form-input" step="0.01" @bind="paySlipInput.IndemniteTransport" />
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>@Localizer["HousingAllowance"]</label>
-                            <input type="number" class="form-input" step="0.01" @bind="paySlipInput.IndemniteLogement" />
-                        </div>
-                        <div class="form-group">
-                            <label>@Localizer["OvertimeHours"]</label>
-                            <input type="number" class="form-input" step="0.5" @bind="paySlipInput.OvertimeHours" />
-                        </div>
-                        <div class="form-group" style="align-self: end;">
-                            <button class="btn-primary" @onclick="GeneratePreviewAsync" disabled="@isGenerating">
-                                @(isGenerating ? "⏳" : "📊") @Localizer["GeneratePaySlip"]
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            }
-
-            @* === SECTION 4: Aperçu bulletin === *@
-            @if (paySlipPreview != null)
-            {
-                <div class="section">
-                    <PaySlipPreviewComponent PaySlip="paySlipPreview">
-                        <Actions>
-                            <button class="btn-primary" @onclick="SavePaySlipAsync">
-                                💾 @Localizer["SavePaySlip"]
-                            </button>
-                            @if (isPaySlipSaved)
-                            {
-                                <button class="btn-submit-draft" @onclick="SubmitDraftToEmployeeAsync" disabled="@isSubmittingDraft">
-                                    @(isSubmittingDraft ? "⏳" : "📧") @Localizer["SubmitDraftToEmployee"]
+                        <div class="form-row">
+                            <div class="form-group" style="align-self: end;">
+                                <button class="btn-primary" @onclick="GeneratePreviewAsync" disabled="@isGenerating">
+                                    @(isGenerating ? "⏳" : "📊") @Localizer["GeneratePaySlip"]
                                 </button>
-                            }
-                        </Actions>
-                    </PaySlipPreviewComponent>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @* === SECTION 4: Aperçu bulletin === *@
+                @if (paySlipPreview != null)
+                {
+                    <div class="section">
+                        <PaySlipPreviewComponent PaySlip="paySlipPreview">
+                            <Actions>
+                                <button class="btn-primary" @onclick="SavePaySlipAsync">
+                                    💾 @Localizer["SavePaySlip"]
+                                </button>
+                                @if (isPaySlipSaved)
+                                {
+                                    <button class="btn-submit-draft" @onclick="SubmitDraftToEmployeeAsync" disabled="@isSubmittingDraft">
+                                        @(isSubmittingDraft ? "⏳" : "📧") @Localizer["SubmitDraftToEmployee"]
+                                    </button>
+                                }
+                            </Actions>
+                        </PaySlipPreviewComponent>
+                    </div>
+                }
+            }
+
+            @if (activeTab == "saved")
+            {
+                <div class="section">
+                    <h2>📄 Bulletins sauvegardés</h2>
+
+                    @if (!selectedPeriodId.HasValue)
+                    {
+                        <div class="error-message">⚠️ Sélectionnez une période de paie pour afficher les bulletins.</div>
+                    }
+                    else if (isLoadingSaved)
+                    {
+                        <div class="loading-state">
+                            <span class="spinner"></span>
+                            <p>Chargement...</p>
+                        </div>
+                    }
+                    else if (!savedPaySlips.Any())
+                    {
+                        <div class="error-message">⚠️ Aucun bulletin sauvegardé pour cette période.</div>
+                    }
+                    else
+                    {
+                        <div class="saved-table-wrapper">
+                            <table class="saved-table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Employé</th>
+                                        <th>Poste</th>
+                                        <th>Net à payer</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var paySlip in savedPaySlips)
+                                    {
+                                        <tr>
+                                            <td class="accordion-toggle">
+                                                <button class="btn-accordion" @onclick="() => TogglePaySlipExpansion(paySlip.PayrollID)">
+                                                    @(IsPaySlipExpanded(paySlip.PayrollID) ? "▼" : "▶")
+                                                </button>
+                                            </td>
+                                            <td>@paySlip.EmployeeName</td>
+                                            <td>@paySlip.Poste</td>
+                                            <td>@paySlip.NetAPayer.ToString("N2") Ar</td>
+                                            
+                                        </tr>
+                                        @if (IsPaySlipExpanded(paySlip.PayrollID))
+                                        {
+                                            <tr class="accordion-row">
+                                                <td colspan="5">
+                                                    <div class="accordion-content">
+                                                        <div class="accordion-header">
+                                                            <strong>Éléments de paie</strong>
+                                                            <span class="accordion-hint">Modifiez les montants puis enregistrez.</span>
+                                                        </div>
+                                                        <div class="accordion-table-wrapper">
+                                                            <table class="payslip-table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Rubrique</th>
+                                                                        <th>Libellé</th>
+                                                                        <th>Type</th>
+                                                                        <th>Nombre</th>
+                                                                        <th>Base</th>
+                                                                        <th>Taux</th>
+                                                                        <th>Gain</th>
+                                                                        <th>Retenue</th>
+                                                                        <th>Part patronale</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach (var line in paySlip.Lines.OrderBy(l => l.SortOrder))
+                                                                    {
+                                                                        <tr>
+                                                                            <td>@line.Rubrique</td>
+                                                                            <td>@line.Libelle</td>
+                                                                            <td>@line.LineType</td>
+                                                                            <td class="amount">
+                                                                                <InputNumber class="form-input-inline" @bind-Value="line.Nombre" disabled="@(!IsPaySlipLineEditable(line))" />
+                                                                            </td>
+                                                                            <td class="amount">
+                                                                                <InputNumber class="form-input-inline" @bind-Value="line.Base" disabled="@(!IsPaySlipLineEditable(line))" />
+                                                                            </td>
+                                                                            <td class="amount">
+                                                                                <InputNumber class="form-input-inline" @bind-Value="line.Taux" disabled="@(!IsPaySlipLineEditable(line))" />
+                                                                            </td>
+                                                                            <td class="amount">
+                                                                                <InputNumber class="form-input-inline" @bind-Value="line.GainAmount" disabled="@(!IsPaySlipLineEditable(line))" />
+                                                                            </td>
+                                                                            <td class="amount">
+                                                                                <InputNumber class="form-input-inline" @bind-Value="line.EmployeeDeduction" disabled="@(!IsPaySlipLineEditable(line))" />
+                                                                            </td>
+                                                                            <td class="amount">
+                                                                                <InputNumber class="form-input-inline" @bind-Value="line.EmployerContribution" disabled="@(!IsPaySlipLineEditable(line))" />
+                                                                            </td>
+                                                                        </tr>
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="accordion-actions">
+                                                            <button class="btn-primary" @onclick="() => SaveEditedPaySlipAsync(paySlip)" disabled="@isSavingEdits">
+                                                                @(isSavingEdits ? "⏳" : "💾") Enregistrer les modifications
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
                 </div>
             }
 

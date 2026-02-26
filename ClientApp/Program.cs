@@ -77,6 +77,7 @@ builder.Services.AddScoped<IPayrollPeriodReadOnly, PayrollPeriodReadOnly>();
 builder.Services.AddScoped<IPayrollPeriodReadWrite, PayrollPeriodReadWrite>();
 builder.Services.AddScoped<IPaySlipLineReadOnly, PaySlipLineReadOnly>();
 builder.Services.AddScoped<IPaySlipLineReadWrite, PaySlipLineReadWrite>();
+builder.Services.AddScoped<IPaySlipReadWrite, PaySlipReadWrite>();
 builder.Services.AddScoped<IProjectReadOnly, ProjectReadOnly>();
 builder.Services.AddScoped<ISouscriptionReadOnly, SouscriptionReadOnly>();
 builder.Services.AddScoped<ISouscriptionReadWrite, SouscriptionReadWrite>();
