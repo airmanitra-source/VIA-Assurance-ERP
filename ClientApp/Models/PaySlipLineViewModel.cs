@@ -12,5 +12,6 @@ namespace ClientApp.Models
         public string Rubrique { get; set; } = string.Empty;
         public int SortOrder { get; set; }
         public decimal? Taux { get; set; }
+        public bool IsRequestedMissingLine { get; set; }
     }
 }

@@ -300,7 +300,8 @@
 }
 
 .payslip-table {
-    width: 100%;
+    min-width: 100%;
+    width: max-content;
     border-collapse: collapse;
     font-size: 13px;
     background: white;
@@ -311,6 +312,11 @@
     padding: 8px 10px;
     border: 1px solid #e2e8f0;
     text-align: left;
+    vertical-align: top;
+}
+
+.is-new-requested-line td {
+    background-color: #f0fff4;
 }
 
 .payslip-table th {
@@ -327,6 +333,30 @@
     text-align: right;
     font-family: 'Consolas', 'Courier New', monospace;
     font-weight: 500;
+    min-width: 120px;
+}
+
+::deep .form-input-inline {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: right;
+    padding: 4px 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-size: 12px;
+    background: white;
+}
+
+::deep .form-input-inline:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+::deep .form-input-inline:disabled {
+    background-color: #f7fafc !important;
+    color: #a0aec0;
+    cursor: not-allowed;
+    border-color: #edf2f7;
 }
 
 .badge-modif {
@@ -345,53 +375,114 @@
     background: #fffff0;
     border: 1px solid #ecc94b;
     border-left: 4px solid #d69e2e;
-    border-radius: 8px;
-    padding: 14px 18px;
-    margin-bottom: 16px;
-    font-size: 13px;
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    font-size: 12px;
     color: #744210;
+    display: block;
+    width: 100%;
 }
 
 .modif-request-banner strong {
     color: #975a16;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
 }
 
 .modif-date {
-    margin-left: 12px;
+    margin-left: 0;
     color: #a0aec0;
-    font-size: 12px;
+    font-size: 11px;
+    display: block;
+    margin-bottom: 6px;
 }
 
 .modif-comments {
-    margin-top: 8px;
+    margin-top: 4px;
+    margin-bottom: 8px;
     font-style: italic;
     color: #6b7280;
+    font-size: 11px;
+    display: block;
 }
 
-.modif-diff-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-top: 12px;
-}
-
-.modif-diff-item {
+.modif-comparison-grid {
     display: flex;
-    justify-content: space-between;
-    padding: 6px 10px;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+    width: fit-content;
+}
+
+.modif-comparison-item {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 8px;
     background: #fefce8;
     border: 1px solid #fde68a;
-    border-radius: 6px;
-    font-size: 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    width: fit-content;
+    white-space: nowrap;
 }
 
-.modif-diff-item span:first-child {
+.modif-label {
     font-weight: 600;
     color: #92400e;
+    font-size: 11px;
+    border-right: 1px solid #fde68a;
+    padding-right: 6px;
+    white-space: nowrap;
 }
 
-.modif-value {
+.modif-values {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    white-space: nowrap;
+}
+
+.current-value {
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.arrow {
+    color: #a0aec0;
+    font-weight: 200;
+    font-size: 10px;
+}
+
+.requested-value {
     color: #b45309;
     font-weight: 700;
-    font-family: 'Consolas', 'Courier New', monospace;
+}
+
+.new-value {
+    color: #059669;
+    background: #d1fae5;
+    padding: 1px 4px;
+    border-radius: 3px;
+    border: 1px solid #6ee7b7;
+}
+
+.line-request-hint {
+    display: table;
+    margin-left: auto;
+    margin-top: 2px;
+    font-size: 9px;
+    color: #059669;
+    font-weight: 700;
+    font-family: system-ui, -apple-system, sans-serif;
+    white-space: nowrap;
+    background: #d1fae5;
+    padding: 0px 3px;
+    border-radius: 3px;
+    border: 1px solid #6ee7b7;
 }

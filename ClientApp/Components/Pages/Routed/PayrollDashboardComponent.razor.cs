@@ -319,6 +319,7 @@ namespace ClientApp.Components.Pages.Routed
             {
                 savedPaySlips = await Controller.IndexSavedPaySlipsAsync(currentCompany.Id, selectedPeriodId.Value);
                 modificationRequests = await Controller.IndexModificationRequestsAsync(selectedPeriodId.Value, currentCompany.Id);
+                EnrichPaySlipsWithMissingRequests();
                 expandedPaySlipIds.Clear();
             }
             catch (Exception ex)
@@ -344,6 +345,108 @@ namespace ClientApp.Components.Pages.Routed
             {
                 errors.Add($"Erreur: {ex.Message}");
             }
+        }
+
+        private void EnrichPaySlipsWithMissingRequests()
+        {
+            if (savedPaySlips == null || modificationRequests == null) return;
+
+            foreach (var paySlip in savedPaySlips)
+            {
+                if (modificationRequests.TryGetValue(paySlip.EmployeeID, out var modifReq))
+                {
+                    var extraRubriques = new[] 
+                    { 
+                        ("15000", "Heures supplémentaires"),
+                        ("17000", "Bonus"),
+                        ("17100", "Prime de scolarité"),
+                        ("17200", "13ème mois"),
+                        ("19400", "Indemnité de déplacement"),
+                        ("19500", "Indemnité de logement")
+                    };
+
+                    foreach (var (rub, label) in extraRubriques)
+                    {
+                        var reqVal = GetRequestedValueForRubrique(modifReq, rub);
+                        // Show if employee requested a value (only positive values) and it's missing from the slip
+                        if (reqVal.HasValue && reqVal.Value > 0 && !paySlip.Lines.Any(l => l.Rubrique == rub))
+                        {
+                            paySlip.Lines.Add(new PaySlipLineViewModel
+                            {
+                                Rubrique = rub,
+                                Libelle = label,
+                                LineType = "Gain",
+                                GainAmount = 0,
+                                Nombre = 0,
+                                Base = 0,
+                                Taux = 0,
+                                IsRequestedMissingLine = true
+                            });
+                        }
+                    }
+
+                    // Sort everything to ensure logical grouping (Indemnités together, Gains at top, etc.)
+                    var sortedLines = paySlip.Lines
+                        .OrderBy(l => l.LineType == "Gain" ? 0 : (l.LineType == "Impot" ? 2 : 1))
+                        .ThenBy(l => int.TryParse(l.Rubrique, out var r) ? r : 99999)
+                        .ToList();
+
+                    // Re-assign SortOrder so the Razor's .OrderBy(l => l.SortOrder) reflects this update
+                    for (int i = 0; i < sortedLines.Count; i++)
+                    {
+                        sortedLines[i].SortOrder = i + 1;
+                    }
+                    paySlip.Lines = sortedLines;
+                }
+            }
+        }
+
+        protected decimal? GetCurrentValueFromPaySlip(PaySlipViewModel paySlip, string rubrique)
+        {
+            var line = paySlip.Lines.FirstOrDefault(l => l.Rubrique == rubrique);
+            return line?.GainAmount;
+        }
+
+        protected decimal? GetCurrentOvertimeFromPaySlip(PaySlipViewModel paySlip)
+        {
+            var line = paySlip.Lines.FirstOrDefault(l => l.Rubrique == "15000");
+            return line?.Nombre;
+        }
+
+        protected bool HasValueChanged(decimal? currentValue, decimal? requestedValue)
+        {
+            if (!requestedValue.HasValue) return false;
+            if (!currentValue.HasValue) return true;
+            return currentValue.Value != requestedValue.Value;
+        }
+
+        protected decimal? GetRequestedValueForRubrique(PaySlipModificationRequestViewModel? req, string rubrique)
+        {
+            if (req == null) return null;
+            return rubrique switch
+            {
+                "15000" => req.OvertimeHours,
+                "17000" => req.Bonus,
+                "17100" => req.PrimeScolarite,
+                "17200" => req.TreiziemeMois,
+                "19400" => req.IndemniteTransport,
+                "19500" => req.IndemniteLogement,
+                _ => null
+            };
+        }
+
+        protected bool HasModificationsToDisplay(PaySlipViewModel paySlip, PaySlipModificationRequestViewModel? req)
+        {
+            if (req == null) return false;
+            
+            if (req.Bonus.HasValue && HasValueChanged(GetCurrentValueFromPaySlip(paySlip, "17000"), req.Bonus)) return true;
+            if (req.PrimeScolarite.HasValue && HasValueChanged(GetCurrentValueFromPaySlip(paySlip, "17100"), req.PrimeScolarite)) return true;
+            if (req.TreiziemeMois.HasValue && HasValueChanged(GetCurrentValueFromPaySlip(paySlip, "17200"), req.TreiziemeMois)) return true;
+            if (req.IndemniteTransport.HasValue && HasValueChanged(GetCurrentValueFromPaySlip(paySlip, "19400"), req.IndemniteTransport)) return true;
+            if (req.IndemniteLogement.HasValue && HasValueChanged(GetCurrentValueFromPaySlip(paySlip, "19500"), req.IndemniteLogement)) return true;
+            if (req.OvertimeHours.HasValue && HasValueChanged(GetCurrentOvertimeFromPaySlip(paySlip), req.OvertimeHours)) return true;
+            
+            return false;
         }
     }
 }

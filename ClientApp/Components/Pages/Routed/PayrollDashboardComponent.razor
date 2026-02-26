@@ -170,9 +170,7 @@
                                                 {
                                                     <span class="badge-modif">📝 Demande employé</span>
                                                 }
-                                                <button class="btn-secondary" @onclick="() => OpenSavedPaySlipAsync(paySlip)">
-                                                    ✏️ Modifier
-                                                </button>
+                                              
                                             </td>
                                         </tr>
                                         @if (IsPaySlipExpanded(paySlip.PayrollID))
@@ -184,7 +182,7 @@
                                                             modificationRequests.TryGetValue(paySlip.EmployeeID, out var modifReq);
                                                         }
 
-                                                        @if (modifReq != null)
+                                                        @if (HasModificationsToDisplay(paySlip, modifReq))
                                                         {
                                                             <div class="modif-request-banner">
                                                                 <strong>📝 Demande de modification de @(modifReq.EmployeeName)</strong>
@@ -193,30 +191,102 @@
                                                                 {
                                                                     <div class="modif-comments">💬 @modifReq.Comments</div>
                                                                 }
-                                                                <div class="modif-diff-grid">
+                                                                 <div class="modif-comparison-grid">
                                                                     @if (modifReq.Bonus.HasValue)
                                                                     {
-                                                                        <div class="modif-diff-item"><span>Bonus</span><span class="modif-value">@modifReq.Bonus.Value.ToString("N2")</span></div>
+                                                                        var currentBonus = GetCurrentValueFromPaySlip(paySlip, "17000");
+                                                                        var hasChanged = HasValueChanged(currentBonus, modifReq.Bonus);
+                                                                        @if (hasChanged)
+                                                                        {
+                                                                            <div class="modif-comparison-item">
+                                                                                <span class="modif-label">Bonus</span>
+                                                                                <div class="modif-values">
+                                                                                    <span class="current-value">@(currentBonus?.ToString("N2") ?? "0.00") Ar</span>
+                                                                                    <span class="arrow">→</span>
+                                                                                    <span class="requested-value new-value">@modifReq.Bonus.Value.ToString("N2") Ar</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        }
                                                                     }
                                                                     @if (modifReq.PrimeScolarite.HasValue)
                                                                     {
-                                                                        <div class="modif-diff-item"><span>Prime scolarité</span><span class="modif-value">@modifReq.PrimeScolarite.Value.ToString("N2")</span></div>
+                                                                        var currentPrime = GetCurrentValueFromPaySlip(paySlip, "17100");
+                                                                        var hasChanged = HasValueChanged(currentPrime, modifReq.PrimeScolarite);
+                                                                        @if (hasChanged)
+                                                                        {
+                                                                            <div class="modif-comparison-item">
+                                                                                <span class="modif-label">Prime scolarité</span>
+                                                                                <div class="modif-values">
+                                                                                    <span class="current-value">@(currentPrime?.ToString("N2") ?? "0.00") Ar</span>
+                                                                                    <span class="arrow">→</span>
+                                                                                    <span class="requested-value new-value">@modifReq.PrimeScolarite.Value.ToString("N2") Ar</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        }
                                                                     }
                                                                     @if (modifReq.TreiziemeMois.HasValue)
                                                                     {
-                                                                        <div class="modif-diff-item"><span>13ème mois</span><span class="modif-value">@modifReq.TreiziemeMois.Value.ToString("N2")</span></div>
+                                                                        var currentTreizieme = GetCurrentValueFromPaySlip(paySlip, "17200");
+                                                                        var hasChanged = HasValueChanged(currentTreizieme, modifReq.TreiziemeMois);
+                                                                        @if (hasChanged)
+                                                                        {
+                                                                            <div class="modif-comparison-item">
+                                                                                <span class="modif-label">13ème mois</span>
+                                                                                <div class="modif-values">
+                                                                                    <span class="current-value">@(currentTreizieme?.ToString("N2") ?? "0.00") Ar</span>
+                                                                                    <span class="arrow">→</span>
+                                                                                    <span class="requested-value new-value">@modifReq.TreiziemeMois.Value.ToString("N2") Ar</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        }
                                                                     }
                                                                     @if (modifReq.IndemniteTransport.HasValue)
                                                                     {
-                                                                        <div class="modif-diff-item"><span>Indemnité transport</span><span class="modif-value">@modifReq.IndemniteTransport.Value.ToString("N2")</span></div>
+                                                                        var currentTransport = GetCurrentValueFromPaySlip(paySlip, "19400");
+                                                                        var hasChanged = HasValueChanged(currentTransport, modifReq.IndemniteTransport);
+                                                                        @if (hasChanged)
+                                                                        {
+                                                                            <div class="modif-comparison-item">
+                                                                                <span class="modif-label">Indemnité transport</span>
+                                                                                <div class="modif-values">
+                                                                                    <span class="current-value">@(currentTransport?.ToString("N2") ?? "0.00") Ar</span>
+                                                                                    <span class="arrow">→</span>
+                                                                                    <span class="requested-value new-value">@modifReq.IndemniteTransport.Value.ToString("N2") Ar</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        }
                                                                     }
                                                                     @if (modifReq.IndemniteLogement.HasValue)
                                                                     {
-                                                                        <div class="modif-diff-item"><span>Indemnité logement</span><span class="modif-value">@modifReq.IndemniteLogement.Value.ToString("N2")</span></div>
+                                                                        var currentLogement = GetCurrentValueFromPaySlip(paySlip, "19500");
+                                                                        var hasChanged = HasValueChanged(currentLogement, modifReq.IndemniteLogement);
+                                                                        @if (hasChanged)
+                                                                        {
+                                                                            <div class="modif-comparison-item">
+                                                                                <span class="modif-label">Indemnité logement</span>
+                                                                                <div class="modif-values">
+                                                                                    <span class="current-value">@(currentLogement?.ToString("N2") ?? "0.00") Ar</span>
+                                                                                    <span class="arrow">→</span>
+                                                                                    <span class="requested-value new-value">@modifReq.IndemniteLogement.Value.ToString("N2") Ar</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        }
                                                                     }
                                                                     @if (modifReq.OvertimeHours.HasValue)
                                                                     {
-                                                                        <div class="modif-diff-item"><span>Heures supp.</span><span class="modif-value">@modifReq.OvertimeHours.Value.ToString("N1") h</span></div>
+                                                                        var currentOvertime = GetCurrentOvertimeFromPaySlip(paySlip);
+                                                                        var hasChanged = HasValueChanged(currentOvertime, modifReq.OvertimeHours);
+                                                                        @if (hasChanged)
+                                                                        {
+                                                                            <div class="modif-comparison-item">
+                                                                                <span class="modif-label">Heures supp.</span>
+                                                                                <div class="modif-values">
+                                                                                    <span class="current-value">@(currentOvertime?.ToString("N1") ?? "0.0") h</span>
+                                                                                    <span class="arrow">→</span>
+                                                                                    <span class="requested-value new-value">@modifReq.OvertimeHours.Value.ToString("N1") h</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        }
                                                                     }
                                                                 </div>
                                                             </div>
@@ -244,12 +314,21 @@
                                                                 <tbody>
                                                                     @foreach (var line in paySlip.Lines.OrderBy(l => l.SortOrder))
                                                                     {
-                                                                        <tr>
+                                                                        var reqVal = GetRequestedValueForRubrique(modifReq, line.Rubrique);
+                                                                        decimal? currentVal = line.Rubrique == "15000" ? line.Nombre : line.GainAmount;
+                                                                        var hasChanged = reqVal.HasValue && HasValueChanged(currentVal, reqVal);
+                                                                        
+
+                                                                        <tr class="@(line.IsRequestedMissingLine ? "is-new-requested-line" : string.Empty)">
                                                                             <td>@line.Rubrique</td>
                                                                             <td>@line.Libelle</td>
                                                                             <td>@line.LineType</td>
                                                                             <td class="amount">
                                                                                 <InputNumber class="form-input-inline" @bind-Value="line.Nombre" disabled="@(!IsPaySlipLineEditable(line))" />
+                                                                                @if (line.Rubrique == "15000" && hasChanged)
+                                                                                {
+                                                                                    <div class="line-request-hint">👤 Demande: @reqVal.Value.ToString("N1") h</div>
+                                                                                }
                                                                             </td>
                                                                             <td class="amount">
                                                                                 <InputNumber class="form-input-inline" @bind-Value="line.Base" disabled="@(!IsPaySlipLineEditable(line))" />
@@ -259,6 +338,10 @@
                                                                             </td>
                                                                             <td class="amount">
                                                                                 <InputNumber class="form-input-inline" @bind-Value="line.GainAmount" disabled="@(!IsPaySlipLineEditable(line))" />
+                                                                                @if (line.Rubrique != "15000" && hasChanged)
+                                                                                {
+                                                                                    <div class="line-request-hint">👤 Demande: @reqVal.Value.ToString("N2") Ar</div>
+                                                                                }
                                                                             </td>
                                                                             <td class="amount">
                                                                                 <InputNumber class="form-input-inline" @bind-Value="line.EmployeeDeduction" disabled="@(!IsPaySlipLineEditable(line))" />
