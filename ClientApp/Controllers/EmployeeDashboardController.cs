@@ -8,15 +8,18 @@ namespace ClientApp.Controllers
     {
         private readonly IEmployeeModule _employeeModule;
         private readonly IEmployeePayrollModule _payrollModule;
+        private readonly IPayrollModule _paySlipModule;
         private readonly IEmployeeTimesheetModule _timesheetModule;
 
         public EmployeeDashboardController(
             IEmployeeModule employeeModule,
             IEmployeePayrollModule payrollModule,
+            IPayrollModule paySlipModule,
             IEmployeeTimesheetModule timesheetModule)
         {
             _employeeModule = employeeModule;
             _payrollModule = payrollModule;
+            _paySlipModule = paySlipModule;
             _timesheetModule = timesheetModule;
         }
 
@@ -30,6 +33,53 @@ namespace ClientApp.Controllers
         {
             var items = await _payrollModule.GetLastMonthsPayrollAsync(employeeId, 3);
             return items.Select(MapPayrollToViewModel).ToList();
+        }
+
+        public async Task<List<PaySlipViewModel>> IndexPaySlipsAsync(long employeeId, long enterpriseId)
+        {
+            var periods = await _paySlipModule.GetPeriodsByEnterpriseAsync(enterpriseId);
+            var recentPeriods = periods.OrderByDescending(p => p.PeriodStart).Take(3).ToList();
+            var result = new List<PaySlipViewModel>();
+
+            foreach (var period in recentPeriods)
+            {
+                try
+                {
+                    var paySlip = await _paySlipModule.GetPaySlipAsync(employeeId, period.PeriodID, enterpriseId);
+                    if (paySlip.Lines.Any())
+                    {
+                        result.Add(new PaySlipViewModel
+                        {
+                            BankAccountNumber = paySlip.BankAccountNumber,
+                            Classification = paySlip.Classification,
+                            Dependents = paySlip.Dependents,
+                            EmployeeID = paySlip.EmployeeID,
+                            EmployeeName = paySlip.EmployeeName,
+                            Lines = paySlip.Lines.Select(l => new PaySlipLineViewModel
+                            {
+                                Base = l.Base,
+                                EmployeeDeduction = l.EmployeeDeduction,
+                                EmployerContribution = l.EmployerContribution,
+                                GainAmount = l.GainAmount,
+                                Libelle = l.Libelle,
+                                LineType = l.LineType,
+                                Nombre = l.Nombre,
+                                Rubrique = l.Rubrique,
+                                SortOrder = l.SortOrder,
+                                Taux = l.Taux
+                            }).ToList(),
+                            NumeroCnaps = paySlip.NumeroCnaps,
+                            PayrollID = paySlip.PayrollID,
+                            PeriodID = paySlip.PeriodID,
+                            PeriodLabel = $"du {period.PeriodStart:dd/MM/yyyy} au {period.PeriodEnd:dd/MM/yyyy}",
+                            Poste = paySlip.Poste
+                        });
+                    }
+                }
+                catch { }
+            }
+
+            return result;
         }
 
         public async Task<List<EmployeeTimesheetViewModel>> IndexTimesheetAsync(long employeeId)

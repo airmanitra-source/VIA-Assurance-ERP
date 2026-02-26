@@ -1,0 +1,115 @@
+@using ClientApp.Models
+
+<div class="payslip-component">
+    <h2>📄 BULLETIN DE PAIE</h2>
+
+    @if (!string.IsNullOrEmpty(PeriodLabel))
+    {
+        <p class="period-label">Période @PeriodLabel</p>
+    }
+
+    <div class="payslip-header">
+        <div>
+            <p><strong>@PaySlip.EmployeeName</strong></p>
+            <p>Fonction: @PaySlip.Poste</p>
+            <p>N° CNaPS: @PaySlip.NumeroCnaps</p>
+            <p>Classification: @PaySlip.Classification</p>
+        </div>
+        <div class="payslip-header-right">
+            <p>Compte N°: @PaySlip.BankAccountNumber</p>
+        </div>
+    </div>
+
+    <table class="payslip-table">
+        <thead>
+            <tr>
+                <th>Rubrique</th>
+                <th>Libellé</th>
+                <th>Nombre</th>
+                <th>Base</th>
+                <th>Taux</th>
+                <th colspan="2">Part salariale</th>
+                <th colspan="2">Part patronale</th>
+            </tr>
+            <tr>
+                <th></th><th></th><th></th><th></th><th></th>
+                <th>Gain</th><th>Retenue</th>
+                <th>Gain</th><th>Retenue</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var line in PaySlip.Lines.Where(l => l.LineType == "Gain").OrderBy(l => l.SortOrder))
+            {
+                <tr>
+                    <td>@line.Rubrique</td>
+                    <td>@line.Libelle</td>
+                    <td class="amount">@line.Nombre?.ToString("N0")</td>
+                    <td class="amount">@line.Base?.ToString("N2")</td>
+                    <td></td>
+                    <td class="amount">@line.GainAmount.ToString("N2")</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            }
+            <tr class="total-row">
+                <td></td>
+                <td><strong>Total Brut</strong></td>
+                <td></td><td></td><td></td>
+                <td class="amount"><strong>@PaySlip.TotalGains.ToString("N2")</strong></td>
+                <td></td><td></td><td></td>
+            </tr>
+
+            @foreach (var line in PaySlip.Lines.Where(l => l.LineType == "Cotisation").OrderBy(l => l.SortOrder))
+            {
+                <tr>
+                    <td>@line.Rubrique</td>
+                    <td>@line.Libelle</td>
+                    <td></td>
+                    <td class="amount">@line.Base?.ToString("N2")</td>
+                    <td></td>
+                    <td></td>
+                    <td class="amount deduction">@line.EmployeeDeduction.ToString("N2")</td>
+                    <td></td>
+                    <td class="amount deduction">@line.EmployerContribution.ToString("N2")</td>
+                </tr>
+            }
+            <tr class="total-row">
+                <td></td>
+                <td><strong>Total Cotisation</strong></td>
+                <td></td><td></td><td></td><td></td>
+                <td class="amount"><strong>@PaySlip.TotalCotisationsEmployee.ToString("N2")</strong></td>
+                <td></td>
+                <td class="amount"><strong>@PaySlip.TotalCotisationsEmployer.ToString("N2")</strong></td>
+            </tr>
+
+            @foreach (var line in PaySlip.Lines.Where(l => l.LineType == "Impot").OrderBy(l => l.SortOrder))
+            {
+                <tr>
+                    <td>@line.Rubrique</td>
+                    <td>@line.Libelle</td>
+                    <td class="amount">@(line.Nombre.HasValue ? line.Nombre.Value.ToString("N0") : "")</td>
+                    <td class="amount">@(line.Base.HasValue ? line.Base.Value.ToString("N2") : "")</td>
+                    <td></td>
+                    <td class="amount">@(line.GainAmount > 0 ? line.GainAmount.ToString("N2") : "")</td>
+                    <td class="amount deduction">@(line.EmployeeDeduction > 0 ? line.EmployeeDeduction.ToString("N2") : "")</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr class="net-row">
+                <td colspan="5"><strong>NET A PAYER</strong></td>
+                <td colspan="4" class="amount net-amount"><strong>@PaySlip.NetAPayer.ToString("N2") Ar</strong></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    @if (Actions != null)
+    {
+        <div class="payslip-actions">
+            @Actions
+        </div>
+    }
+</div>

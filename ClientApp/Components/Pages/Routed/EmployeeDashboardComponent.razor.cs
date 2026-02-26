@@ -14,6 +14,7 @@ namespace ClientApp.Components.Pages.Routed
         protected bool isSubmitting = false;
         protected EmployeeTimesheetViewModel newTimesheet = new();
         protected List<EmployeePayrollViewModel>? payrolls;
+        protected List<PaySlipViewModel>? paySlips;
         protected EmployeeViewModel? profile;
         protected string timesheetMessage = string.Empty;
         protected bool timesheetSuccess;
@@ -58,6 +59,7 @@ namespace ClientApp.Components.Pages.Routed
                 {
                     timesheets = await DashboardController.IndexTimesheetAsync(profile.EmployeeID);
                     payrolls = await DashboardController.IndexPayrollAsync(profile.EmployeeID);
+                    paySlips = await DashboardController.IndexPaySlipsAsync(profile.EmployeeID, profile.EntrepriseId);
                 }
             }
             catch (Exception ex)

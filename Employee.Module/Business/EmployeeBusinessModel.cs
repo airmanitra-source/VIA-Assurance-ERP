@@ -6,9 +6,15 @@ namespace Employee.Module.Business
 
         public int Age { get; set; }
 
+        public string? BankAccountNumber { get; set; }
+
+        public string? Classification { get; set; }
+
         public DateTime? DateEmbauche { get; set; }
 
         public DateTime? DateFinContrat { get; set; }
+
+        public int Dependents { get; set; }
 
         public string? Email { get; set; }
 
@@ -23,6 +29,8 @@ namespace Employee.Module.Business
         public int NombreMoisPoste { get; set; }
 
         public string? NomPoste { get; set; }
+
+        public string? NumeroCnaps { get; set; }
 
         public string? NumeroMatricule { get; set; }
 

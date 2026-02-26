@@ -187,48 +187,15 @@
         {
             <div class="section-card">
                 <h2>Bulletins de Paie — 3 Derniers Mois</h2>
-                @if (payrolls == null || !payrolls.Any())
+                @if (paySlips == null || !paySlips.Any())
                 {
                     <div class="empty-state-inline">Aucun bulletin de paie disponible pour le moment.</div>
                 }
                 else
                 {
-                    @foreach (var p in payrolls)
+                    @foreach (var slip in paySlips)
                     {
-                        <div class="payroll-card">
-                            <div class="payroll-header">
-                                <h3>📄 @p.PeriodLabel</h3>
-                                <span class="payroll-date">Payé le @p.PaymentDate.ToString("dd/MM/yyyy")</span>
-                            </div>
-                            <div class="payroll-details">
-                                <div class="payroll-line">
-                                    <span>Salaire de base</span>
-                                    <span>@p.BaseSalary.ToString("N2") Ar</span>
-                                </div>
-                                @if (p.Bonus > 0)
-                                {
-                                    <div class="payroll-line bonus">
-                                        <span>Bonus</span>
-                                        <span>+ @p.Bonus.ToString("N2") Ar</span>
-                                    </div>
-                                }
-                                @if (p.Deductions > 0)
-                                {
-                                    <div class="payroll-line deduction">
-                                        <span>Déductions</span>
-                                        <span>- @p.Deductions.ToString("N2") Ar</span>
-                                    </div>
-                                }
-                                <div class="payroll-line net">
-                                    <span><strong>Salaire Net</strong></span>
-                                    <span><strong>@p.NetSalary.ToString("N2") Ar</strong></span>
-                                </div>
-                            </div>
-                            @if (!string.IsNullOrEmpty(p.Notes))
-                            {
-                                <div class="payroll-notes">📝 @p.Notes</div>
-                            }
-                        </div>
+                        <PaySlipPreviewComponent PaySlip="slip" PeriodLabel="@slip.PeriodLabel" />
                     }
                 }
             </div>

@@ -95,8 +95,11 @@ namespace Employee.Module
             return new EmployeeDataModel
             {
                 Age = businessModel.Age,
+                BankAccountNumber = businessModel.BankAccountNumber,
+                Classification = businessModel.Classification,
                 DateEmbauche = businessModel.DateEmbauche,
                 DateFinContrat = businessModel.DateFinContrat,
+                Dependents = businessModel.Dependents,
                 EmployeeID = businessModel.EmployeeID,
                 Email = businessModel.Email,
                 EntrepriseID = businessModel.EntrepriseID,
@@ -105,6 +108,7 @@ namespace Employee.Module
                 Nom = businessModel.Nom,
                 NombreMoisPoste = businessModel.NombreMoisPoste,
                 NomPoste = businessModel.NomPoste,
+                NumeroCnaps = businessModel.NumeroCnaps,
                 NumeroMatricule = businessModel.NumeroMatricule,
                 Prenom = businessModel.Prenom,
                 Salaire = businessModel.Salaire,
@@ -119,8 +123,11 @@ namespace Employee.Module
             return new EmployeeBusinessModel
             {
                 Age = dataModel.Age,
+                BankAccountNumber = dataModel.BankAccountNumber,
+                Classification = dataModel.Classification,
                 DateEmbauche = dataModel.DateEmbauche,
                 DateFinContrat = dataModel.DateFinContrat,
+                Dependents = dataModel.Dependents,
                 EmployeeID = dataModel.EmployeeID,
                 Email = dataModel.Email,
                 EntrepriseID = dataModel.EntrepriseID,
@@ -129,6 +136,7 @@ namespace Employee.Module
                 Nom = dataModel.Nom,
                 NombreMoisPoste = dataModel.NombreMoisPoste,
                 NomPoste = dataModel.NomPoste,
+                NumeroCnaps = dataModel.NumeroCnaps,
                 NumeroMatricule = dataModel.NumeroMatricule,
                 Prenom = dataModel.Prenom,
                 Salaire = dataModel.Salaire,

@@ -221,4 +221,55 @@ public class EmailService : IEmailService
 
         await Task.CompletedTask;
     }
+
+    public async Task SendPaySlipDraftEmailAsync(string email, string employeeName, string periodLabel, string portalUrl)
+    {
+        var subject = $"Bulletin de paie - {periodLabel}";
+        var htmlBody = GeneratePaySlipDraftEmailHtml(employeeName, periodLabel, portalUrl);
+        await SendEmailAsync(email, subject, htmlBody);
+    }
+
+    private string GeneratePaySlipDraftEmailHtml(string employeeName, string periodLabel, string portalUrl)
+    {
+        return $@"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <style>
+        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }}
+        .header {{ background-color: #1e318c; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }}
+        .content {{ padding: 20px; }}
+        .button {{ display: inline-block; padding: 12px 24px; background-color: #38a169; color: white; text-decoration: none; border-radius: 4px; margin: 20px 0; }}
+        .footer {{ background-color: #f9f9f9; padding: 15px; text-align: center; font-size: 12px; color: #666; border-radius: 0 0 8px 8px; }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h1>ERP ASSUR</h1>
+            <p>Bulletin de paie</p>
+        </div>
+        <div class='content'>
+            <p>Bonjour {employeeName},</p>
+            <p>Votre bulletin de paie pour la période <strong>{periodLabel}</strong> est disponible en consultation.</p>
+            <p>Veuillez vous connecter à votre portail employé pour vérifier et valider les informations :</p>
+
+            <center>
+                <a href='{portalUrl}' class='button'>Accéder à mon portail</a>
+            </center>
+
+            <p>Si vous constatez une erreur, veuillez contacter le service RH dans les plus brefs délais.</p>
+
+            <p>Cordialement,<br/>Le service des Ressources Humaines</p>
+        </div>
+        <div class='footer'>
+            <p>&copy; 2026 ERP ASSUR. Tous droits réservés.</p>
+            <p>Ceci est un message automatique. Merci de ne pas répondre à cet email.</p>
+        </div>
+    </div>
+</body>
+</html>";
+    }
 }

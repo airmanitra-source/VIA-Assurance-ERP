@@ -786,4 +786,43 @@
   <data name="Salary" xml:space="preserve">
     <value>Salaire</value>
   </data>
+  <data name="Payroll" xml:space="preserve">
+    <value>Paie</value>
+  </data>
+  <data name="PayrollDescription" xml:space="preserve">
+    <value>Gestion de la paie et des bulletins de salaire</value>
+  </data>
+  <data name="PayrollPeriod" xml:space="preserve">
+    <value>Période de paie</value>
+  </data>
+  <data name="SelectPeriod" xml:space="preserve">
+    <value>Sélectionner une période</value>
+  </data>
+  <data name="SelectEmployee" xml:space="preserve">
+    <value>Sélectionner un employé</value>
+  </data>
+  <data name="PaySlipVariables" xml:space="preserve">
+    <value>Variables du bulletin</value>
+  </data>
+  <data name="SchoolAllowance" xml:space="preserve">
+    <value>Prime de scolarité</value>
+  </data>
+  <data name="TransportAllowance" xml:space="preserve">
+    <value>Indemnité de déplacement</value>
+  </data>
+  <data name="HousingAllowance" xml:space="preserve">
+    <value>Indemnité de logement</value>
+  </data>
+  <data name="OvertimeHours" xml:space="preserve">
+    <value>Heures supplémentaires</value>
+  </data>
+  <data name="GeneratePaySlip" xml:space="preserve">
+    <value>Générer le bulletin</value>
+  </data>
+  <data name="SavePaySlip" xml:space="preserve">
+    <value>Enregistrer le bulletin</value>
+  </data>
+  <data name="SubmitDraftToEmployee" xml:space="preserve">
+    <value>Soumettre à l'employé</value>
+  </data>
 </root>

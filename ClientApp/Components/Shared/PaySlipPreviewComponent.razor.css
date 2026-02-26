@@ -1,0 +1,99 @@
+.payslip-component {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 24px;
+}
+
+.payslip-component h2 {
+    font-size: 18px;
+    color: #2d3748;
+    margin: 0 0 8px 0;
+}
+
+.period-label {
+    color: #718096;
+    font-size: 13px;
+    margin: 0 0 20px 0;
+}
+
+.payslip-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: #f7fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.payslip-header p {
+    margin: 4px 0;
+    font-size: 13px;
+    color: #4a5568;
+}
+
+.payslip-header-right {
+    text-align: right;
+}
+
+.payslip-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.payslip-table th,
+.payslip-table td {
+    padding: 8px 10px;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+.payslip-table th {
+    background: #edf2f7;
+    font-weight: 600;
+    text-align: center;
+    color: #2d3748;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.payslip-table .amount {
+    text-align: right;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-weight: 500;
+}
+
+.payslip-table .deduction {
+    color: #c53030;
+}
+
+.payslip-table .total-row {
+    background: #f7fafc;
+    font-weight: 700;
+}
+
+.payslip-table .net-row {
+    background: #2d3748;
+    color: white;
+    font-size: 15px;
+}
+
+.payslip-table .net-row td {
+    border-color: #2d3748;
+    padding: 12px 10px;
+}
+
+.payslip-table .net-amount {
+    text-align: right;
+    font-family: 'Consolas', 'Courier New', monospace;
+}
+
+.payslip-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}

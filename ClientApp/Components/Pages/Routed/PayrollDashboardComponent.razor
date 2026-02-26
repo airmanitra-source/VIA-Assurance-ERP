@@ -1,0 +1,157 @@
+@page "/payroll"
+@inherits AuthenticatedComponentBase
+@rendermode InteractiveServer
+@using ClientApp.Models
+@using ClientApp.Services
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "directeur,RH,admin,developer")]
+
+<PageTitle>@Localizer["Payroll"] - ERP ASSUR Dashboard</PageTitle>
+
+<div class="payroll-container">
+    <div class="payroll-card">
+        <div class="header">
+            <h1>💰 @Localizer["Payroll"]</h1>
+            <p>@Localizer["PayrollDescription"]</p>
+        </div>
+
+        @if (isLoading)
+        {
+            <div class="loading-state">
+                <span class="spinner"></span>
+                <p>Chargement...</p>
+            </div>
+        }
+        else if (currentCompany == null)
+        {
+            <div class="error-message">⚠️ Impossible de charger les données entreprise</div>
+        }
+        else
+        {
+            <div class="enterprise-info">
+                <span>@Localizer["Enterprise"]: <strong>@currentCompany.RaisonSocial</strong></span>
+            </div>
+
+            @* === SECTION 1: Créer une période === *@
+            <div class="section">
+                <h2>📅 @Localizer["PayrollPeriod"]</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>@Localizer["StartDate"]</label>
+                        <input type="date" class="form-input" @bind="newPeriodStart" />
+                    </div>
+                    <div class="form-group">
+                        <label>@Localizer["EndDate"]</label>
+                        <input type="date" class="form-input" @bind="newPeriodEnd" />
+                    </div>
+                    <div class="form-group" style="align-self: end;">
+                        <button class="btn-primary" @onclick="CreatePeriodAsync">@Localizer["Add"]</button>
+                    </div>
+                </div>
+
+                @if (periods.Any())
+                {
+                    <div class="form-group">
+                        <label>@Localizer["SelectPeriod"]</label>
+                        <select class="form-input" @bind="selectedPeriodId">
+                            <option value="">— @Localizer["Select"] —</option>
+                            @foreach (var period in periods)
+                            {
+                                <option value="@period.PeriodID">@period.PeriodLabel (@period.Status)</option>
+                            }
+                        </select>
+                    </div>
+                }
+            </div>
+
+            @* === SECTION 2: Sélectionner un employé === *@
+            @if (selectedPeriodId.HasValue)
+            {
+                <div class="section">
+                    <h2>👤 @Localizer["SelectEmployee"]</h2>
+                    <div class="form-group">
+                        <select class="form-input" @onchange="OnEmployeeSelected">
+                            <option value="">— @Localizer["Select"] —</option>
+                            @foreach (var emp in employees)
+                            {
+                                <option value="@emp.EmployeeID">@emp.Prenom @emp.Nom — @emp.NomPoste (@(emp.Salaire?.ToString("N2") ?? "0") Ar)</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            }
+
+            @* === SECTION 3: Saisie des variables === *@
+            @if (selectedEmployeeId.HasValue)
+            {
+                <div class="section">
+                    <h2>📝 @Localizer["PaySlipVariables"]</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Bonus</label>
+                            <input type="number" class="form-input" step="0.01" @bind="paySlipInput.Bonus" />
+                        </div>
+                        <div class="form-group">
+                            <label>@Localizer["SchoolAllowance"]</label>
+                            <input type="number" class="form-input" step="0.01" @bind="paySlipInput.PrimeScolarite" />
+                        </div>
+                        <div class="form-group">
+                            <label>@Localizer["TransportAllowance"]</label>
+                            <input type="number" class="form-input" step="0.01" @bind="paySlipInput.IndemniteTransport" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>@Localizer["HousingAllowance"]</label>
+                            <input type="number" class="form-input" step="0.01" @bind="paySlipInput.IndemniteLogement" />
+                        </div>
+                        <div class="form-group">
+                            <label>@Localizer["OvertimeHours"]</label>
+                            <input type="number" class="form-input" step="0.5" @bind="paySlipInput.OvertimeHours" />
+                        </div>
+                        <div class="form-group" style="align-self: end;">
+                            <button class="btn-primary" @onclick="GeneratePreviewAsync" disabled="@isGenerating">
+                                @(isGenerating ? "⏳" : "📊") @Localizer["GeneratePaySlip"]
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @* === SECTION 4: Aperçu bulletin === *@
+            @if (paySlipPreview != null)
+            {
+                <div class="section">
+                    <PaySlipPreviewComponent PaySlip="paySlipPreview">
+                        <Actions>
+                            <button class="btn-primary" @onclick="SavePaySlipAsync">
+                                💾 @Localizer["SavePaySlip"]
+                            </button>
+                            @if (isPaySlipSaved)
+                            {
+                                <button class="btn-submit-draft" @onclick="SubmitDraftToEmployeeAsync" disabled="@isSubmittingDraft">
+                                    @(isSubmittingDraft ? "⏳" : "📧") @Localizer["SubmitDraftToEmployee"]
+                                </button>
+                            }
+                        </Actions>
+                    </PaySlipPreviewComponent>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(successMessage))
+            {
+                <div class="success-message">✅ @successMessage</div>
+            }
+
+            @if (errors.Any())
+            {
+                <div class="error-list">
+                    @foreach (var error in errors)
+                    {
+                        <div class="error-message">⚠️ @error</div>
+                    }
+                </div>
+            }
+        }
+    </div>
+</div>

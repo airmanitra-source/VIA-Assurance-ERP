@@ -8,5 +8,6 @@ namespace FileTable.Infrastructure.Services
     {
         Task SendPasswordResetEmailAsync(string email, string userName, string resetToken, string resetUrl);
         Task SendPasswordResetConfirmationEmailAsync(string email, string userName);
+        Task SendPaySlipDraftEmailAsync(string email, string employeeName, string periodLabel, string portalUrl);
     }
 }
