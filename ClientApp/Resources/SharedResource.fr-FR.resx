@@ -825,4 +825,7 @@
   <data name="Username" xml:space="preserve">
     <value>Adresse courriel</value>
   </data>
+  <data name="NumberOfChildren" xml:space="preserve">
+    <value>Nombre d'enfants à charge</value>
+  </data>
 </root>

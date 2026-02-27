@@ -170,47 +170,6 @@ namespace ClientApp.Controllers
             await _payrollModule.SetPaySlipAsync(business, paymentDate, periodMonth, periodYear);
         }
 
-        /// <summary>
-        /// Get all employees for the payroll period selector
-        /// </summary>
-        public async Task<List<EmployeeViewModel>> IndexEmployeesAsync(long enterpriseId)
-        {
-            var employees = await _employeeModule.GetEmployeesByEnterpriseIdAsync(enterpriseId);
-            return employees
-                .Where(e => e.IsActive)
-                .Select(e => new EmployeeViewModel
-                {
-                    EmployeeID = e.EmployeeID,
-                    Nom = e.Nom,
-                    NomPoste = e.NomPoste,
-                    Prenom = e.Prenom,
-                    Salaire = e.Salaire
-                })
-                .OrderBy(e => e.Nom)
-                .ThenBy(e => e.Prenom)
-                .ToList();
-        }
-
-        /// <summary>
-        /// Get employees without payslips for a specific period
-        /// </summary>
-        public async Task<List<EmployeeViewModel>> IndexEmployeesWithoutPaySlipAsync(long enterpriseId, int periodId)
-        {
-            var employees = await _employeeModule.GetEmployeesWithoutPaySlipForPeriodAsync(enterpriseId, periodId);
-            return employees
-                .Select(e => new EmployeeViewModel
-                {
-                    EmployeeID = e.EmployeeID,
-                    Nom = e.Nom,
-                    NomPoste = e.NomPoste,
-                    Prenom = e.Prenom,
-                    Salaire = e.Salaire
-                })
-                .OrderBy(e => e.Nom)
-                .ThenBy(e => e.Prenom)
-                .ToList();
-        }
-
         private static PaySlipViewModel MapToViewModel(PaySlipBusinessModel business)
         {
             return new PaySlipViewModel

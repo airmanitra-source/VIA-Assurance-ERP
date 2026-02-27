@@ -83,7 +83,7 @@
                         <div class="form-group">
                             <select class="form-input" @bind="selectedEmployeeId" @bind:after="OnEmployeeSelectedAsync">
                                 <option value="">— @Localizer["Select"] —</option>
-                                @foreach (var emp in employees)
+                                @foreach (var emp in eligibleEmployees)
                                 {
                                     <option value="@emp.EmployeeID">@emp.Prenom @emp.Nom — @emp.NomPoste</option>
                                 }

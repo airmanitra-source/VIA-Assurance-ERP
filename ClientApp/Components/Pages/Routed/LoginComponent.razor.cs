@@ -51,7 +51,11 @@ namespace ClientApp.Components.Pages.Routed
                 // Get the user's roles to determine the redirect URL
                 var authState = await AuthStateProvider.GetAuthenticationStateAsync();
                 var user = authState.User;
-                
+                if (user.IsInRole("developer"))
+                {
+                    Navigation.NavigateTo("/");
+                    return;
+                }
                 // Check if user has the "employee" role
                 if (user.IsInRole("employee"))
                 {

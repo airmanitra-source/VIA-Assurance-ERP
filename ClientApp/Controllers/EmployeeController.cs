@@ -4,7 +4,6 @@ using Employee.Module.Business;
 using EmployeeDocuments.Module;
 using EmployeeDocuments.Module.Business;
 using Project.Module;
-using System.Linq;
 
 namespace ClientApp.Controllers
 {
@@ -35,6 +34,49 @@ namespace ClientApp.Controllers
             var employees = await _employeeModule.GetEmployeesByEnterpriseIdAsync(enterpriseId);
             return employees
                 .Select(MapBusinessModelToViewModel)
+                .OrderBy(e => e.Nom)
+                .ThenBy(e => e.Prenom)
+                .ToList();
+        }
+
+
+        /// <summary>
+        /// Get all employees for the payroll period selector
+        /// </summary>
+        public async Task<List<EmployeeViewModel>> IndexEmployeesAsync(long enterpriseId)
+        {
+            var employees = await _employeeModule.GetEmployeesByEnterpriseIdAsync(enterpriseId);
+            return employees
+                .Where(e => e.IsActive)
+                .Select(e => new EmployeeViewModel
+                {
+                    EmployeeID = e.EmployeeID,
+                    Nom = e.Nom,
+                    NomPoste = e.NomPoste,
+                    Prenom = e.Prenom,
+                    Salaire = e.Salaire
+                })
+                .OrderBy(e => e.Nom)
+                .ThenBy(e => e.Prenom)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Get employees without payslips for a specific period
+        /// </summary>
+        public async Task<List<EmployeeViewModel>> IndexEmployeesWithoutPaySlipAsync(long enterpriseId, int periodId)
+        {
+            var employees = await _employeeModule.GetEmployeesWithoutPaySlipForPeriodAsync(enterpriseId, periodId);
+            return employees
+                .Where(x => x.IsActive)
+                .Select(e => new EmployeeViewModel
+                {
+                    EmployeeID = e.EmployeeID,
+                    Nom = e.Nom,
+                    NomPoste = e.NomPoste,
+                    Prenom = e.Prenom,
+                    Salaire = e.Salaire
+                })
                 .OrderBy(e => e.Nom)
                 .ThenBy(e => e.Prenom)
                 .ToList();
@@ -97,12 +139,14 @@ namespace ClientApp.Controllers
 
             try
             {
-                // Capture old salary if updating
+                // Capture old values if updating
                 decimal? oldSalary = null;
+                int? oldDependents = null;
                 if (employeeId.HasValue)
                 {
                     var existingDetail = await _employeeModule.GetEmployeeByIdAndEnterpriseAsync(employeeId.Value, enterpriseId);
                     oldSalary = existingDetail?.Employee.Salaire;
+                    oldDependents = existingDetail?.Employee.Dependents;
                 }
 
                 // Map ViewModel to Business Model
@@ -115,13 +159,16 @@ namespace ClientApp.Controllers
                     savedEmployeeId = employeeId.Value;
                     result.Message = $"Employee {viewModel.Prenom} {viewModel.Nom} updated successfully!";
 
-                    // PaySlip Recalculation: If salary changed, recalculate all draft payslips
-                    if (oldSalary.HasValue && viewModel.Salaire != oldSalary.Value)
+                    // PaySlip Recalculation: If salary or number of children changed, recalculate all draft payslips
+                    bool salaryChanged = oldSalary.HasValue && viewModel.Salaire != oldSalary.Value;
+                    bool dependentsChanged = oldDependents.HasValue && viewModel.NombreEnfants != oldDependents.Value;
+
+                    if (salaryChanged || dependentsChanged)
                     {
                         await _payrollModule.SetRecalculateDraftPaySlipsForEmployeeAsync(
                             employeeId.Value, 
                             enterpriseId, 
-                            viewModel.Salaire);
+                            salaryChanged ? viewModel.Salaire : null);
                     }
                 }
                 else
@@ -214,6 +261,7 @@ namespace ClientApp.Controllers
                 Fonctions = business.Fonctions ?? string.Empty,
                 IsActive = business.IsActive,
                 Nom = business.Nom,
+                NombreEnfants = business.Dependents,
                 NombreMoisPoste = business.NombreMoisPoste,
                 NomPoste = business.NomPoste ?? string.Empty,
                 NumeroMatricule = business.NumeroMatricule ?? string.Empty,
@@ -240,6 +288,7 @@ namespace ClientApp.Controllers
                 EntrepriseID = enterpriseId,
                 Fonctions = viewModel.Fonctions,
                 IsActive = true,
+                Dependents = viewModel.NombreEnfants,
                 Nom = viewModel.Nom,
                 NombreMoisPoste = viewModel.NombreMoisPoste,
                 NomPoste = viewModel.NomPoste,

@@ -26,7 +26,10 @@ namespace ClientApp.Models
         [Required(ErrorMessage = "Nom is required")]
         public string Nom { get; set; } = string.Empty;
 
-        [Range(0, 1000, ErrorMessage = "Nombre de mois must be positive")]
+        [Range(0, 30, ErrorMessage = "Nombre d'enfants doit etre entre 0 et 30")]
+        public int NombreEnfants { get; set; }
+
+        [Range(0, 1000, ErrorMessage = "Nombre de mois doit être positif")]
         public int NombreMoisPoste { get; set; }
 
         public string? NomPoste { get; set; }
@@ -64,6 +67,7 @@ namespace ClientApp.Models
                 Fonctions = employee.Fonctions,
                 IsActive = employee.IsActive,
                 Nom = employee.Nom,
+                NombreEnfants = employee.Dependents,
                 NombreMoisPoste = employee.NombreMoisPoste,
                 NomPoste = employee.NomPoste,
                 NumeroMatricule = employee.NumeroMatricule,

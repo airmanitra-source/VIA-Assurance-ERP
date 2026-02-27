@@ -80,6 +80,7 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
                 Age = entity.Age,
                 DateEmbauche = entity.DateEmbauche,
                 DateFinContrat = entity.DateFinContrat,
+                Dependents = entity.NombreEnfants,
                 Email = entity.Email,
                 EntrepriseID = entity.EntrepriseID,
                 Fonctions = entity.Fonctions,

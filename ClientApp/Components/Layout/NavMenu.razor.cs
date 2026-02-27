@@ -11,6 +11,8 @@ namespace ClientApp.Components.Layout
         private AuthenticationStateProvider AuthStateProvider { get; set; } = default!;
 
         private bool IsRHOnly { get; set; }
+        private bool IsDeveloper { get; set; }
+
         private bool showEmployeesMenu = false;
         private bool showInsurancesMenu = false;
 
@@ -23,6 +25,7 @@ namespace ClientApp.Components.Layout
             // "RH seulement" might include 'employee' as it's a base role, 
             // but we check if any other management roles are present.
             var managementRoles = new[] { "directeur", "auditeur", "admin", "developer" };
+            IsDeveloper = roles.Contains("developer");
             var isRH = roles.Contains("RH");
             var hasOtherManagementRoles = roles.Any(r => managementRoles.Contains(r));
 

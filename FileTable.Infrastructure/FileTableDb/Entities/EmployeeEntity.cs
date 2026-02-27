@@ -20,6 +20,8 @@ namespace FileTable.Infrastructure.FileTableDb.Entities
 
         public string Nom { get; set; } = string.Empty;
 
+        public int NombreEnfants { get; set; }
+
         public int NombreMoisPoste { get; set; }
 
         public string? NomPoste { get; set; }

@@ -20,8 +20,8 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
             using var transaction = connection.BeginTransaction();
 
             var insertEmployeeSql = @"
-                INSERT INTO [documentdb].[dbo].[Employee] (Nom, Prenom, Age, Sexe, Salaire, NomPoste, Fonctions, NombreMoisPoste, StatutEmploye, EntrepriseID, IsActive, NumeroMatricule, DateEmbauche, DateFinContrat, Email, VouloirSouscrire)
-                VALUES (@Nom, @Prenom, @Age, @Sexe, @Salaire, @NomPoste, @Fonctions, @NombreMoisPoste, @StatutEmploye, @EntrepriseID, @IsActive, @NumeroMatricule, @DateEmbauche, @DateFinContrat, @Email, @VouloirSouscrire);
+                INSERT INTO [documentdb].[dbo].[Employee] (Nom, Prenom, Age, Sexe, Salaire, NomPoste, Fonctions, NombreEnfants, NombreMoisPoste, StatutEmploye, EntrepriseID, IsActive, NumeroMatricule, DateEmbauche, DateFinContrat, Email, VouloirSouscrire)
+                VALUES (@Nom, @Prenom, @Age, @Sexe, @Salaire, @NomPoste, @Fonctions, @Dependents, @NombreMoisPoste, @StatutEmploye, @EntrepriseID, @IsActive, @NumeroMatricule, @DateEmbauche, @DateFinContrat, @Email, @VouloirSouscrire);
                 SELECT CAST(SCOPE_IDENTITY() as bigint);";
 
             var employeeId = await connection.ExecuteScalarAsync<long>(insertEmployeeSql, employee, transaction);
@@ -49,7 +49,7 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         public async Task<IEnumerable<EmployeeDataModel>> ReadEmployeesByEnterpriseAsync(long enterpriseId)
         {
             using var connection = _dbContext.CreateConnection();
-            var sql = "SELECT * FROM [documentdb].[dbo].[Employee] WHERE EntrepriseID = @enterpriseId";
+            var sql = "SELECT *, NombreEnfants AS Dependents FROM [documentdb].[dbo].[Employee] WHERE EntrepriseID = @enterpriseId";
             return await connection.QueryAsync<EmployeeDataModel>(sql, new { enterpriseId });
         }
 
@@ -65,6 +65,7 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
                     Salaire = @Salaire,
                     NomPoste = @NomPoste,
                     Fonctions = @Fonctions,
+                    NombreEnfants = @Dependents,
                     NombreMoisPoste = @NombreMoisPoste,
                     StatutEmploye = @StatutEmploye,
                     IsActive = @IsActive,

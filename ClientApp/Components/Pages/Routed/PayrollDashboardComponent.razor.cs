@@ -8,11 +8,13 @@ namespace ClientApp.Components.Pages.Routed
 {
     public partial class PayrollDashboardComponent : AuthenticatedComponentBase
     {
-        [Inject] protected PayrollController Controller { get; set; } = default!;
+        [Inject] protected PayrollController _payrollController { get; set; } = default!;
+        [Inject] protected EmployeeController _employeeController { get; set; } = default!;
+
         [Inject] protected IJSRuntime JSRuntime { get; set; } = default!;
 
         protected EntrepriseViewModel? currentCompany;
-        protected List<EmployeeViewModel> employees = new();
+        protected List<EmployeeViewModel> eligibleEmployees = new();
         protected List<string> errors = new();
         protected HashSet<int> expandedPaySlipIds = new();
         protected string activeTab = "draft";
@@ -44,7 +46,7 @@ namespace ClientApp.Components.Pages.Routed
 
             try
             {
-                var periodId = await Controller.Store(currentCompany.Id, newPeriodStart, newPeriodEnd);
+                var periodId = await _payrollController.Store(currentCompany.Id, newPeriodStart, newPeriodEnd);
                 successMessage = "Période de paie créée avec succès";
                 await LoadPeriodsAsync();
                 selectedPeriodId = periodId;
@@ -64,7 +66,7 @@ namespace ClientApp.Components.Pages.Routed
             isPaySlipSaved = false;
             try
             {
-                paySlipPreview = await Controller.ShowPreviewAsync(
+                paySlipPreview = await _payrollController.ShowPreviewAsync(
                     selectedEmployeeId.Value,
                     selectedPeriodId.Value,
                     currentCompany.Id,
@@ -85,7 +87,7 @@ namespace ClientApp.Components.Pages.Routed
             if (long.TryParse(e.Value?.ToString(), out var id))
             {
                 selectedEmployeeId = id;
-                var emp = employees.FirstOrDefault(x => x.EmployeeID == id);
+                var emp = eligibleEmployees.FirstOrDefault(x => x.EmployeeID == id);
                 paySlipInput = new PaySlipInputViewModel
                 {
                     EmployeeID = id,
@@ -101,7 +103,7 @@ namespace ClientApp.Components.Pages.Routed
             if (!selectedEmployeeId.HasValue)
                 return Task.CompletedTask;
 
-            var emp = employees.FirstOrDefault(x => x.EmployeeID == selectedEmployeeId.Value);
+            var emp = eligibleEmployees.FirstOrDefault(x => x.EmployeeID == selectedEmployeeId.Value);
             paySlipInput = new PaySlipInputViewModel
             {
                 EmployeeID = selectedEmployeeId.Value,
@@ -118,7 +120,7 @@ namespace ClientApp.Components.Pages.Routed
 
             try
             {
-                await Controller.StorePaySlipAsync(
+                await _payrollController.StorePaySlipAsync(
                     selectedEmployeeId.Value,
                     selectedPeriodId.Value,
                     currentCompany.Id,
@@ -148,7 +150,7 @@ namespace ClientApp.Components.Pages.Routed
 
             try
             {
-                await Controller.SubmitDraftToEmployeeAsync(
+                await _payrollController.SubmitDraftToEmployeeAsync(
                     selectedEmployeeId.Value,
                     selectedPeriodId.Value,
                     currentCompany.Id);
@@ -213,7 +215,7 @@ namespace ClientApp.Components.Pages.Routed
 
             try
             {
-                await Controller.StoreSavedPaySlipAsync(currentCompany.Id, selectedPeriodId.Value, paySlip);
+                await _payrollController.StoreSavedPaySlipAsync(currentCompany.Id, selectedPeriodId.Value, paySlip);
                 successMessage = $"Bulletin mis à jour pour {paySlip.EmployeeName}.";
                 await LoadSavedPaySlipsAsync();
             }
@@ -234,7 +236,7 @@ namespace ClientApp.Components.Pages.Routed
 
             try
             {
-                await Controller.RemovePaySlipAsync(paySlip.PayrollID);
+                await _payrollController.RemovePaySlipAsync(paySlip.PayrollID);
                 successMessage = "Bulletin supprimé avec succès.";
                 await LoadSavedPaySlipsAsync();
                 
@@ -293,7 +295,7 @@ namespace ClientApp.Components.Pages.Routed
                 if (company != null)
                 {
                     currentCompany = EntrepriseViewModel.FromBusinessModel(company);
-                    await Task.WhenAll(LoadPeriodsAsync(), LoadEmployeesAsync());
+                    await LoadPeriodsAsync();
                 }
             }
             catch (Exception ex)
@@ -306,16 +308,10 @@ namespace ClientApp.Components.Pages.Routed
             }
         }
 
-        private async Task LoadEmployeesAsync()
-        {
-            if (currentCompany == null) return;
-            employees = await Controller.IndexEmployeesAsync(currentCompany.Id);
-        }
-
         private async Task LoadPeriodsAsync()
         {
             if (currentCompany == null) return;
-            periods = await Controller.Index(currentCompany.Id);
+            periods = await _payrollController.Index(currentCompany.Id);
             
             if (!selectedPeriodId.HasValue && periods.Any())
             {
@@ -332,6 +328,21 @@ namespace ClientApp.Components.Pages.Routed
             }
         }
 
+        private async Task LoadEmployeesForPeriodAsync()
+        {
+            if (currentCompany == null || !selectedPeriodId.HasValue)
+                return;
+
+            try
+            {
+                eligibleEmployees = await _employeeController.IndexEmployeesWithoutPaySlipAsync(currentCompany.Id, selectedPeriodId.Value);
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"Erreur: {ex.Message}");
+            }
+        }
+
         private async Task LoadSavedPaySlipsAsync()
         {
             if (currentCompany == null || !selectedPeriodId.HasValue)
@@ -340,8 +351,8 @@ namespace ClientApp.Components.Pages.Routed
             isLoadingSaved = true;
             try
             {
-                savedPaySlips = await Controller.IndexSavedPaySlipsAsync(currentCompany.Id, selectedPeriodId.Value);
-                modificationRequests = await Controller.IndexModificationRequestsAsync(selectedPeriodId.Value, currentCompany.Id);
+                savedPaySlips = await _payrollController.IndexSavedPaySlipsAsync(currentCompany.Id, selectedPeriodId.Value);
+                modificationRequests = await _payrollController.IndexModificationRequestsAsync(selectedPeriodId.Value, currentCompany.Id);
                 EnrichPaySlipsWithMissingRequests();
                 expandedPaySlipIds.Clear();
             }
@@ -352,21 +363,6 @@ namespace ClientApp.Components.Pages.Routed
             finally
             {
                 isLoadingSaved = false;
-            }
-        }
-
-        private async Task LoadEmployeesForPeriodAsync()
-        {
-            if (currentCompany == null || !selectedPeriodId.HasValue)
-                return;
-
-            try
-            {
-                employees = await Controller.IndexEmployeesWithoutPaySlipAsync(currentCompany.Id, selectedPeriodId.Value);
-            }
-            catch (Exception ex)
-            {
-                errors.Add($"Erreur: {ex.Message}");
             }
         }
 

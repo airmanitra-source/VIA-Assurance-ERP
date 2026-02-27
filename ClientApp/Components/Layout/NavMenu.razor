@@ -22,8 +22,9 @@
                         <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> @Localizer["Home"]
                     </NavLink>
                 </div>
-
-                <AuthorizeView Roles="employee" Context="empCtx">
+                @if (!IsDeveloper)
+                {
+                    <AuthorizeView Roles="employee" Context="empCtx">
                     <Authorized>
                         <div class="nav-item px-3">
                             <NavLink class="nav-link" href="employee-dashboard">
@@ -32,7 +33,7 @@
                         </div>
                     </Authorized>
                 </AuthorizeView>
-
+                }
                 <AuthorizeView Roles="directeur,RH,auditeur,admin,developer" Context="mgmtCtx">
                     <Authorized>
                         <div class="nav-item px-3">

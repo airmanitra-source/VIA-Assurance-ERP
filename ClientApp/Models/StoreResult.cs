@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace ClientApp.Models
 {
     public class StoreResult
