@@ -164,10 +164,6 @@
                                             </td>
                                             <td>
                                                 @paySlip.EmployeeName
-                                                @if (paySlip.IsInvalidated)
-                                                {
-                                                    <span class="badge-invalidated-inline">⚠️ Salaire changé</span>
-                                                }
                                             </td>
                                             <td>@paySlip.Poste</td>
                                             <td>@paySlip.NetAPayer.ToString("N2") Ar</td>
@@ -176,7 +172,6 @@
                                                 {
                                                     <span class="badge-modif">📝 Demande employé</span>
                                                 }
-                                                <span class="badge-invalidated">⚠️ Salaire changé</span>
                                                 <button class="btn-danger" @onclick="() => DeletePaySlipAsync(paySlip)" disabled="@isSavingEdits">
                                                     🗑️ Supprimer
                                                 </button>

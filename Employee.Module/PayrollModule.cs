@@ -297,5 +297,193 @@ namespace Employee.Module
         {
             await DeletePayrollAsync(payrollId);
         }
+
+        public async Task SetRecalculateDraftPaySlipsForEmployeeAsync(long employeeId, long enterpriseId)
+        {
+            var settings = await GetSettingsAsync(enterpriseId);
+            var periods = await GetPeriodsByEnterpriseAsync(enterpriseId);
+            var draftPeriods = periods.Where(p => p.Status == "Draft" || p.Status == "Open").ToList();
+
+            if (!draftPeriods.Any())
+                return;
+
+            var empData = await _employeeReadWrite.ReadEmployeeByIdAsync((int)employeeId);
+            if (empData == null)
+                return;
+
+            var employee = new EmployeeBusinessModel
+            {
+                BankAccountNumber = empData.BankAccountNumber,
+                Classification = empData.Classification,
+                Dependents = empData.Dependents,
+                EmployeeID = empData.EmployeeID,
+                Nom = empData.Nom,
+                NomPoste = empData.NomPoste,
+                NumeroCnaps = empData.NumeroCnaps,
+                Prenom = empData.Prenom,
+                Salaire = empData.Salaire
+            };
+
+            await _transactionHandler.ExecuteInTransactionAsync(async () =>
+            {
+                foreach (var period in draftPeriods)
+                {
+                    var existingLines = await _lineReadOnly.ReadByPeriodAndEmployeeAsync(period.PeriodID, employeeId);
+                    if (!existingLines.Any())
+                        continue;
+
+                    int payrollId = existingLines.First().PayrollID;
+
+                    // Extract variable inputs from existing lines
+                    decimal? bonus = existingLines.FirstOrDefault(l => l.Rubrique == "17000")?.GainAmount;
+                    decimal? primeScolarite = existingLines.FirstOrDefault(l => l.Rubrique == "17100")?.GainAmount;
+                    decimal? treiziemeMois = existingLines.FirstOrDefault(l => l.Rubrique == "17200")?.GainAmount;
+                    decimal? indemniteTransport = existingLines.FirstOrDefault(l => l.Rubrique == "19400")?.GainAmount;
+                    decimal? indemniteLogement = existingLines.FirstOrDefault(l => l.Rubrique == "19500")?.GainAmount;
+                    decimal? overtimeHours = existingLines.FirstOrDefault(l => l.Rubrique == "15000")?.Nombre;
+
+                    var regenerated = PaySlipBusinessModel.Generate(
+                        employee,
+                        settings,
+                        period.PeriodID,
+                        payrollId,
+                        bonus: bonus,
+                        primeScolarite: primeScolarite,
+                        treiziemeMois: treiziemeMois,
+                        indemniteTransport: indemniteTransport,
+                        indemniteLogement: indemniteLogement,
+                        overtimeHours: overtimeHours);
+
+                    var payrollData = new EmployeePayrollDataModel
+                    {
+                        BaseSalary = regenerated.TotalGains,
+                        Bonus = 0,
+                        Deductions = regenerated.TotalCotisationsEmployee + regenerated.Irsa,
+                        EmployeeID = regenerated.EmployeeID,
+                        NetSalary = regenerated.NetAPayer,
+                        PayrollID = payrollId,
+                        PaymentDate = period.PaymentDate ?? DateTime.Now,
+                        PaymentMethod = "BankTransfer",
+                        PayPeriodMonth = period.PeriodStart.Month,
+                        PayPeriodYear = period.PeriodStart.Year
+                    };
+
+                    var lineDataModels = regenerated.Lines.Select(l => new PaySlipLineDataModel
+                    {
+                        Base = l.Base,
+                        EmployeeDeduction = l.EmployeeDeduction,
+                        EmployeeID = l.EmployeeID,
+                        EmployerContribution = l.EmployerContribution,
+                        GainAmount = l.GainAmount,
+                        Libelle = l.Libelle,
+                        LineType = l.LineType,
+                        Nombre = l.Nombre,
+                        PayrollID = payrollId,
+                        PeriodID = l.PeriodID,
+                        Rubrique = l.Rubrique,
+                        SortOrder = l.SortOrder,
+                        Taux = l.Taux
+                    }).ToList();
+
+                    await _paySlipUpdate.UpdatePaySlipAsync(payrollData, lineDataModels);
+                }
+
+                return true;
+            });
+        }
+
+        public async Task SetRecalculateDraftPaySlipsForEmployeeAsync(long employeeId, long enterpriseId, decimal? updatedSalary = null)
+        {
+            var settings = await GetSettingsAsync(enterpriseId);
+            var periods = await GetPeriodsByEnterpriseAsync(enterpriseId);
+            var draftPeriods = periods.Where(p => p.Status == "Draft" || p.Status == "Open").ToList();
+
+            if (!draftPeriods.Any())
+                return;
+
+            var empData = await _employeeReadWrite.ReadEmployeeByIdAsync((int)employeeId);
+            if (empData == null)
+                return;
+
+            var employee = new EmployeeBusinessModel
+            {
+                BankAccountNumber = empData.BankAccountNumber,
+                Classification = empData.Classification,
+                Dependents = empData.Dependents,
+                EmployeeID = empData.EmployeeID,
+                Nom = empData.Nom,
+                NomPoste = empData.NomPoste,
+                NumeroCnaps = empData.NumeroCnaps,
+                Prenom = empData.Prenom,
+                Salaire = updatedSalary ?? empData.Salaire
+            };
+
+            await _transactionHandler.ExecuteInTransactionAsync(async () =>
+            {
+                foreach (var period in draftPeriods)
+                {
+                    var existingLines = await _lineReadOnly.ReadByPeriodAndEmployeeAsync(period.PeriodID, employeeId);
+                    if (!existingLines.Any())
+                        continue;
+
+                    int payrollId = existingLines.First().PayrollID;
+
+                    // Extract variable inputs from existing lines
+                    decimal? bonus = existingLines.FirstOrDefault(l => l.Rubrique == "17000")?.GainAmount;
+                    decimal? primeScolarite = existingLines.FirstOrDefault(l => l.Rubrique == "17100")?.GainAmount;
+                    decimal? treiziemeMois = existingLines.FirstOrDefault(l => l.Rubrique == "17200")?.GainAmount;
+                    decimal? indemniteTransport = existingLines.FirstOrDefault(l => l.Rubrique == "19400")?.GainAmount;
+                    decimal? indemniteLogement = existingLines.FirstOrDefault(l => l.Rubrique == "19500")?.GainAmount;
+                    decimal? overtimeHours = existingLines.FirstOrDefault(l => l.Rubrique == "15000")?.Nombre;
+
+                    var regenerated = PaySlipBusinessModel.Generate(
+                        employee,
+                        settings,
+                        period.PeriodID,
+                        payrollId,
+                        bonus: bonus,
+                        primeScolarite: primeScolarite,
+                        treiziemeMois: treiziemeMois,
+                        indemniteTransport: indemniteTransport,
+                        indemniteLogement: indemniteLogement,
+                        overtimeHours: overtimeHours);
+
+                    var payrollData = new EmployeePayrollDataModel
+                    {
+                        BaseSalary = regenerated.TotalGains,
+                        Bonus = 0,
+                        Deductions = regenerated.TotalCotisationsEmployee + regenerated.Irsa,
+                        EmployeeID = regenerated.EmployeeID,
+                        NetSalary = regenerated.NetAPayer,
+                        PayrollID = payrollId,
+                        PaymentDate = period.PaymentDate ?? DateTime.Now,
+                        PaymentMethod = "BankTransfer",
+                        PayPeriodMonth = period.PeriodStart.Month,
+                        PayPeriodYear = period.PeriodStart.Year
+                    };
+
+                    var lineDataModels = regenerated.Lines.Select(l => new PaySlipLineDataModel
+                    {
+                        Base = l.Base,
+                        EmployeeDeduction = l.EmployeeDeduction,
+                        EmployeeID = l.EmployeeID,
+                        EmployerContribution = l.EmployerContribution,
+                        GainAmount = l.GainAmount,
+                        Libelle = l.Libelle,
+                        LineType = l.LineType,
+                        Nombre = l.Nombre,
+                        PayrollID = payrollId,
+                        PeriodID = l.PeriodID,
+                        Rubrique = l.Rubrique,
+                        SortOrder = l.SortOrder,
+                        Taux = l.Taux
+                    }).ToList();
+
+                    await _paySlipUpdate.UpdatePaySlipAsync(payrollData, lineDataModels);
+                }
+
+                return true;
+            });
+        }
     }
 }

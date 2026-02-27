@@ -13,6 +13,7 @@ namespace Employee.Module
         Task<PaySlipBusinessModel> GetPaySlipAsync(long employeeId, int periodId, long enterpriseId);
         Task<List<PayrollPeriodBusinessModel>> GetPeriodsByEnterpriseAsync(long enterpriseId);
         Task<PaySlipBusinessModel?> GetSavedPaySlipAsync(long employeeId, int periodId);
+        Task SetRecalculateDraftPaySlipsForEmployeeAsync(long employeeId, long enterpriseId, decimal? updatedSalary = null);
         Task<CompanyPayrollSettingsBusinessModel> GetSettingsAsync(long enterpriseId);
         Task SetModificationRequestStatusAsync(int requestId, string status);
         Task SetPaySlipAsync(PaySlipBusinessModel paySlip, DateTime paymentDate, int periodMonth, int periodYear);

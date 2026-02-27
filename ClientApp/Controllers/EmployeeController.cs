@@ -115,19 +115,13 @@ namespace ClientApp.Controllers
                     savedEmployeeId = employeeId.Value;
                     result.Message = $"Employee {viewModel.Prenom} {viewModel.Nom} updated successfully!";
 
-                    // PaySlip Invalidation Check: If salary changed, check for draft payslips
+                    // PaySlip Recalculation: If salary changed, recalculate all draft payslips
                     if (oldSalary.HasValue && viewModel.Salaire != oldSalary.Value)
                     {
-                        var periods = await _payrollModule.GetPeriodsByEnterpriseAsync(enterpriseId);
-                        foreach (var period in periods.Where(p => p.Status == "Draft" || p.Status == "Open"))
-                        {
-                            var savedPaySlip = await _payrollModule.GetSavedPaySlipAsync(employeeId.Value, period.PeriodID);
-                            if (savedPaySlip != null)
-                            {
-                                result.ShowPayrollWarning = true;
-                                break;
-                            }
-                        }
+                        await _payrollModule.SetRecalculateDraftPaySlipsForEmployeeAsync(
+                            employeeId.Value, 
+                            enterpriseId, 
+                            viewModel.Salaire);
                     }
                 }
                 else

@@ -290,16 +290,22 @@ namespace ClientApp.Controllers
                 if (paySlip == null)
                     continue;
 
+                // Check if salary changed - compare with actual salary in payslip line
+                var salaryLine = paySlip.Lines.FirstOrDefault(l => l.Rubrique == "6500");
+                if (salaryLine != null && salaryLine.GainAmount != (employee.Salaire ?? 0))
+                {
+                    // Recalculate all draft payslips for this employee
+                    await _payrollModule.SetRecalculateDraftPaySlipsForEmployeeAsync(employee.EmployeeID, enterpriseId);
+                    
+                    // Reload the payslip to get updated values
+                    paySlip = await _payrollModule.GetSavedPaySlipAsync(employee.EmployeeID, periodId);
+                    if (paySlip == null)
+                        continue;
+                }
+
                 var viewModel = MapToViewModel(paySlip);
                 viewModel.PeriodLabel = periodLabel;
-                
-                // Check if payslip is invalidated (salary changed since payslip was created)
-                var salaryLineInPaySlip = paySlip.Lines.FirstOrDefault(l => l.Rubrique == "6500");
-                if (salaryLineInPaySlip != null && salaryLineInPaySlip.GainAmount != (employee.Salaire ?? 0))
-                {
-                    viewModel.IsInvalidated = true;
-                }
-                
+
                 result.Add(viewModel);
             }
 
