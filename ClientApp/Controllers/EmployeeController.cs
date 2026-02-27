@@ -4,6 +4,7 @@ using Employee.Module.Business;
 using EmployeeDocuments.Module;
 using EmployeeDocuments.Module.Business;
 using Project.Module;
+using System.Linq;
 
 namespace ClientApp.Controllers
 {
@@ -11,15 +12,18 @@ namespace ClientApp.Controllers
     {
         private readonly IEmployeeDocumentModule _employeeDocumentModule;
         private readonly IEmployeeModule _employeeModule;
+        private readonly IPayrollModule _payrollModule;
         private readonly IProjectModule _projectModule;
 
         public EmployeeController(
             IEmployeeDocumentModule employeeDocumentModule,
             IEmployeeModule employeeModule,
+            IPayrollModule payrollModule,
             IProjectModule projectModule)
         {
             _employeeDocumentModule = employeeDocumentModule;
             _employeeModule = employeeModule;
+            _payrollModule = payrollModule;
             _projectModule = projectModule;
         }
 
@@ -93,6 +97,14 @@ namespace ClientApp.Controllers
 
             try
             {
+                // Capture old salary if updating
+                decimal? oldSalary = null;
+                if (employeeId.HasValue)
+                {
+                    var existingDetail = await _employeeModule.GetEmployeeByIdAndEnterpriseAsync(employeeId.Value, enterpriseId);
+                    oldSalary = existingDetail?.Employee.Salaire;
+                }
+
                 // Map ViewModel to Business Model
                 var businessModel = MapViewModelToBusinessModel(viewModel, employeeId, enterpriseId);
 
@@ -102,6 +114,21 @@ namespace ClientApp.Controllers
                     await _employeeModule.SetEmployeeAsync(businessModel);
                     savedEmployeeId = employeeId.Value;
                     result.Message = $"Employee {viewModel.Prenom} {viewModel.Nom} updated successfully!";
+
+                    // PaySlip Invalidation Check: If salary changed, check for draft payslips
+                    if (oldSalary.HasValue && viewModel.Salaire != oldSalary.Value)
+                    {
+                        var periods = await _payrollModule.GetPeriodsByEnterpriseAsync(enterpriseId);
+                        foreach (var period in periods.Where(p => p.Status == "Draft" || p.Status == "Open"))
+                        {
+                            var savedPaySlip = await _payrollModule.GetSavedPaySlipAsync(employeeId.Value, period.PeriodID);
+                            if (savedPaySlip != null)
+                            {
+                                result.ShowPayrollWarning = true;
+                                break;
+                            }
+                        }
+                    }
                 }
                 else
                 {

@@ -36,5 +36,15 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
                 WHERE PayrollID = @PayrollID";
             await connection.ExecuteAsync(sql, payroll);
         }
+
+        public async Task DeletePayrollAsync(int payrollId)
+        {
+            using var connection = _dbContext.CreateConnection();
+            var sql = @"
+                DELETE FROM [documentdb].[dbo].[PaySlipLine] WHERE PayrollID = @PayrollID;
+                DELETE FROM [documentdb].[dbo].[EmployeePayroll] WHERE PayrollID = @PayrollID;
+            ";
+            await connection.ExecuteAsync(sql, new { PayrollID = payrollId });
+        }
     }
 }

@@ -22,9 +22,11 @@ namespace ClientApp.Components.Pages.Routed
         protected List<string> errors = new();
         protected bool isLoadingCompany = true;
         protected bool isLoadingEmployee = false;
+        protected bool isPaySlipInvalidated = false;
         protected bool isSubmitting = false;
         protected List<ProjectViewModel> projects = new();
         protected string selectedDocumentType = "CV";
+        protected bool showPayrollWarning = false;
         protected string successMessage = string.Empty;
 
         // --- Lifecycle ---
@@ -47,6 +49,7 @@ namespace ClientApp.Components.Pages.Routed
             isSubmitting = true;
             errors.Clear();
             successMessage = string.Empty;
+            showPayrollWarning = false;
 
             var result = await Controller.Store(
                 employeeModel,
@@ -57,6 +60,7 @@ namespace ClientApp.Components.Pages.Routed
 
             errors = result.Errors;
             successMessage = result.Message;
+            showPayrollWarning = result.ShowPayrollWarning;
             isSubmitting = false;
 
             if (result.Success && !Id.HasValue)

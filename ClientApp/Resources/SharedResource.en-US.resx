@@ -207,9 +207,6 @@
   <data name="LoadingEmployees" xml:space="preserve">
     <value>Loading employees...</value>
   </data>
-  <data name="LoginSubtitle" xml:space="preserve">
-    <value>Unemployment Insurance Dashboard</value>
-  </data>
   <data name="DontHaveAccount" xml:space="preserve">
     <value>Don't have an account?</value>
   </data>
@@ -824,5 +821,8 @@
   </data>
   <data name="SubmitDraftToEmployee" xml:space="preserve">
     <value>Submit to Employee</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>User name (email address)</value>
   </data>
 </root>

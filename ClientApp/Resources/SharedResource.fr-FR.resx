@@ -207,9 +207,6 @@
   <data name="LoadingEmployees" xml:space="preserve">
     <value>Chargement des employés...</value>
   </data>
-  <data name="LoginSubtitle" xml:space="preserve">
-    <value>Tableau de bord de l'Assurance Chômage</value>
-  </data>
   <data name="DontHaveAccount" xml:space="preserve">
     <value>Vous n'avez pas de compte ?</value>
   </data>
@@ -824,5 +821,8 @@
   </data>
   <data name="SubmitDraftToEmployee" xml:space="preserve">
     <value>Soumettre à l'employé</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Adresse courriel</value>
   </data>
 </root>

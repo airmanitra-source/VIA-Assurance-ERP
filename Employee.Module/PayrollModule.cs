@@ -1,6 +1,7 @@
 using Employee.Module.Business;
 using Employee.Module.Data.Models;
 using Employee.Module.Data.Providers;
+using FileTable.Infrastructure.Abstractions;
 
 namespace Employee.Module
 {
@@ -16,6 +17,7 @@ namespace Employee.Module
         private readonly IPayrollPeriodReadWrite _periodReadWrite;
         private readonly IPaySlipLineReadOnly _lineReadOnly;
         private readonly IPaySlipLineReadWrite _lineReadWrite;
+        private readonly ITransactionHandler _transactionHandler;
 
         public PayrollModule(
             ICompanyPayrollSettingsReadOnly settingsReadOnly,
@@ -27,7 +29,8 @@ namespace Employee.Module
             IEmployeePayrollReadWrite payrollReadWrite,
             IPaySlipReadWrite paySlipUpdate,
             IPaySlipModificationRequestReadOnly modificationRequestRead,
-            IPaySlipModificationRequestReadWrite modificationRequestWrite)
+            IPaySlipModificationRequestReadWrite modificationRequestWrite,
+            ITransactionHandler transactionHandler)
         {
             _settingsReadOnly = settingsReadOnly;
             _employeeReadWrite = employeeReadWrite;
@@ -39,6 +42,7 @@ namespace Employee.Module
             _paySlipUpdate = paySlipUpdate;
             _modificationRequestRead = modificationRequestRead;
             _modificationRequestWrite = modificationRequestWrite;
+            _transactionHandler = transactionHandler;
         }
 
         public async Task<int> AddPeriodAsync(long enterpriseId, DateTime periodStart, DateTime periodEnd)
@@ -263,6 +267,35 @@ namespace Employee.Module
         public async Task SetModificationRequestStatusAsync(int requestId, string status)
         {
             await _modificationRequestWrite.UpdateRequestStatusAsync(requestId, status);
+        }
+
+        public async Task DeletePayrollAsync(int payrollId)
+        {
+            await _transactionHandler.ExecuteInTransactionAsync(async () =>
+            {
+                // Get employee and period info from payroll lines before deleting
+                var payrollLines = await _lineReadOnly.ReadByPayrollIdAsync(payrollId);
+                if (payrollLines.Any())
+                {
+                    var firstLine = payrollLines.First();
+                    var employeeId = firstLine.EmployeeID;
+                    var periodId = firstLine.PeriodID;
+                    
+
+                    // Delete associated modification requests
+                    await _modificationRequestWrite.DeleteByEmployeeAndPeriodAsync(employeeId, periodId);
+                }
+                
+                // Delete payslip lines and the payroll record
+                await _lineReadWrite.DeleteByPayrollIdAsync(payrollId);
+                await _payrollReadWrite.DeletePayrollAsync(payrollId);
+                return true;
+            });
+        }
+
+        public async Task RemovePaySlipAsync(int payrollId)
+        {
+            await DeletePayrollAsync(payrollId);
         }
     }
 }

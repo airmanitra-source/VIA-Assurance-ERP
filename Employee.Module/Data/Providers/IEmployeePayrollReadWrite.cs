@@ -6,5 +6,6 @@ namespace Employee.Module.Data.Providers
     {
         Task<int> CreatePayrollAsync(EmployeePayrollDataModel payroll);
         Task UpdatePayrollAsync(EmployeePayrollDataModel payroll);
+        Task DeletePayrollAsync(int payrollId);
     }
 }

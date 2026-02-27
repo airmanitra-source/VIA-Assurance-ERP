@@ -25,6 +25,15 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
             return await connection.ExecuteScalarAsync<int>(sql, request);
         }
 
+        public async Task DeleteByEmployeeAndPeriodAsync(long employeeId, int periodId)
+        {
+            using var connection = _dbContext.CreateConnection();
+            var sql = @"
+                DELETE FROM [documentdb].[dbo].[PaySlipModificationRequest]
+                WHERE EmployeeID = @employeeId AND PeriodID = @periodId";
+            await connection.ExecuteAsync(sql, new { employeeId, periodId });
+        }
+
         public async Task UpdateRequestStatusAsync(int requestId, string status)
         {
             using var connection = _dbContext.CreateConnection();

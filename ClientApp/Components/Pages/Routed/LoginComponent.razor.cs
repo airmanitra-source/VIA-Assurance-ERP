@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
 using ClientApp.Models;
 using ClientApp.Services;
-using System.Security.Claims;
 
 namespace ClientApp.Components.Pages.Routed
 {
@@ -59,8 +57,11 @@ namespace ClientApp.Components.Pages.Routed
                 {
                     Navigation.NavigateTo("/employee-dashboard");
                 }
-                else
+                else if (user.IsInRole("RH"))
                 {
+                    Navigation.NavigateTo("/payroll");
+                }
+                else {
                     Navigation.NavigateTo("/list-employees");
                 }
             }

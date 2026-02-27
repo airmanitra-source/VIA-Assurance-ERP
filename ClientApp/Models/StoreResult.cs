@@ -10,6 +10,8 @@ namespace ClientApp.Models
 
         public string Message { get; set; } = string.Empty;
 
+        public bool ShowPayrollWarning { get; set; }
+
         public bool Success { get; set; }
     }
 }

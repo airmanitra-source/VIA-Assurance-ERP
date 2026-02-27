@@ -2,12 +2,14 @@ using ClientApp.Components.Shared;
 using ClientApp.Controllers;
 using ClientApp.Models;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace ClientApp.Components.Pages.Routed
 {
     public partial class PayrollDashboardComponent : AuthenticatedComponentBase
     {
         [Inject] protected PayrollController Controller { get; set; } = default!;
+        [Inject] protected IJSRuntime JSRuntime { get; set; } = default!;
 
         protected EntrepriseViewModel? currentCompany;
         protected List<EmployeeViewModel> employees = new();
@@ -204,9 +206,7 @@ namespace ClientApp.Components.Pages.Routed
 
         protected async Task SaveEditedPaySlipAsync(PaySlipViewModel paySlip)
         {
-            if (currentCompany == null || !selectedPeriodId.HasValue)
-                return;
-
+            if (isSavingEdits) return;
             isSavingEdits = true;
             errors.Clear();
             successMessage = string.Empty;
@@ -224,6 +224,29 @@ namespace ClientApp.Components.Pages.Routed
             finally
             {
                 isSavingEdits = false;
+            }
+        }
+
+        protected async Task DeletePaySlipAsync(PaySlipViewModel paySlip)
+        {
+            if (!await JSRuntime.InvokeAsync<bool>("confirm", $"Êtes-vous sûr de vouloir supprimer le bulletin de {paySlip.EmployeeName} ?"))
+                return;
+
+            try
+            {
+                await Controller.RemovePaySlipAsync(paySlip.PayrollID);
+                successMessage = "Bulletin supprimé avec succès.";
+                await LoadSavedPaySlipsAsync();
+                
+                // Reload available employees for draft tab since one is now available again
+                if (activeTab == "saved" && selectedPeriodId.HasValue)
+                {
+                    await LoadEmployeesForPeriodAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"Erreur lors de la suppression : {ex.Message}");
             }
         }
 
@@ -447,6 +470,34 @@ namespace ClientApp.Components.Pages.Routed
             if (req.OvertimeHours.HasValue && HasValueChanged(GetCurrentOvertimeFromPaySlip(paySlip), req.OvertimeHours)) return true;
             
             return false;
+        }
+
+        protected decimal CalculateProjectedNetAPayer(PaySlipViewModel paySlip, PaySlipModificationRequestViewModel? req)
+        {
+            if (req == null || !HasModificationsToDisplay(paySlip, req)) return paySlip.NetAPayer;
+
+            decimal gainDiff = 0;
+            decimal taxableDiff = 0;
+            
+            // Taxable items (usually Bonus, TreiziemeMois, Overtime)
+            if (req.Bonus.HasValue) taxableDiff += req.Bonus.Value - (GetCurrentValueFromPaySlip(paySlip, "17000") ?? 0);
+            if (req.TreiziemeMois.HasValue) taxableDiff += req.TreiziemeMois.Value - (GetCurrentValueFromPaySlip(paySlip, "17200") ?? 0);
+            
+            var overtimeLine = paySlip.Lines.FirstOrDefault(l => l.Rubrique == "15000");
+            if (overtimeLine != null && req.OvertimeHours.HasValue)
+            {
+                decimal hourlyRate = overtimeLine.Taux ?? 0;
+                taxableDiff += (req.OvertimeHours.Value - (overtimeLine.Nombre ?? 0)) * hourlyRate;
+            }
+
+            // High probability of exemption items (Indemnités, Prime Scolarité)
+            if (req.PrimeScolarite.HasValue) gainDiff += req.PrimeScolarite.Value - (GetCurrentValueFromPaySlip(paySlip, "17100") ?? 0);
+            if (req.IndemniteTransport.HasValue) gainDiff += req.IndemniteTransport.Value - (GetCurrentValueFromPaySlip(paySlip, "19400") ?? 0);
+            if (req.IndemniteLogement.HasValue) gainDiff += req.IndemniteLogement.Value - (GetCurrentValueFromPaySlip(paySlip, "19500") ?? 0);
+            
+            // Estimation: Taxable items get a 22% haircut (Social (CNAPS 1% + OSIE 1%) + IRSA ~20%)
+            // This is an estimation for summary purposes.
+            return paySlip.NetAPayer + gainDiff + (taxableDiff * 0.78m);
         }
     }
 }

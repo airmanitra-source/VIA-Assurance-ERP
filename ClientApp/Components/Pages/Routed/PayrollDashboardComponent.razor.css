@@ -258,6 +258,44 @@
     border-bottom: none;
 }
 
+.net-to-pay-cell {
+    min-width: 180px;
+}
+
+.net-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.current-net {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.projected-net-hint {
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #059669;
+    background: #f0fff4;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid #c6f6d5;
+    width: fit-content;
+    margin-top: 4px;
+}
+
+.hint-label {
+    font-weight: 600;
+}
+
+.projected-amount {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-weight: 700;
+}
+
 .accordion-toggle {
     width: 36px;
 }

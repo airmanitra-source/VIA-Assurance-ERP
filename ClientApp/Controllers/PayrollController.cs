@@ -292,6 +292,14 @@ namespace ClientApp.Controllers
 
                 var viewModel = MapToViewModel(paySlip);
                 viewModel.PeriodLabel = periodLabel;
+                
+                // Check if payslip is invalidated (salary changed since payslip was created)
+                var salaryLineInPaySlip = paySlip.Lines.FirstOrDefault(l => l.Rubrique == "6500");
+                if (salaryLineInPaySlip != null && salaryLineInPaySlip.GainAmount != (employee.Salaire ?? 0))
+                {
+                    viewModel.IsInvalidated = true;
+                }
+                
                 result.Add(viewModel);
             }
 
@@ -334,6 +342,14 @@ namespace ClientApp.Controllers
                             TreiziemeMois = r.TreiziemeMois
                         };
                     });
+        }
+
+        /// <summary>
+        /// REST: Destroy - Delete a payslip and its associated lines
+        /// </summary>
+        public async Task RemovePaySlipAsync(int payrollId)
+        {
+            await _payrollModule.DeletePayrollAsync(payrollId);
         }
     }
 }

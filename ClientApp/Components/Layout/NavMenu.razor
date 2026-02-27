@@ -57,54 +57,57 @@
                             }
                         </div>
 
-                        <div class="nav-item px-3">
-                            <button class="nav-link btn-toggle" @onclick="ToggleInsurancesMenu">
-                                <span class="bi bi-shield-lock-fill-nav-menu" aria-hidden="true"></span> @Localizer["InsurancesTitle"]
-                                <span class="toggle-indicator">@(showInsurancesMenu ? "▼" : "▶")</span>
-                            </button>
-                            @if (showInsurancesMenu)
-                            {
-                                <div class="nav-submenu ps-3">
-                                    <div class="nav-item px-3">
-                                        <NavLink class="nav-link" href="fleet-list">
-                                            <span class="bi bi-car-front-fill-nav-menu" aria-hidden="true"></span> @Localizer["AutomobileFleetInsurance"]
-                                        </NavLink>
+                        @if (!IsRHOnly)
+                        {
+                            <div class="nav-item px-3">
+                                <button class="nav-link btn-toggle" @onclick="ToggleInsurancesMenu">
+                                    <span class="bi bi-shield-lock-fill-nav-menu" aria-hidden="true"></span> @Localizer["InsurancesTitle"]
+                                    <span class="toggle-indicator">@(showInsurancesMenu ? "▼" : "▶")</span>
+                                </button>
+                                @if (showInsurancesMenu)
+                                {
+                                    <div class="nav-submenu ps-3">
+                                        <div class="nav-item px-3">
+                                            <NavLink class="nav-link" href="fleet-list">
+                                                <span class="bi bi-car-front-fill-nav-menu" aria-hidden="true"></span> @Localizer["AutomobileFleetInsurance"]
+                                            </NavLink>
+                                        </div>
+                                        <div class="nav-item px-3">
+                                            <NavLink class="nav-link" href="transportation-list">
+                                                <span class="bi bi-truck-nav-menu" aria-hidden="true"></span> @Localizer["GoodsTransportInsurance"]
+                                            </NavLink>
+                                        </div>
+                                        <div class="nav-item px-3">
+                                            <NavLink class="nav-link" href="warehouse-list">
+                                                <span class="bi bi-box-seam-fill-nav-menu" aria-hidden="true"></span> @Localizer["WarehouseEquipmentProtection"]
+                                            </NavLink>
+                                        </div>
+                                        <div class="nav-item px-3">
+                                            <NavLink class="nav-link" href="company-documents">
+                                                <span class="bi bi-folder-fill-nav-menu" aria-hidden="true"></span> @Localizer["ViewConfirmationInsurancePolicy"]
+                                            </NavLink>
+                                        </div>
+                                        <div class="nav-item px-3">
+                                            <NavLink class="nav-link" href="insurance-policy">
+                                                <span class="bi bi-file-pdf-nav-menu" aria-hidden="true"></span> @Localizer["ViewInsurancePolicy"]
+                                            </NavLink>
+                                        </div>
                                     </div>
-                                    <div class="nav-item px-3">
-                                        <NavLink class="nav-link" href="transportation-list">
-                                            <span class="bi bi-truck-nav-menu" aria-hidden="true"></span> @Localizer["GoodsTransportInsurance"]
-                                        </NavLink>
-                                    </div>
-                                    <div class="nav-item px-3">
-                                        <NavLink class="nav-link" href="warehouse-list">
-                                            <span class="bi bi-box-seam-fill-nav-menu" aria-hidden="true"></span> @Localizer["WarehouseEquipmentProtection"]
-                                        </NavLink>
-                                    </div>
-                                    <div class="nav-item px-3">
-                                        <NavLink class="nav-link" href="company-documents">
-                                            <span class="bi bi-folder-fill-nav-menu" aria-hidden="true"></span> @Localizer["ViewConfirmationInsurancePolicy"]
-                                        </NavLink>
-                                    </div>
-                                    <div class="nav-item px-3">
-                                        <NavLink class="nav-link" href="insurance-policy">
-                                            <span class="bi bi-file-pdf-nav-menu" aria-hidden="true"></span> @Localizer["ViewInsurancePolicy"]
-                                        </NavLink>
-                                    </div>
-                                </div>
-                            }
-                        </div>
+                                }
+                            </div>
 
-                        <div class="nav-item px-3">
-                            <button class="nav-link btn-toggle" @onclick="FillClaims">
-                                <span class="bi bi-exclamation-triangle-fill-nav-menu" aria-hidden="true"></span> @Localizer["FillClaim"]
-                            </button>
-                        </div>
+                            <div class="nav-item px-3">
+                                <button class="nav-link btn-toggle" @onclick="FillClaims">
+                                    <span class="bi bi-exclamation-triangle-fill-nav-menu" aria-hidden="true"></span> @Localizer["FillClaim"]
+                                </button>
+                            </div>
 
-                        <div class="nav-item px-3">
-                            <NavLink class="nav-link" href="list-sinisters">
-                                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> @Localizer["ClaimsList"]
-                            </NavLink>
-                        </div>
+                            <div class="nav-item px-3">
+                                <NavLink class="nav-link" href="list-sinisters">
+                                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> @Localizer["ClaimsList"]
+                                </NavLink>
+                            </div>
+                        }
 
                         <div class="nav-item px-3">
                             <NavLink class="nav-link" href="payroll">

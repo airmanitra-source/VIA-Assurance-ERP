@@ -207,9 +207,6 @@
   <data name="LoadingEmployees" xml:space="preserve">
     <value>Loading employees...</value>
   </data>
-  <data name="LoginSubtitle" xml:space="preserve">
-    <value>Unemployment Insurance Dashboard</value>
-  </data>
   <data name="DontHaveAccount" xml:space="preserve">
     <value>Don't have an account?</value>
   </data>
@@ -770,5 +767,62 @@
   </data>
   <data name="ClaimsList" xml:space="preserve">
     <value>Claims List</value>
+  </data>
+  <data name="CurrentProjectAssigned" xml:space="preserve">
+    <value>Current project assigned to this employee</value>
+  </data>
+  <data name="DateOfHiring" xml:space="preserve">
+    <value>Date of Hiring</value>
+  </data>
+  <data name="MonthlySalary" xml:space="preserve">
+    <value>Monthly Salary</value>
+  </data>
+  <data name="ProjectAssignmentDefault" xml:space="preserve">
+    <value>If no project is selected, the employee will be assigned to the "On Boarding" project.</value>
+  </data>
+  <data name="Salary" xml:space="preserve">
+    <value>Salary</value>
+  </data>
+  <data name="Payroll" xml:space="preserve">
+    <value>Payroll</value>
+  </data>
+  <data name="PayrollDescription" xml:space="preserve">
+    <value>Payroll management and payslips</value>
+  </data>
+  <data name="PayrollPeriod" xml:space="preserve">
+    <value>Payroll Period</value>
+  </data>
+  <data name="SelectPeriod" xml:space="preserve">
+    <value>Select a period</value>
+  </data>
+  <data name="SelectEmployee" xml:space="preserve">
+    <value>Select an employee</value>
+  </data>
+  <data name="PaySlipVariables" xml:space="preserve">
+    <value>Payslip Variables</value>
+  </data>
+  <data name="SchoolAllowance" xml:space="preserve">
+    <value>School Allowance</value>
+  </data>
+  <data name="TransportAllowance" xml:space="preserve">
+    <value>Transport Allowance</value>
+  </data>
+  <data name="HousingAllowance" xml:space="preserve">
+    <value>Housing Allowance</value>
+  </data>
+  <data name="OvertimeHours" xml:space="preserve">
+    <value>Overtime hours</value>
+  </data>
+  <data name="GeneratePaySlip" xml:space="preserve">
+    <value>Generate Payslip</value>
+  </data>
+  <data name="SavePaySlip" xml:space="preserve">
+    <value>Save Payslip</value>
+  </data>
+  <data name="SubmitDraftToEmployee" xml:space="preserve">
+    <value>Submit to Employee</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Username</value>
   </data>
 </root>

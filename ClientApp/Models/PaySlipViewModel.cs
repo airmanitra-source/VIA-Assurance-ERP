@@ -7,6 +7,7 @@ namespace ClientApp.Models
         public string? Classification { get; set; }
         public int Dependents { get; set; }
         public string EmployeeName { get; set; } = string.Empty;
+        public bool IsInvalidated { get; set; }
         public List<PaySlipLineViewModel> Lines { get; set; } = new();
         public string? NumeroCnaps { get; set; }
         public int PayrollID { get; set; }
