@@ -1,6 +1,6 @@
 using Dapper;
-using Employee.Module.Data.Models;
-using Employee.Module.Data.Providers;
+using PaySlip.Module.Data.Models;
+using PaySlip.Module.Data.Providers;
 
 namespace FileTable.Infrastructure.FileTableDb.DataProviders
 {

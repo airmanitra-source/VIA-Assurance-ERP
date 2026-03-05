@@ -1,0 +1,125 @@
+@page "/payroll-settings"
+@inherits AuthenticatedComponentBase
+@rendermode InteractiveServer
+@using ClientApp.Models
+@using ClientApp.Services
+@using Microsoft.Extensions.Localization
+@using Microsoft.AspNetCore.Authorization
+@inject IStringLocalizer<ClientApp.SharedResource> Localizer
+@attribute [Authorize(Roles = "RH,developer")]
+
+<PageTitle>@Localizer["PayrollSettings"] - ERP ASSUR</PageTitle>
+
+<div class="settings-container">
+    <div class="settings-card">
+        <div class="header">
+            <div class="header-row">
+                <span class="settings-logo bi bi-gear-fill-nav-menu" aria-hidden="true"></span>
+                <div>
+                    <h1>@Localizer["PayrollSettings"]</h1>
+                    <p>@Localizer["PayrollSettingsDescription"]</p>
+                </div>
+            </div>
+        </div>
+
+        @if (isLoading)
+        {
+            <div class="loading-state">
+                <span class="spinner"></span>
+                <p>@Localizer["Loading"]...</p>
+            </div>
+        }
+        else if (settings == null)
+        {
+            <div class="error-message">⚠️ @Localizer["CouldNotRetrieveEnterprise"]</div>
+        }
+        else
+        {
+            @if (!string.IsNullOrEmpty(successMessage))
+            {
+                <div class="success-message">✅ @successMessage</div>
+            }
+            @foreach (var error in errors)
+            {
+                <div class="error-message">❌ @error</div>
+            }
+
+            <div class="section">
+                <h2>🏢 @Localizer["EmployeeContributions"]</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>@Localizer["CnapsEmployeeRate"] (%)</label>
+                        <input type="number" class="form-input" step="0.01" @bind="cnapsEmployeeRatePercent" />
+                    </div>
+                    <div class="form-group">
+                        <label>@Localizer["CnapsComplementaryRate"] (%)</label>
+                        <input type="number" class="form-input" step="0.01" @bind="cnapsComplementaryRatePercent" />
+                    </div>
+                    <div class="form-group">
+                        <label>@Localizer["OstieEmployeeRate"] (%)</label>
+                        <input type="number" class="form-input" step="0.01" @bind="ostieEmployeeRatePercent" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🏭 @Localizer["EmployerContributions"]</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>@Localizer["CnapsEmployerRate"] (%)</label>
+                        <input type="number" class="form-input" step="0.01" @bind="cnapsEmployerRatePercent" />
+                    </div>
+                    <div class="form-group">
+                        <label>@Localizer["CnapsComplementaryEmployerRate"] (%)</label>
+                        <input type="number" class="form-input" step="0.01" @bind="cnapsComplementaryEmployerRatePercent" />
+                    </div>
+                    <div class="form-group">
+                        <label>@Localizer["OstieEmployerRate"] (%)</label>
+                        <input type="number" class="form-input" step="0.01" @bind="ostieEmployerRatePercent" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>💰 @Localizer["TaxAndOvertime"]</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>@Localizer["IrsaMinimum"]</label>
+                        <input type="number" class="form-input" step="100" @bind="settings.IrsaMinimum" />
+                    </div>
+                    <div class="form-group">
+                        <label>@Localizer["IrsaDependentReduction"]</label>
+                        <input type="number" class="form-input" step="100" @bind="settings.IrsaDependentReduction" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>@Localizer["MaxOvertimeHoursPerWeek"]</label>
+                        <input type="number" class="form-input" @bind="settings.MaxOvertimeHoursPerWeek" />
+                    </div>
+                    <div class="form-group">
+                        <label>@Localizer["OvertimeRateMultiplier"]</label>
+                        <input type="number" class="form-input" step="0.1" @bind="settings.OvertimeRateMultiplier" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔒 @Localizer["DoubleEntrySection"]</h2>
+                <div class="double-entry-toggle">
+                    <label class="toggle-label">
+                        <input type="checkbox" @bind="settings.RequireDoubleEntry" />
+                        <span class="toggle-text">@Localizer["RequireDoubleEntryLabel"]</span>
+                    </label>
+                    <p class="help-text">@Localizer["RequireDoubleEntryHelp"]</p>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn-primary" @onclick="SaveSettingsAsync" disabled="@isSaving">
+                    @(isSaving ? "⏳" : "💾") @Localizer["SaveSettings"]
+                </button>
+            </div>
+        }
+    </div>
+</div>

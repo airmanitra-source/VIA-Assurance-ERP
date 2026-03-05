@@ -1,6 +1,12 @@
 using ClientApp.Models;
 using Employee.Module;
 using Employee.Module.Business;
+using EmployeePayroll.Module;
+using EmployeePayroll.Module.Business;
+using EmployeeTimesheet.Module;
+using EmployeeTimesheet.Module.Business;
+using PaySlip.Module;
+using PaySlip.Module.Business;
 
 namespace ClientApp.Controllers
 {
@@ -8,13 +14,13 @@ namespace ClientApp.Controllers
     {
         private readonly IEmployeeModule _employeeModule;
         private readonly IEmployeePayrollModule _payrollModule;
-        private readonly IPayrollModule _paySlipModule;
+        private readonly IPaySlipModule _paySlipModule;
         private readonly IEmployeeTimesheetModule _timesheetModule;
 
         public EmployeeDashboardController(
             IEmployeeModule employeeModule,
             IEmployeePayrollModule payrollModule,
-            IPayrollModule paySlipModule,
+            IPaySlipModule paySlipModule,
             IEmployeeTimesheetModule timesheetModule)
         {
             _employeeModule = employeeModule;
@@ -37,7 +43,7 @@ namespace ClientApp.Controllers
 
         public async Task<List<PaySlipViewModel>> IndexPaySlipsAsync(long employeeId, long enterpriseId)
         {
-            var periods = await _paySlipModule.GetPeriodsByEnterpriseAsync(enterpriseId);
+            var periods = await _payrollModule.GetPeriodsByEnterpriseAsync(enterpriseId);
             var recentPeriods = periods.OrderByDescending(p => p.PeriodStart).Take(3).ToList();
             var result = new List<PaySlipViewModel>();
 
@@ -115,7 +121,7 @@ namespace ClientApp.Controllers
 
         public async Task<List<PayrollPeriodViewModel>> IndexPeriodsAsync(long enterpriseId)
         {
-            var periods = await _paySlipModule.GetPeriodsByEnterpriseAsync(enterpriseId);
+            var periods = await _payrollModule.GetPeriodsByEnterpriseAsync(enterpriseId);
             return periods
                 .Where(p => p.Status == "Draft")
                 .OrderByDescending(p => p.PeriodStart)

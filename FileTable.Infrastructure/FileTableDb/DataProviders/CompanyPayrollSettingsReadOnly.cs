@@ -1,6 +1,6 @@
+using CompanyPayroll.Module.Data.Models;
+using CompanyPayroll.Module.Data.Providers;
 using Dapper;
-using Employee.Module.Data.Models;
-using Employee.Module.Data.Providers;
 using FileTable.Infrastructure.FileTableDb.Entities;
 
 namespace FileTable.Infrastructure.FileTableDb.DataProviders
@@ -37,6 +37,7 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
                 OstieEmployeeRate = e.OstieEmployeeRate,
                 OstieEmployerRate = e.OstieEmployerRate,
                 OvertimeRateMultiplier = e.OvertimeRateMultiplier,
+                RequireDoubleEntry = e.RequireDoubleEntry,
                 SettingsID = e.SettingsID
             };
         }

@@ -1,6 +1,6 @@
 using Dapper;
-using Employee.Module.Data.Models;
-using Employee.Module.Data.Providers;
+using EmployeePayroll.Module.Data.Models;
+using EmployeePayroll.Module.Data.Providers;
 using FileTable.Infrastructure.FileTableDb.Entities;
 
 namespace FileTable.Infrastructure.FileTableDb.DataProviders

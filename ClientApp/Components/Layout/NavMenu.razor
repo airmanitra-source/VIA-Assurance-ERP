@@ -118,6 +118,16 @@
                     </Authorized>
                 </AuthorizeView>
 
+                <AuthorizeView Roles="RH,developer" Context="settingsCtx">
+                    <Authorized>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="payroll-settings">
+                                <span class="bi bi-gear-fill-nav-menu" aria-hidden="true"></span> @Localizer["PayrollSettings"]
+                            </NavLink>
+                        </div>
+                    </Authorized>
+                </AuthorizeView>
+
                 <div class="nav-item logout-item px-3 mt-auto">
                     <a class="nav-link btn-logout" href="/logout">
                         <span class="bi bi-box-arrow-right" aria-hidden="true"></span> @Localizer["Logout"]

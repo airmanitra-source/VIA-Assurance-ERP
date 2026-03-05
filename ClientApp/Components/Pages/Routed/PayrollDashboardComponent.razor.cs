@@ -10,6 +10,7 @@ namespace ClientApp.Components.Pages.Routed
     {
         [Inject] protected PayrollController _payrollController { get; set; } = default!;
         [Inject] protected EmployeeController _employeeController { get; set; } = default!;
+        [Inject] protected CompanyPayrollSettingsController _settingsController { get; set; } = default!;
 
         [Inject] protected IJSRuntime JSRuntime { get; set; } = default!;
 
@@ -34,6 +35,13 @@ namespace ClientApp.Components.Pages.Routed
         protected long? selectedEmployeeId;
         protected int? selectedPeriodId;
         protected string successMessage = string.Empty;
+
+        // Double entry state
+        protected bool requireDoubleEntry = false;
+        protected int doubleEntryStep = 1;
+        protected PaySlipInputViewModel firstEntry = new();
+        protected PaySlipInputViewModel secondEntry = new();
+        protected List<string> doubleEntryDifferences = new();
 
         protected override async Task OnInitializedAuthenticatedAsync()
         {
@@ -62,6 +70,12 @@ namespace ClientApp.Components.Pages.Routed
         {
             if (currentCompany == null || !selectedEmployeeId.HasValue || !selectedPeriodId.HasValue) return;
 
+            if (requireDoubleEntry)
+            {
+                await HandleDoubleEntryGenerateAsync();
+                return;
+            }
+
             isGenerating = true;
             isPaySlipSaved = false;
             try
@@ -80,6 +94,109 @@ namespace ClientApp.Components.Pages.Routed
             {
                 isGenerating = false;
             }
+        }
+
+        protected async Task HandleDoubleEntryGenerateAsync()
+        {
+            isGenerating = true;
+            errors.Clear();
+            doubleEntryDifferences.Clear();
+
+            try
+            {
+                if (doubleEntryStep == 1)
+                {
+                    firstEntry = CloneInput(paySlipInput);
+                    doubleEntryStep = 2;
+                    paySlipInput = new PaySlipInputViewModel
+                    {
+                        EmployeeID = selectedEmployeeId!.Value,
+                        EmployeeName = paySlipInput.EmployeeName
+                    };
+                }
+                else
+                {
+                    secondEntry = CloneInput(paySlipInput);
+                    var diffs = CompareEntries(firstEntry, secondEntry);
+
+                    if (diffs.Count > 0)
+                    {
+                        doubleEntryDifferences = diffs;
+                        doubleEntryStep = 1;
+                        paySlipInput = CloneInput(firstEntry);
+                    }
+                    else
+                    {
+                        await _payrollController.StoreSecondEntryAsync(
+                            selectedEmployeeId!.Value,
+                            selectedPeriodId!.Value,
+                            secondEntry);
+
+                        paySlipInput = CloneInput(firstEntry);
+                        paySlipPreview = await _payrollController.ShowPreviewAsync(
+                            selectedEmployeeId!.Value,
+                            selectedPeriodId!.Value,
+                            currentCompany!.Id,
+                            paySlipInput);
+                        doubleEntryStep = 1;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"Erreur: {ex.Message}");
+            }
+            finally
+            {
+                isGenerating = false;
+            }
+        }
+
+        protected void ResetDoubleEntry()
+        {
+            doubleEntryStep = 1;
+            doubleEntryDifferences.Clear();
+            paySlipInput = new PaySlipInputViewModel
+            {
+                EmployeeID = selectedEmployeeId ?? 0,
+                EmployeeName = paySlipInput.EmployeeName
+            };
+            paySlipPreview = null;
+        }
+
+        private static PaySlipInputViewModel CloneInput(PaySlipInputViewModel src)
+        {
+            return new PaySlipInputViewModel
+            {
+                Bonus = src.Bonus,
+                EmployeeID = src.EmployeeID,
+                EmployeeName = src.EmployeeName,
+                IndemniteLogement = src.IndemniteLogement,
+                IndemniteTransport = src.IndemniteTransport,
+                OvertimeHours = src.OvertimeHours,
+                PrimeScolarite = src.PrimeScolarite,
+                TreiziemeMois = src.TreiziemeMois
+            };
+        }
+
+        private static List<string> CompareEntries(PaySlipInputViewModel a, PaySlipInputViewModel b)
+        {
+            var diffs = new List<string>();
+
+            if (a.Bonus != b.Bonus)
+                diffs.Add($"Bonus: {a.Bonus?.ToString("N2") ?? "0"} ≠ {b.Bonus?.ToString("N2") ?? "0"}");
+            if (a.PrimeScolarite != b.PrimeScolarite)
+                diffs.Add($"Prime scolarité: {a.PrimeScolarite?.ToString("N2") ?? "0"} ≠ {b.PrimeScolarite?.ToString("N2") ?? "0"}");
+            if (a.TreiziemeMois != b.TreiziemeMois)
+                diffs.Add($"13ème mois: {a.TreiziemeMois?.ToString("N2") ?? "0"} ≠ {b.TreiziemeMois?.ToString("N2") ?? "0"}");
+            if (a.IndemniteTransport != b.IndemniteTransport)
+                diffs.Add($"Indemnité transport: {a.IndemniteTransport?.ToString("N2") ?? "0"} ≠ {b.IndemniteTransport?.ToString("N2") ?? "0"}");
+            if (a.IndemniteLogement != b.IndemniteLogement)
+                diffs.Add($"Indemnité logement: {a.IndemniteLogement?.ToString("N2") ?? "0"} ≠ {b.IndemniteLogement?.ToString("N2") ?? "0"}");
+            if (a.OvertimeHours != b.OvertimeHours)
+                diffs.Add($"Heures sup.: {a.OvertimeHours?.ToString("N1") ?? "0"} ≠ {b.OvertimeHours?.ToString("N1") ?? "0"}");
+
+            return diffs;
         }
 
         protected void OnEmployeeSelected(ChangeEventArgs e)
@@ -111,6 +228,8 @@ namespace ClientApp.Components.Pages.Routed
             };
             paySlipPreview = null;
             isPaySlipSaved = false;
+            doubleEntryStep = 1;
+            doubleEntryDifferences.Clear();
             return Task.CompletedTask;
         }
 
@@ -295,6 +414,8 @@ namespace ClientApp.Components.Pages.Routed
                 if (company != null)
                 {
                     currentCompany = EntrepriseViewModel.FromBusinessModel(company);
+                    var settingsVm = await _settingsController.Show(currentCompany.Id);
+                    requireDoubleEntry = settingsVm.RequireDoubleEntry;
                     await LoadPeriodsAsync();
                 }
             }

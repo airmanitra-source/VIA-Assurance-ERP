@@ -2,7 +2,7 @@ using ClientApp.Models;
 using Employee.Module;
 using Employee.Module.Business;
 using EmployeeDocuments.Module;
-using EmployeeDocuments.Module.Business;
+using PaySlip.Module;
 using Project.Module;
 
 namespace ClientApp.Controllers
@@ -11,18 +11,18 @@ namespace ClientApp.Controllers
     {
         private readonly IEmployeeDocumentModule _employeeDocumentModule;
         private readonly IEmployeeModule _employeeModule;
-        private readonly IPayrollModule _payrollModule;
+        private readonly IPaySlipModule _paySlipModule;
         private readonly IProjectModule _projectModule;
 
         public EmployeeController(
             IEmployeeDocumentModule employeeDocumentModule,
             IEmployeeModule employeeModule,
-            IPayrollModule payrollModule,
+            IPaySlipModule paySlipModule,
             IProjectModule projectModule)
         {
             _employeeDocumentModule = employeeDocumentModule;
             _employeeModule = employeeModule;
-            _payrollModule = payrollModule;
+            _paySlipModule = paySlipModule;
             _projectModule = projectModule;
         }
 
@@ -165,7 +165,7 @@ namespace ClientApp.Controllers
 
                     if (salaryChanged || dependentsChanged)
                     {
-                        await _payrollModule.SetRecalculateDraftPaySlipsForEmployeeAsync(
+                        await _paySlipModule.SetRecalculateDraftPaySlipsForEmployeeAsync(
                             employeeId.Value, 
                             enterpriseId, 
                             salaryChanged ? viewModel.Salaire : null);

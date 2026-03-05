@@ -23,7 +23,7 @@ namespace ClientApp.Models
 
         public bool IsActive { get; set; }
 
-        [Required(ErrorMessage = "Nom is required")]
+        [Required(ErrorMessage = "Nom est requis")]
         public string Nom { get; set; } = string.Empty;
 
         [Range(0, 30, ErrorMessage = "Nombre d'enfants doit etre entre 0 et 30")]
@@ -34,10 +34,10 @@ namespace ClientApp.Models
 
         public string? NomPoste { get; set; }
 
-        [Required(ErrorMessage = "Matricule is required")]
+        [Required(ErrorMessage = "Matricule est requis")]
         public string NumeroMatricule { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Prenom is required")]
+        [Required(ErrorMessage = "Prenom est requis")]
         public string Prenom { get; set; } = string.Empty;
 
         public int? ProjectID { get; set; }
@@ -47,10 +47,10 @@ namespace ClientApp.Models
 
         public int? SelectedProjectId { get; set; }
 
-        [Required(ErrorMessage = "Sexe is required")]
+        [Required(ErrorMessage = "Sexe est requis")]
         public string Sexe { get; set; } = "M";
 
-        [Required(ErrorMessage = "Statut is required")]
+        [Required(ErrorMessage = "Statut est requis")]
         public string StatutEmploye { get; set; } = "CDI";
 
         public bool VouloirSouscrire { get; set; }

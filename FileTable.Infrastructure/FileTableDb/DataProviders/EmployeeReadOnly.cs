@@ -78,6 +78,8 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
             {
                 EmployeeID = entity.EmployeeID,
                 Age = entity.Age,
+                BankAccountNumber = entity.BankAccountNumber,
+                Classification = entity.Classification,
                 DateEmbauche = entity.DateEmbauche,
                 DateFinContrat = entity.DateFinContrat,
                 Dependents = entity.NombreEnfants,
@@ -88,8 +90,10 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
                 Nom = entity.Nom,
                 NombreMoisPoste = entity.NombreMoisPoste,
                 NomPoste = entity.NomPoste,
+                NumeroCnaps = entity.NumeroCnaps,
                 NumeroMatricule = entity.NumeroMatricule,
                 Prenom = entity.Prenom,
+                Salaire = entity.Salaire,
                 Sexe = entity.Sexe,
                 StatutEmploye = entity.StatutEmploye,
                 VouloirSouscrire = entity.VouloirSouscrire

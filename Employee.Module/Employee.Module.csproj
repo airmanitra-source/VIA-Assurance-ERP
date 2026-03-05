@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EmployeeDocuments.Module\EmployeeDocuments.Module.csproj" />
-    <ProjectReference Include="..\FileTable.Infrastructure.Abstractions\FileTable.Infrastructure.Abstractions.csproj" />
     <ProjectReference Include="..\Project.Module\Project.Module.csproj" />
   </ItemGroup>
 

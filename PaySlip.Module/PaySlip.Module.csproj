@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CompanyPayroll.Module\CompanyPayroll.Module.csproj" />
+    <ProjectReference Include="..\Employee.Module\Employee.Module.csproj" />
+    <ProjectReference Include="..\EmployeePayroll.Module\EmployeePayroll.Module.csproj" />
+    <ProjectReference Include="..\FileTable.Infrastructure.Abstractions\FileTable.Infrastructure.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

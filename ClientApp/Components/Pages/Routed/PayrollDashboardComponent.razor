@@ -95,8 +95,44 @@
                 @* === SECTION 3: Saisie des variables === *@
                 @if (selectedEmployeeId.HasValue)
                 {
+                    @if (requireDoubleEntry && doubleEntryDifferences.Any())
+                    {
+                        <div class="section double-entry-error">
+                            <h2>⚠️ @Localizer["DoubleEntryMismatch"]</h2>
+                            <p>@Localizer["DoubleEntryMismatchHelp"]</p>
+                            <div class="diff-list">
+                                @foreach (var diff in doubleEntryDifferences)
+                                {
+                                    <div class="diff-item">
+                                        <span class="diff-icon">❌</span>
+                                        <span class="diff-text">@diff</span>
+                                    </div>
+                                }
+                            </div>
+                            <button class="btn-retry" @onclick="ResetDoubleEntry">
+                                🔄 @Localizer["RetryDoubleEntry"]
+                            </button>
+                        </div>
+                    }
+
+                    @if (requireDoubleEntry && doubleEntryStep == 2)
+                    {
+                        <div class="double-entry-banner">
+                            <span class="step-badge">2/2</span>
+                            <span>@Localizer["DoubleEntryStep2"]</span>
+                        </div>
+                    }
+                    else if (requireDoubleEntry && doubleEntryStep == 1 && !doubleEntryDifferences.Any())
+                    {
+                        <div class="double-entry-banner step1">
+                            <span class="step-badge">1/2</span>
+                            <span>@Localizer["DoubleEntryStep1"]</span>
+                        </div>
+                    }
+
                     <PaySlipVariablesComponent PaySlipInput="paySlipInput" 
-                                               IsGenerating="isGenerating" 
+                                               IsGenerating="isGenerating"
+                                               ButtonLabel="@(requireDoubleEntry && doubleEntryStep == 1 ? Localizer["ValidateFirstEntry"].Value : (requireDoubleEntry && doubleEntryStep == 2 ? Localizer["ValidateSecondEntry"].Value : null))"
                                                OnGenerateClick="GeneratePreviewAsync" />
                 }
 

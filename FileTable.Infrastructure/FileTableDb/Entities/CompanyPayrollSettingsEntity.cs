@@ -16,5 +16,6 @@ namespace FileTable.Infrastructure.FileTableDb.Entities
         public decimal OstieEmployeeRate { get; set; }
         public decimal OstieEmployerRate { get; set; }
         public decimal OvertimeRateMultiplier { get; set; }
+        public bool RequireDoubleEntry { get; set; }
     }
 }

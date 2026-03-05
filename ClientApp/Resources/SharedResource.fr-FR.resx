@@ -822,10 +822,91 @@
   <data name="SubmitDraftToEmployee" xml:space="preserve">
     <value>Soumettre à l'employé</value>
   </data>
+  <data name="PayrollSettings" xml:space="preserve">
+    <value>Paramètres de paie</value>
+  </data>
+  <data name="PayrollSettingsDescription" xml:space="preserve">
+    <value>Configurer les règles de paie et la double saisie</value>
+  </data>
+  <data name="EmployeeContributions" xml:space="preserve">
+    <value>Cotisations salariales</value>
+  </data>
+  <data name="EmployerContributions" xml:space="preserve">
+    <value>Cotisations patronales</value>
+  </data>
+  <data name="TaxAndOvertime" xml:space="preserve">
+    <value>Fiscalité &amp; heures sup.</value>
+  </data>
+  <data name="DoubleEntrySection" xml:space="preserve">
+    <value>Double saisie</value>
+  </data>
+  <data name="RequireDoubleEntryLabel" xml:space="preserve">
+    <value>Exiger une double saisie des éléments de paie</value>
+  </data>
+  <data name="RequireDoubleEntryHelp" xml:space="preserve">
+    <value>Si activé, l'utilisateur saisit deux fois et les valeurs doivent correspondre avant de générer le bulletin.</value>
+  </data>
+  <data name="SaveSettings" xml:space="preserve">
+    <value>Enregistrer les paramètres</value>
+  </data>
+  <data name="SettingsSavedSuccessfully" xml:space="preserve">
+    <value>Paramètres enregistrés avec succès</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Chargement</value>
+  </data>
+  <data name="DoubleEntryMismatch" xml:space="preserve">
+    <value>Les saisies ne correspondent pas</value>
+  </data>
+  <data name="DoubleEntryMismatchHelp" xml:space="preserve">
+    <value>Veuillez vérifier les différences et ressaisir les valeurs.</value>
+  </data>
+  <data name="RetryDoubleEntry" xml:space="preserve">
+    <value>Recommencer la saisie</value>
+  </data>
+  <data name="DoubleEntryStep1" xml:space="preserve">
+    <value>Étape 1 : première saisie</value>
+  </data>
+  <data name="DoubleEntryStep2" xml:space="preserve">
+    <value>Étape 2 : seconde saisie</value>
+  </data>
+  <data name="ValidateFirstEntry" xml:space="preserve">
+    <value>Valider la première saisie</value>
+  </data>
+  <data name="ValidateSecondEntry" xml:space="preserve">
+    <value>Valider la seconde saisie</value>
+  </data>
   <data name="Username" xml:space="preserve">
     <value>Adresse courriel</value>
   </data>
-  <data name="NumberOfChildren" xml:space="preserve">
-    <value>Nombre d'enfants à charge</value>
+  <data name="CnapsEmployeeRate" xml:space="preserve">
+    <value>Taux CNaPS salarié</value>
+  </data>
+  <data name="CnapsComplementaryRate" xml:space="preserve">
+    <value>Taux CNaPS complémentaire</value>
+  </data>
+  <data name="OstieEmployeeRate" xml:space="preserve">
+    <value>Taux OSTIE salarié</value>
+  </data>
+  <data name="CnapsEmployerRate" xml:space="preserve">
+    <value>Taux CNaPS employeur</value>
+  </data>
+  <data name="CnapsComplementaryEmployerRate" xml:space="preserve">
+    <value>Taux CNaPS complémentaire employeur</value>
+  </data>
+  <data name="OstieEmployerRate" xml:space="preserve">
+    <value>Taux OSTIE employeur</value>
+  </data>
+  <data name="IrsaMinimum" xml:space="preserve">
+    <value>IRSA minimum</value>
+  </data>
+  <data name="IrsaDependentReduction" xml:space="preserve">
+    <value>Abattement IRSA par enfant</value>
+  </data>
+  <data name="MaxOvertimeHoursPerWeek" xml:space="preserve">
+    <value>Heures supplémentaires max/semaine</value>
+  </data>
+  <data name="OvertimeRateMultiplier" xml:space="preserve">
+    <value>Coefficient heures supplémentaires</value>
   </data>
 </root>

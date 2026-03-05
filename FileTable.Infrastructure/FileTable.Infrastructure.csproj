@@ -35,8 +35,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CompanyPayroll.Module\CompanyPayroll.Module.csproj" />
     <ProjectReference Include="..\EmployeeDocuments.Module\EmployeeDocuments.Module.csproj" />
     <ProjectReference Include="..\Employee.Module\Employee.Module.csproj" />
+    <ProjectReference Include="..\EmployeePayroll.Module\EmployeePayroll.Module.csproj" />
+    <ProjectReference Include="..\EmployeeTimesheet.Module\EmployeeTimesheet.Module.csproj" />
+    <ProjectReference Include="..\PaySlip.Module\PaySlip.Module.csproj" />
     <ProjectReference Include="..\Project.Module\Project.Module.csproj" />
     <ProjectReference Include="..\Company.Module\Company.Module.csproj" />
     <ProjectReference Include="..\Subscription.Module\Subscription.Module.csproj" />

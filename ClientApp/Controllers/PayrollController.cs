@@ -1,24 +1,33 @@
 using ClientApp.Models;
+using CompanyPayroll.Module;
 using Employee.Module;
-using Employee.Module.Business;
+using EmployeePayroll.Module;
 using FileTable.Infrastructure.Services;
+using PaySlip.Module;
+using PaySlip.Module.Business;
 
 namespace ClientApp.Controllers
 {
     public class PayrollController
     {
+        private readonly ICompanyPayrollModule _companyPayrollModule;
         private readonly IEmailService _emailService;
         private readonly IEmployeeModule _employeeModule;
-        private readonly IPayrollModule _payrollModule;
+        private readonly IEmployeePayrollModule _employeePayrollModule;
+        private readonly IPaySlipModule _paySlipModule;
 
         public PayrollController(
+            ICompanyPayrollModule companyPayrollModule,
             IEmailService emailService,
             IEmployeeModule employeeModule,
-            IPayrollModule payrollModule)
+            IEmployeePayrollModule employeePayrollModule,
+            IPaySlipModule paySlipModule)
         {
+            _companyPayrollModule = companyPayrollModule;
             _emailService = emailService;
             _employeeModule = employeeModule;
-            _payrollModule = payrollModule;
+            _employeePayrollModule = employeePayrollModule;
+            _paySlipModule = paySlipModule;
         }
 
         /// <summary>
@@ -26,7 +35,7 @@ namespace ClientApp.Controllers
         /// </summary>
         public async Task<List<PayrollPeriodViewModel>> Index(long enterpriseId)
         {
-            var periods = await _payrollModule.GetPeriodsByEnterpriseAsync(enterpriseId);
+            var periods = await _employeePayrollModule.GetPeriodsByEnterpriseAsync(enterpriseId);
             return periods
                 .Select(p => new PayrollPeriodViewModel
                 {
@@ -45,7 +54,7 @@ namespace ClientApp.Controllers
         /// </summary>
         public async Task<PaySlipViewModel> Show(long employeeId, int periodId, long enterpriseId)
         {
-            var paySlip = await _payrollModule.GetPaySlipAsync(employeeId, periodId, enterpriseId);
+            var paySlip = await _paySlipModule.GetPaySlipAsync(employeeId, periodId, enterpriseId);
             return MapToViewModel(paySlip);
         }
 
@@ -58,7 +67,7 @@ namespace ClientApp.Controllers
             long enterpriseId,
             PaySlipInputViewModel input)
         {
-            var settings = await _payrollModule.GetSettingsAsync(enterpriseId);
+            var settings = await _companyPayrollModule.GetSettingsAsync(enterpriseId);
             var employees = await _employeeModule.GetEmployeesByEnterpriseIdAsync(enterpriseId);
             var emp = employees.FirstOrDefault(e => e.EmployeeID == employeeId);
 
@@ -85,7 +94,7 @@ namespace ClientApp.Controllers
         /// </summary>
         public async Task<int> Store(long enterpriseId, DateTime periodStart, DateTime periodEnd)
         {
-            return await _payrollModule.AddPeriodAsync(enterpriseId, periodStart, periodEnd);
+            return await _employeePayrollModule.AddPeriodAsync(enterpriseId, periodStart, periodEnd);
         }
 
         /// <summary>
@@ -97,14 +106,14 @@ namespace ClientApp.Controllers
             long enterpriseId,
             PaySlipInputViewModel input)
         {
-            var settings = await _payrollModule.GetSettingsAsync(enterpriseId);
+            var settings = await _companyPayrollModule.GetSettingsAsync(enterpriseId);
             var employees = await _employeeModule.GetEmployeesByEnterpriseIdAsync(enterpriseId);
             var emp = employees.FirstOrDefault(e => e.EmployeeID == employeeId);
 
             if (emp == null)
                 throw new InvalidOperationException("Employee not found");
 
-            var period = (await _payrollModule.GetPeriodsByEnterpriseAsync(enterpriseId))
+            var period = (await _employeePayrollModule.GetPeriodsByEnterpriseAsync(enterpriseId))
                 .FirstOrDefault(p => p.PeriodID == periodId);
 
             var paySlip = PaySlipBusinessModel.Generate(
@@ -123,7 +132,7 @@ namespace ClientApp.Controllers
             int periodYear = period?.PeriodStart.Year ?? DateTime.Now.Year;
             DateTime paymentDate = period?.PaymentDate ?? DateTime.Now;
 
-            return await _payrollModule.AddPaySlipAsync(paySlip, paymentDate, periodMonth, periodYear);
+            return await _paySlipModule.AddPaySlipAsync(paySlip, paymentDate, periodMonth, periodYear);
         }
 
         /// <summary>
@@ -131,7 +140,7 @@ namespace ClientApp.Controllers
         /// </summary>
         public async Task StoreSavedPaySlipAsync(long enterpriseId, int periodId, PaySlipViewModel paySlip)
         {
-            var periods = await _payrollModule.GetPeriodsByEnterpriseAsync(enterpriseId);
+            var periods = await _employeePayrollModule.GetPeriodsByEnterpriseAsync(enterpriseId);
             var period = periods.FirstOrDefault(p => p.PeriodID == periodId);
 
             int periodMonth = period?.PeriodStart.Month ?? DateTime.Now.Month;
@@ -167,7 +176,7 @@ namespace ClientApp.Controllers
                 Poste = paySlip.Poste
             };
 
-            await _payrollModule.SetPaySlipAsync(business, paymentDate, periodMonth, periodYear);
+            await _paySlipModule.SetPaySlipAsync(business, paymentDate, periodMonth, periodYear);
         }
 
         private static PaySlipViewModel MapToViewModel(PaySlipBusinessModel business)
@@ -213,7 +222,7 @@ namespace ClientApp.Controllers
             if (string.IsNullOrWhiteSpace(emp.Email))
                 throw new InvalidOperationException($"L'employé {emp.Prenom} {emp.Nom} n'a pas d'adresse email configurée");
 
-            var periods = await _payrollModule.GetPeriodsByEnterpriseAsync(enterpriseId);
+            var periods = await _employeePayrollModule.GetPeriodsByEnterpriseAsync(enterpriseId);
             var period = periods.FirstOrDefault(p => p.PeriodID == periodId);
             string periodLabel = period != null
                 ? $"du {period.PeriodStart:dd/MM/yyyy} au {period.PeriodEnd:dd/MM/yyyy}"
@@ -234,7 +243,7 @@ namespace ClientApp.Controllers
         public async Task<List<PaySlipViewModel>> IndexSavedPaySlipsAsync(long enterpriseId, int periodId)
         {
             var employees = await _employeeModule.GetEmployeesByEnterpriseIdAsync(enterpriseId);
-            var period = (await _payrollModule.GetPeriodsByEnterpriseAsync(enterpriseId))
+            var period = (await _employeePayrollModule.GetPeriodsByEnterpriseAsync(enterpriseId))
                 .FirstOrDefault(p => p.PeriodID == periodId);
 
             string periodLabel = period != null
@@ -245,7 +254,7 @@ namespace ClientApp.Controllers
 
             foreach (var employee in employees.Where(e => e.IsActive))
             {
-                var paySlip = await _payrollModule.GetSavedPaySlipAsync(employee.EmployeeID, periodId);
+                var paySlip = await _paySlipModule.GetSavedPaySlipAsync(employee.EmployeeID, periodId);
                 if (paySlip == null)
                     continue;
 
@@ -254,10 +263,10 @@ namespace ClientApp.Controllers
                 if (salaryLine != null && salaryLine.GainAmount != (employee.Salaire ?? 0))
                 {
                     // Recalculate all draft payslips for this employee
-                    await _payrollModule.SetRecalculateDraftPaySlipsForEmployeeAsync(employee.EmployeeID, enterpriseId);
-                    
+                    await _paySlipModule.SetRecalculateDraftPaySlipsForEmployeeAsync(employee.EmployeeID, enterpriseId);
+
                     // Reload the payslip to get updated values
-                    paySlip = await _payrollModule.GetSavedPaySlipAsync(employee.EmployeeID, periodId);
+                    paySlip = await _paySlipModule.GetSavedPaySlipAsync(employee.EmployeeID, periodId);
                     if (paySlip == null)
                         continue;
                 }
@@ -278,7 +287,7 @@ namespace ClientApp.Controllers
         /// </summary>
         public async Task<Dictionary<long, PaySlipModificationRequestViewModel>> IndexModificationRequestsAsync(int periodId, long enterpriseId)
         {
-            var requests = await _payrollModule.GetModificationRequestsByPeriodAsync(periodId);
+            var requests = await _paySlipModule.GetModificationRequestsByPeriodAsync(periodId);
             var employees = await _employeeModule.GetEmployeesByEnterpriseIdAsync(enterpriseId);
 
             // Group by EmployeeID and take the latest request (by CreatedDate) for each employee
@@ -314,7 +323,26 @@ namespace ClientApp.Controllers
         /// </summary>
         public async Task RemovePaySlipAsync(int payrollId)
         {
-            await _payrollModule.DeletePayrollAsync(payrollId);
+            await _paySlipModule.RemovePayrollAsync(payrollId);
+        }
+
+        /// <summary>
+        /// REST: Store - Save the second entry for double-entry validation
+        /// </summary>
+        public async Task StoreSecondEntryAsync(long employeeId, int periodId, PaySlipInputViewModel input)
+        {
+            var business = new PaySlipSecondEntryBusinessModel
+            {
+                Bonus = input.Bonus,
+                EmployeeID = employeeId,
+                IndemniteLogement = input.IndemniteLogement,
+                IndemniteTransport = input.IndemniteTransport,
+                OvertimeHours = input.OvertimeHours,
+                PeriodID = periodId,
+                PrimeScolarite = input.PrimeScolarite,
+                TreiziemeMois = input.TreiziemeMois
+            };
+            await _paySlipModule.AddSecondEntryAsync(business);
         }
     }
 }
