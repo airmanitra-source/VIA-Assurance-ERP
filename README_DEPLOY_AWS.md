@@ -61,7 +61,7 @@ EB Console > Configuration > Software > Environment properties :
 | `ConnectionStrings__FileTableConnection` | `Server=<RDS_ENDPOINT>,1433;Database=via_assurance;User Id=<USER>;Password=<PWD>;Encrypt=True;TrustServerCertificate=True;` |
 | `Email__SmtpServer` | `smtp.gmail.com` |
 | `Email__SmtpPort` | `587` |
-| `Email__SenderEmail` | `airmanitra@gmail.com` |
+| `Email__SenderEmail` | `no-reply@your-domain.com` |
 | `Email__SenderPassword` | `<APP_PASSWORD_GMAIL>` |
 | `Email__SenderName` | `VIA Assurance` |
 | `UserDefaults__DefaultPassword` | `<MOT_DE_PASSE_PAR_DEFAUT>` |
