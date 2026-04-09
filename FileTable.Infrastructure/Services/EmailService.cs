@@ -29,7 +29,7 @@ public class EmailService : IEmailService
             var fullResetUrl = $"{resetUrl}?token={encodedToken}&email={HttpUtility.UrlEncode(email)}";
 
             var subject = "Password Reset Request - ERP ASSUR";
-            var defaultPassword = _configuration["UserDefaults:DefaultPassword"]?.Trim() ?? string.Empty;
+            var defaultPassword = GetConfiguredSecretValue("UserDefaults:DefaultPassword");
             if (string.IsNullOrWhiteSpace(defaultPassword))
             {
                 _logger.LogWarning("Default password is not configured. Email will not include default password.");
@@ -76,7 +76,7 @@ public class EmailService : IEmailService
             var smtpServer = _configuration["Email:SmtpServer"] ?? "smtp.gmail.com";
             var smtpPort = int.Parse(_configuration["Email:SmtpPort"] ?? "587");
             var senderEmail = _configuration["Email:SenderEmail"] ?? "no-reply@example.com";
-            var senderPassword = _configuration["Email:SenderPassword"];
+            var senderPassword = GetConfiguredSecretValue("Email:SenderPassword");
             var senderName = _configuration["Email:SenderName"] ?? "ERP ASSUR";
 
             if (string.IsNullOrWhiteSpace(senderPassword))
@@ -115,6 +115,18 @@ public class EmailService : IEmailService
             _logger.LogError($"General error sending email: {ex.Message}");
             throw;
         }
+    }
+
+    private string GetConfiguredSecretValue(string key)
+    {
+        var value = _configuration[key]?.Trim() ?? string.Empty;
+        return IsPlaceholderConfigurationValue(value) ? string.Empty : value;
+    }
+
+    private static bool IsPlaceholderConfigurationValue(string value)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            || (value.StartsWith('<') && value.EndsWith('>'));
     }
 
     private string GeneratePasswordResetEmailHtml(string userName, string resetUrl, string defaultPassword)

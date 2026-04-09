@@ -34,7 +34,7 @@ namespace ClientApp.Components.Pages.Routed
             // Note: Blazor automatically URL-decodes query parameters via [SupplyParameterFromQuery]
             // No manual decoding needed!
 
-            defaultPassword = Configuration["UserDefaults:DefaultPassword"] ?? string.Empty;
+            defaultPassword = GetConfiguredDefaultPassword();
 
             // Verify token is valid
             if (string.IsNullOrWhiteSpace(Token) || string.IsNullOrWhiteSpace(Email))
@@ -134,6 +134,18 @@ namespace ClientApp.Components.Pages.Routed
         protected void NavigateToLogin()
         {
             Navigation.NavigateTo("/login");
+        }
+
+        private string GetConfiguredDefaultPassword()
+        {
+            var value = Configuration["UserDefaults:DefaultPassword"]?.Trim() ?? string.Empty;
+            return IsPlaceholderConfigurationValue(value) ? string.Empty : value;
+        }
+
+        private static bool IsPlaceholderConfigurationValue(string value)
+        {
+            return string.IsNullOrWhiteSpace(value)
+                || (value.StartsWith('<') && value.EndsWith('>'));
         }
 
         #endregion
