@@ -201,7 +201,7 @@ Ce projet contient les contrats techniques partagés, par exemple :
 
 Ils permettent aux modules métier d'exprimer un besoin transactionnel **sans dépendre d'une implémentation infrastructure concrète**.
 
-Concrètement, lorsqu'un cas d'usage doit enchaîner plusieurs écritures cohérentes — par exemple créer ou mettre à jour plusieurs enregistrements liés dans la paie, les souscriptions ou les sinistres — le module peut demander une exécution transactionnelle via ces abstractions, tandis que l'infrastructure se charge du mécanisme réel côté base de données.
+Concrètement, lorsqu'un cas d'usage doit enchaîner plusieurs écritures cohérentes, le module peut demander une exécution transactionnelle via ces abstractions. C'est ensuite l'infrastructure qui se charge du mécanisme réel côté base de données, par exemple pour la paie, les souscriptions ou les sinistres.
 
 ---
 
