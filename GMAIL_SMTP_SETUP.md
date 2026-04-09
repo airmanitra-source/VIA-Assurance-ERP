@@ -5,7 +5,7 @@
 ### Step 1: Enable 2-Factor Authentication on Gmail
 
 1. Go to: https://myaccount.google.com/security
-2. Sign in to your Google account (airmanitra@gmail.com)
+2. Sign in to the Google account that will send application emails
 3. Look for "2-Step Verification" and enable it
 4. Follow Google's verification process
 
@@ -24,7 +24,7 @@ Replace `your_app_password_here` with the 16-character password from Step 2:
 "Email": {
     "SmtpServer": "smtp.gmail.com",
     "SmtpPort": 587,
-    "SenderEmail": "airmanitra@gmail.com",
+    "SenderEmail": "no-reply@your-domain.com",
     "SenderPassword": "xxxx xxxx xxxx xxxx",  // Paste the 16-char password here
     "SenderName": "VIA Assurance"
 }
@@ -70,7 +70,7 @@ When you create a new user:
 
 ## Credentials Used
 
-- **Email**: airmanitra@gmail.com
+- **Email**: `no-reply@your-domain.com`
 - **SMTP Server**: smtp.gmail.com
 - **SMTP Port**: 587 (TLS/STARTTLS)
 - **Sender Name**: VIA Assurance
@@ -95,4 +95,4 @@ The EmailService now:
 2. **ClientApp\appsettings.json**
    - Added Email configuration section
    - SMTP server settings
-   - Gmail credentials (password placeholder)
+   - SMTP configuration with safe placeholders only

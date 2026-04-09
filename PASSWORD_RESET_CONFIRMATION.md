@@ -153,14 +153,14 @@ To test the complete flow:
 
 ## 📧 Email Addresses
 
-Both emails are sent from: **airmanitra@gmail.com**
+Both emails are sent from the sender configured in your secure application settings.
 
 Make sure to configure Gmail SMTP credentials in `appsettings.json`:
 ```json
 "Email": {
     "SmtpServer": "smtp.gmail.com",
     "SmtpPort": 587,
-    "SenderEmail": "airmanitra@gmail.com",
+    "SenderEmail": "no-reply@your-domain.com",
     "SenderPassword": "your_app_password_here",
     "SenderName": "VIA Assurance"
 }

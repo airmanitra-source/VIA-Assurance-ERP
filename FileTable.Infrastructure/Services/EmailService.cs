@@ -75,7 +75,7 @@ public class EmailService : IEmailService
         {
             var smtpServer = _configuration["Email:SmtpServer"] ?? "smtp.gmail.com";
             var smtpPort = int.Parse(_configuration["Email:SmtpPort"] ?? "587");
-            var senderEmail = _configuration["Email:SenderEmail"] ?? "airmanitra@gmail.com";
+            var senderEmail = _configuration["Email:SenderEmail"] ?? "no-reply@example.com";
             var senderPassword = _configuration["Email:SenderPassword"];
             var senderName = _configuration["Email:SenderName"] ?? "ERP ASSUR";
 
