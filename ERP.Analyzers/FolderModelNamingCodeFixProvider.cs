@@ -12,6 +12,17 @@ namespace ERP.Analyzers
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(FolderModelNamingCodeFixProvider)), Shared]
     public class FolderModelNamingCodeFixProvider : CodeFixProvider
     {
+        private readonly INamingHelper _namingHelper;
+
+        public FolderModelNamingCodeFixProvider() : this(new NamingHelper())
+        {
+        }
+
+        public FolderModelNamingCodeFixProvider(INamingHelper namingHelper)
+        {
+            _namingHelper = namingHelper;
+        }
+
         public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Constants.BusinessModelDiagnosticId, Constants.DataModelDiagnosticId, Constants.DataProviderDiagnosticId);
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
@@ -29,9 +40,9 @@ namespace ERP.Analyzers
 
             context.RegisterCodeFix(
                 CodeAction.Create(
-                    title: GetTitle(diagnostic.Id),
+                    title: _namingHelper.GetCodeFixTitle(diagnostic.Id),
                     createChangedSolution: c => RenameTypeAsync(context.Document, typeDeclaration, c),
-                    equivalenceKey: GetTitle(diagnostic.Id)),
+                    equivalenceKey: _namingHelper.GetCodeFixTitle(diagnostic.Id)),
                 diagnostic);
         }
 
@@ -39,7 +50,7 @@ namespace ERP.Analyzers
         {
             var documentIdentifier = typeDeclaration.Identifier;
             var oldName = documentIdentifier.Text;
-            var newName = oldName + GetSuffixForDocument(typeDeclaration);
+            var newName = oldName + _namingHelper.GetSuffixForDocumentFilePath(typeDeclaration.SyntaxTree.FilePath);
 
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
             if (semanticModel == null) return document.Project.Solution;
@@ -58,28 +69,6 @@ namespace ERP.Analyzers
                 cancellationToken).ConfigureAwait(false);
 
             return newSolution;
-        }
-
-        private static string GetTitle(string diagnosticId)
-        {
-            return diagnosticId switch
-            {
-                Constants.DataModelDiagnosticId => Constants.DataModelCodeFixTitle,
-                Constants.DataProviderDiagnosticId => Constants.DataProviderCodeFixTitle,
-                _ => Constants.BusinessModelCodeFixTitle,
-            };
-        }
-
-        private static string GetSuffixForDocument(TypeDeclarationSyntax typeDeclaration)
-        {
-            var filePath = typeDeclaration.SyntaxTree.FilePath.Replace('/', '\\');
-            if (filePath.Contains(Constants.DataModelsFolder))
-                return Constants.DataModelSuffix;
-
-            if (filePath.Contains(Constants.DataProvidersFolder))
-                return Constants.DataProviderSuffix;
-
-            return Constants.BusinessModelSuffix;
         }
     }
 }

@@ -10,6 +10,17 @@ namespace ERP.Analyzers
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class FolderModelNamingAnalyzer : DiagnosticAnalyzer
     {
+        private readonly INamingHelper _namingHelper;
+
+        public FolderModelNamingAnalyzer() : this(new NamingHelper())
+        {
+        }
+
+        public FolderModelNamingAnalyzer(INamingHelper namingHelper)
+        {
+            _namingHelper = namingHelper;
+        }
+
 #pragma warning disable RS2008 // Enable analyzer release tracking
         private static readonly DiagnosticDescriptor BusinessModelRule = new DiagnosticDescriptor(
             Constants.BusinessModelDiagnosticId,
@@ -91,7 +102,7 @@ namespace ERP.Analyzers
             }
         }
 
-        private static void ReportIfFileNameInvalid(
+        private void ReportIfFileNameInvalid(
             SyntaxNodeAnalysisContext context,
             TypeDeclarationSyntax typeDeclaration,
             string fileNameWithoutExtension,
@@ -103,35 +114,15 @@ namespace ERP.Analyzers
             {
                 var descriptor = new DiagnosticDescriptor(
                     diagnosticId,
-                    GetTitle(diagnosticId),
+                    _namingHelper.GetTitle(diagnosticId),
                     messageFormat,
                     Constants.AnalyzerCategory,
                     DiagnosticSeverity.Error,
                     isEnabledByDefault: true,
-                    description: GetDescription(diagnosticId));
+                    description: _namingHelper.GetDescription(diagnosticId));
 
                 context.ReportDiagnostic(Diagnostic.Create(descriptor, typeDeclaration.Identifier.GetLocation(), fileNameWithoutExtension));
             }
-        }
-
-        private static string GetTitle(string diagnosticId)
-        {
-            return diagnosticId switch
-            {
-                Constants.DataModelDiagnosticId => Constants.DataModelTitle,
-                Constants.DataProviderDiagnosticId => Constants.DataProviderTitle,
-                _ => Constants.BusinessModelTitle,
-            };
-        }
-
-        private static string GetDescription(string diagnosticId)
-        {
-            return diagnosticId switch
-            {
-                Constants.DataModelDiagnosticId => Constants.DataModelDescription,
-                Constants.DataProviderDiagnosticId => Constants.DataProviderDescription,
-                _ => Constants.BusinessModelDescription,
-            };
         }
     }
 }
