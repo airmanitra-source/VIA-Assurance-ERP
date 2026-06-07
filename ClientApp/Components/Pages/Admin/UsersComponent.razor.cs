@@ -81,7 +81,14 @@ namespace ClientApp.Components.Pages.Admin
 
         private string GetDefaultPassword()
         {
-            return Configuration["UserDefaults:DefaultPassword"] ?? string.Empty;
+            var value = Configuration["UserDefaults:DefaultPassword"]?.Trim() ?? string.Empty;
+            return IsPlaceholderConfigurationValue(value) ? string.Empty : value;
+        }
+
+        private static bool IsPlaceholderConfigurationValue(string value)
+        {
+            return string.IsNullOrWhiteSpace(value)
+                || (value.StartsWith('<') && value.EndsWith('>'));
         }
 
         private async Task OnRoleChangedAsync(ChangeEventArgs e)
