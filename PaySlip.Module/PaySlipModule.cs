@@ -1,4 +1,4 @@
-using CompanyPayroll.Module;
+﻿using CompanyPayroll.Module;
 using Employee.Module.Business;
 using Employee.Module.Business.Models;
 using Employee.Module.Data.Providers;
@@ -15,30 +15,30 @@ namespace PaySlip.Module
     public class PaySlipModule : IPaySlipModule
     {
         private readonly ICompanyPayrollModule _companyPayrollModule;
-        private readonly IEmployeeReadWrite _employeeReadWrite;
-        private readonly IEmployeePayrollReadWrite _payrollReadWrite;
-        private readonly IPayrollPeriodReadOnly _periodReadOnly;
-        private readonly IPaySlipLineReadOnly _lineReadOnly;
-        private readonly IPaySlipLineReadWrite _lineReadWrite;
-        private readonly IPaySlipModificationRequestReadOnly _modificationRequestRead;
-        private readonly IPaySlipModificationRequestReadWrite _modificationRequestWrite;
-        private readonly IPaySlipReadWrite _paySlipUpdate;
-        private readonly IPaySlipSecondEntryReadOnly _secondEntryRead;
-        private readonly IPaySlipSecondEntryReadWrite _secondEntryWrite;
+        private readonly IEmployeeReadWriteDataProvider _employeeReadWrite;
+        private readonly IEmployeePayrollReadWriteDataProvider _payrollReadWrite;
+        private readonly IPayrollPeriodReadOnlyDataProvider _periodReadOnly;
+        private readonly IPaySlipLineReadOnlyDataProvider _lineReadOnly;
+        private readonly IPaySlipLineReadWriteDataProvider _lineReadWrite;
+        private readonly IPaySlipModificationRequestReadOnlyDataProvider _modificationRequestRead;
+        private readonly IPaySlipModificationRequestReadWriteDataProvider _modificationRequestWrite;
+        private readonly IPaySlipReadWriteDataProvider _paySlipUpdate;
+        private readonly IPaySlipSecondEntryReadOnlyDataProvider _secondEntryRead;
+        private readonly IPaySlipSecondEntryReadWriteDataProvider _secondEntryWrite;
         private readonly ITransactionHandler _transactionHandler;
 
         public PaySlipModule(
             ICompanyPayrollModule companyPayrollModule,
-            IEmployeeReadWrite employeeReadWrite,
-            IEmployeePayrollReadWrite payrollReadWrite,
-            IPayrollPeriodReadOnly periodReadOnly,
-            IPaySlipLineReadOnly lineReadOnly,
-            IPaySlipLineReadWrite lineReadWrite,
-            IPaySlipModificationRequestReadOnly modificationRequestRead,
-            IPaySlipModificationRequestReadWrite modificationRequestWrite,
-            IPaySlipReadWrite paySlipUpdate,
-            IPaySlipSecondEntryReadOnly secondEntryRead,
-            IPaySlipSecondEntryReadWrite secondEntryWrite,
+            IEmployeeReadWriteDataProvider employeeReadWrite,
+            IEmployeePayrollReadWriteDataProvider payrollReadWrite,
+            IPayrollPeriodReadOnlyDataProvider periodReadOnly,
+            IPaySlipLineReadOnlyDataProvider lineReadOnly,
+            IPaySlipLineReadWriteDataProvider lineReadWrite,
+            IPaySlipModificationRequestReadOnlyDataProvider modificationRequestRead,
+            IPaySlipModificationRequestReadWriteDataProvider modificationRequestWrite,
+            IPaySlipReadWriteDataProvider paySlipUpdate,
+            IPaySlipSecondEntryReadOnlyDataProvider secondEntryRead,
+            IPaySlipSecondEntryReadWriteDataProvider secondEntryWrite,
             ITransactionHandler transactionHandler)
         {
             _companyPayrollModule = companyPayrollModule;

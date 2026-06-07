@@ -1,10 +1,10 @@
-using Dapper;
+﻿using Dapper;
 using PaySlip.Module.Data.Models;
 using PaySlip.Module.Data.Providers;
 
 namespace FileTable.Infrastructure.FileTableDb.DataProviders
 {
-    public class PaySlipLineReadWrite : IPaySlipLineReadWrite
+    public class PaySlipLineReadWrite : IPaySlipLineReadWriteDataProvider
     {
         private readonly FileTableDbContext _dbContext;
 
@@ -32,3 +32,4 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         }
     }
 }
+

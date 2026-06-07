@@ -1,4 +1,4 @@
-using Company.Warehouse.Module.Business;
+﻿using Company.Warehouse.Module.Business;
 using Company.Warehouse.Module.Data.Models;
 using Company.Warehouse.Module.Data.Providers;
 
@@ -6,9 +6,9 @@ namespace Company.Warehouse.Module
 {
     public class CompanyWarehouseModule : ICompanyWarehouseModule
     {
-        private readonly IEntrepriseWarehouseReadWrite _warehouseProvider;
+        private readonly IEntrepriseWarehouseReadWriteDataProvider _warehouseProvider;
 
-        public CompanyWarehouseModule(IEntrepriseWarehouseReadWrite warehouseProvider)
+        public CompanyWarehouseModule(IEntrepriseWarehouseReadWriteDataProvider warehouseProvider)
         {
             _warehouseProvider = warehouseProvider;
         }
@@ -37,14 +37,14 @@ namespace Company.Warehouse.Module
 
         public async Task RemoveWarehouseAsync(long id)
         {
-            // Protection: vérifier si le warehouse est assuré avant de permettre la suppression
+            // Protection: vÃ©rifier si le warehouse est assurÃ© avant de permettre la suppression
             var warehouse = await _warehouseProvider.GetWarehouseByIdAsync(id);
             
             if (warehouse != null && warehouse.IsInsured)
             {
                 throw new InvalidOperationException(
-                    "Impossible de supprimer cet entrepôt car il est assuré. " +
-                    "La confirmation d'assurance a été signée et l'entrepôt ne peut plus être supprimé.");
+                    "Impossible de supprimer cet entrepÃ´t car il est assurÃ©. " +
+                    "La confirmation d'assurance a Ã©tÃ© signÃ©e et l'entrepÃ´t ne peut plus Ãªtre supprimÃ©.");
             }
 
             await _warehouseProvider.DeleteWarehouseAsync(id);
@@ -56,12 +56,12 @@ namespace Company.Warehouse.Module
             
             if (warehouse == null)
             {
-                throw new InvalidOperationException($"Entrepôt avec ID {id} introuvable.");
+                throw new InvalidOperationException($"EntrepÃ´t avec ID {id} introuvable.");
             }
 
             if (warehouse.IsInsured)
             {
-                // Déjà assuré, pas besoin de mettre à jour
+                // DÃ©jÃ  assurÃ©, pas besoin de mettre Ã  jour
                 return;
             }
 
@@ -97,3 +97,4 @@ namespace Company.Warehouse.Module
         }
     }
 }
+

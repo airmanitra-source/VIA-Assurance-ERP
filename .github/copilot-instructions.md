@@ -13,6 +13,7 @@ The application follows a Clean Architecture pattern. It is composed of modules 
 * Asynchronous Methods: All async methods must be suffixed with Async.
 * Property Ordering: Properties within classes must be sorted alphabetically, with the exception of Id fields which should come first.
 * Interfaces and their implementations must not be in the same file.
+* The FolderModel analyzer must validate both file naming conventions and class/type conventions, not just classes/types.
 
 ## Infrastructure Project
 

@@ -1,4 +1,4 @@
-using Company.Sinister.Module.Business;
+﻿using Company.Sinister.Module.Business;
 using Company.Sinister.Module.Data.Providers;
 using CompanySinisterDocument.Module;
 using FileTable.Infrastructure.Abstractions;
@@ -8,27 +8,27 @@ namespace Company.Sinister.Module
     public class CompanySinisterModule : ICompanySinisterModule
     {
         private readonly ICompanySinisterDocumentModule _documentModule;
-        private readonly ICompanySinisterReadOnly _readOnlyProvider;
-        private readonly ICompanySinisterReadWrite _readWriteProvider;
-        private readonly ICompanySinisterTypeReadonly _sinisterTypeReadProvider;
-        private readonly ICompanySinisterTypeReadWrite _sinisterTypeReadWriteProvider;
-        private readonly ISinisterTypeReadonly _sinisterTypeRefProvider;
+        private readonly ICompanySinisterReadOnlyDataProvider _readOnlyProvider;
+        private readonly ICompanySinisterReadWriteDataProvider _readWriteProvider;
+        private readonly ICompanySinisterTypeReadonlyDataProvider _sinisterTypeReadProvider;
+        private readonly ICompanySinisterTypeReadWriteDataProvider _sinisterTypeReadWriteProvider;
+        private readonly ISinisterTypeReadonlyDataProvider _sinisterTypeRefProvider;
         private readonly ITransactionDetector _transactionDetector;
         private readonly ITransactionHandler _transactionHandler;
 
-        private ICompanySinisterReadOnly ReadProvider =>
+        private ICompanySinisterReadOnlyDataProvider ReadProvider =>
            _transactionDetector.IsTransactionActive() ? _readWriteProvider : _readOnlyProvider;
 
-        private ICompanySinisterTypeReadonly SinisterTypeReadProvider =>
+        private ICompanySinisterTypeReadonlyDataProvider SinisterTypeReadProvider =>
            _transactionDetector.IsTransactionActive() ? _sinisterTypeReadWriteProvider : _sinisterTypeReadProvider;
 
         public CompanySinisterModule(
-            ICompanySinisterReadOnly readOnlyProvider,
-            ICompanySinisterReadWrite readWriteProvider,
+            ICompanySinisterReadOnlyDataProvider readOnlyProvider,
+            ICompanySinisterReadWriteDataProvider readWriteProvider,
             ICompanySinisterDocumentModule documentModule,
-            ICompanySinisterTypeReadonly sinisterTypeReadProvider,
-            ICompanySinisterTypeReadWrite sinisterTypeReadWriteProvider,
-            ISinisterTypeReadonly sinisterTypeRefProvider,
+            ICompanySinisterTypeReadonlyDataProvider sinisterTypeReadProvider,
+            ICompanySinisterTypeReadWriteDataProvider sinisterTypeReadWriteProvider,
+            ISinisterTypeReadonlyDataProvider sinisterTypeRefProvider,
             ITransactionDetector transactionDetector,
             ITransactionHandler transactionHandler)
         {
@@ -144,3 +144,4 @@ namespace Company.Sinister.Module
         }
     }
 }
+

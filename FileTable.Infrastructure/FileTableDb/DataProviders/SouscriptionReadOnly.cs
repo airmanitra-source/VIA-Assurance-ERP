@@ -1,10 +1,10 @@
-using Dapper;
+﻿using Dapper;
 using Subscription.Module.Data.Models;
 using Subscription.Module.Data.Providers;
 
 namespace FileTable.Infrastructure.FileTableDb.DataProviders
 {
-    public class SouscriptionReadOnly : ISouscriptionReadOnly
+    public class SouscriptionReadOnly : ISouscriptionReadOnlyDataProvider
     {
         private readonly FileTableDbContext _dbContext;
 
@@ -50,3 +50,4 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         }
     }
 }
+

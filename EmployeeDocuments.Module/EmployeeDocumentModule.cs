@@ -6,10 +6,10 @@ namespace EmployeeDocuments.Module
 {
     public class EmployeeDocumentModule: IEmployeeDocumentModule
     {
-        private readonly IEmployeeDocumentReadOnly _employeeDocumentReadOnly;
-        private readonly IEmployeeDocumentReadWrite _employeeDocumentReadWrite;
+        private readonly IEmployeeDocumentReadOnlyDataProvider _employeeDocumentReadOnly;
+        private readonly IEmployeeDocumentReadWriteDataProvider _employeeDocumentReadWrite;
 
-        public EmployeeDocumentModule(IEmployeeDocumentReadOnly employeeDocumentReadOnly, IEmployeeDocumentReadWrite employeeDocumentReadWrite)
+        public EmployeeDocumentModule(IEmployeeDocumentReadOnlyDataProvider employeeDocumentReadOnly, IEmployeeDocumentReadWriteDataProvider employeeDocumentReadWrite)
         {
             _employeeDocumentReadOnly = employeeDocumentReadOnly;
             _employeeDocumentReadWrite = employeeDocumentReadWrite;
@@ -75,3 +75,4 @@ namespace EmployeeDocuments.Module
         }
     }
 }
+

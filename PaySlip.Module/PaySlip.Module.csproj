@@ -10,6 +10,7 @@
     <ProjectReference Include="..\CompanyPayroll.Module\CompanyPayroll.Module.csproj" />
     <ProjectReference Include="..\Employee.Module\Employee.Module.csproj" />
     <ProjectReference Include="..\EmployeePayroll.Module\EmployeePayroll.Module.csproj" />
+    <ProjectReference Include="..\ERP.Analyzers\ERP.Analyzers.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\FileTable.Infrastructure.Abstractions\FileTable.Infrastructure.Abstractions.csproj" />
   </ItemGroup>
 

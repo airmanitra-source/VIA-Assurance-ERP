@@ -1,10 +1,10 @@
-using Dapper;
+﻿using Dapper;
 using Company.Warehouse.Module.Data.Models;
 using Company.Warehouse.Module.Data.Providers;
 
 namespace FileTable.Infrastructure.FileTableDb.DataProviders
 {
-    public class EntrepriseWarehouseReadWrite : EntrepriseWarehouseReadOnly, IEntrepriseWarehouseReadWrite
+    public class EntrepriseWarehouseReadWrite : EntrepriseWarehouseReadOnly, IEntrepriseWarehouseReadWriteDataProvider
     {
         private readonly FileTableDbContext _dbContext;
 
@@ -87,3 +87,4 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         }
     }
 }
+

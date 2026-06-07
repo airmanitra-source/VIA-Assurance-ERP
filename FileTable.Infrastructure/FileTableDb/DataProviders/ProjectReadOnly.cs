@@ -1,11 +1,11 @@
-using Dapper;
+﻿using Dapper;
 using Project.Module.Data.Models;
 using Project.Module.Data.Providers;
 using FileTable.Infrastructure.FileTableDb.Entities;
 
 namespace FileTable.Infrastructure.FileTableDb.DataProviders
 {
-    public class ProjectReadOnly : IProjectReadOnly
+    public class ProjectReadOnly : IProjectReadOnlyDataProvider
     {
         private readonly FileTableDbContext _dbContext;
 
@@ -57,3 +57,4 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         }
     }
 }
+

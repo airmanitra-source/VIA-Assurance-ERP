@@ -1,4 +1,4 @@
-using Employee.Module;
+﻿using Employee.Module;
 using Subscription.Module.Business;
 using Subscription.Module.Data.Models;
 using Subscription.Module.Data.Providers;
@@ -7,16 +7,16 @@ namespace Subscription.Module
 {
     public class SubscriptionModule : ISubscriptionModule
     {
-        private readonly ISouscriptionReadWrite _souscriptionReadWrite;
-        private readonly ISouscriptionReadOnly _souscriptionReadOnly;
+        private readonly ISouscriptionReadWriteDataProvider _souscriptionReadWrite;
+        private readonly ISouscriptionReadOnlyDataProvider _souscriptionReadOnly;
         private readonly ISubscriptionExternalService _externalService;
         private readonly IEmployeeModule _employeeModule;
 
         public SubscriptionModule(
-            ISouscriptionReadWrite souscriptionReadWrite,
+            ISouscriptionReadWriteDataProvider souscriptionReadWrite,
             ISubscriptionExternalService externalService,
             IEmployeeModule employeeModule,
-            ISouscriptionReadOnly souscriptionReadOnly)
+            ISouscriptionReadOnlyDataProvider souscriptionReadOnly)
         {
             _souscriptionReadWrite = souscriptionReadWrite;
             _externalService = externalService;
@@ -111,3 +111,4 @@ namespace Subscription.Module
         }
     }
 }
+

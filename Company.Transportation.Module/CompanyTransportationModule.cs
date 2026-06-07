@@ -1,4 +1,4 @@
-using Company.Transportation.Module.Business;
+﻿using Company.Transportation.Module.Business;
 using Company.Transportation.Module.Data.Models;
 using Company.Transportation.Module.Data.Providers;
 
@@ -6,9 +6,9 @@ namespace Company.Transportation.Module
 {
     public class CompanyTransportationModule : ICompanyTransportationModule
     {
-        private readonly IEntrepriseMerchandiseTransportationReadWrite _transportationProvider;
+        private readonly IEntrepriseMerchandiseTransportationReadWriteDataProvider _transportationProvider;
 
-        public CompanyTransportationModule(IEntrepriseMerchandiseTransportationReadWrite transportationProvider)
+        public CompanyTransportationModule(IEntrepriseMerchandiseTransportationReadWriteDataProvider transportationProvider)
         {
             _transportationProvider = transportationProvider;
         }
@@ -37,14 +37,14 @@ namespace Company.Transportation.Module
 
         public async Task RemoveTransportationAsync(long id)
         {
-            // Protection: vérifier si le transport est assuré avant de permettre la suppression
+            // Protection: vÃ©rifier si le transport est assurÃ© avant de permettre la suppression
             var transportation = await _transportationProvider.GetTransportationByIdAsync(id);
             
             if (transportation != null && transportation.IsInsured)
             {
                 throw new InvalidOperationException(
-                    "Impossible de supprimer ce transport car il est assuré. " +
-                    "La confirmation d'assurance a été signée et le transport ne peut plus être supprimé.");
+                    "Impossible de supprimer ce transport car il est assurÃ©. " +
+                    "La confirmation d'assurance a Ã©tÃ© signÃ©e et le transport ne peut plus Ãªtre supprimÃ©.");
             }
 
             await _transportationProvider.DeleteTransportationAsync(id);
@@ -61,7 +61,7 @@ namespace Company.Transportation.Module
 
             if (transportation.IsInsured)
             {
-                // Déjà assuré, pas besoin de mettre à jour
+                // DÃ©jÃ  assurÃ©, pas besoin de mettre Ã  jour
                 return;
             }
 
@@ -70,3 +70,4 @@ namespace Company.Transportation.Module
         }
     }
 }
+

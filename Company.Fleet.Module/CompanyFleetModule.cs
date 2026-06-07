@@ -1,13 +1,13 @@
-using Company.Fleet.Module.Business.Models;
+﻿using Company.Fleet.Module.Business.Models;
 using Company.Fleet.Module.Data.Providers;
 
 namespace Company.Fleet.Module
 {
     public class CompanyFleetModule : ICompanyFleetModule
     {
-        private readonly IEntrepriseFleetReadWrite _fleetProvider;
+        private readonly IEntrepriseFleetReadWriteDataProvider _fleetProvider;
 
-        public CompanyFleetModule(IEntrepriseFleetReadWrite fleetProvider)
+        public CompanyFleetModule(IEntrepriseFleetReadWriteDataProvider fleetProvider)
         {
             _fleetProvider = fleetProvider;
         }
@@ -38,14 +38,14 @@ namespace Company.Fleet.Module
 
         public async Task RemoveFleetItemAsync(long id)
         {
-            // Protection: vérifier si le véhicule est assuré avant de permettre la suppression
+            // Protection: vÃ©rifier si le vÃ©hicule est assurÃ© avant de permettre la suppression
             var fleetItem = await _fleetProvider.GetFleetItemByIdAsync(id);
             
             if (fleetItem != null && fleetItem.IsInsured)
             {
                 throw new InvalidOperationException(
-                    "Impossible de supprimer ce véhicule car il est assuré. " +
-                    "La confirmation d'assurance a été signée et le véhicule ne peut plus être supprimé.");
+                    "Impossible de supprimer ce vÃ©hicule car il est assurÃ©. " +
+                    "La confirmation d'assurance a Ã©tÃ© signÃ©e et le vÃ©hicule ne peut plus Ãªtre supprimÃ©.");
             }
 
             await _fleetProvider.DeleteFleetItemAsync(id);
@@ -57,12 +57,12 @@ namespace Company.Fleet.Module
             
             if (fleetItem == null)
             {
-                throw new InvalidOperationException($"Véhicule avec ID {id} introuvable.");
+                throw new InvalidOperationException($"VÃ©hicule avec ID {id} introuvable.");
             }
 
             if (fleetItem.IsInsured)
             {
-                // Déjà assuré, pas besoin de mettre à jour
+                // DÃ©jÃ  assurÃ©, pas besoin de mettre Ã  jour
                 return;
             }
 
@@ -71,3 +71,4 @@ namespace Company.Fleet.Module
         }
     }
 }
+

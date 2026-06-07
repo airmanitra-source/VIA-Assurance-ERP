@@ -1,0 +1,6 @@
+root = true
+
+[*.cs]
+dotnet_diagnostic.ERP0001.severity = error
+dotnet_diagnostic.ERP0002.severity = error
+dotnet_diagnostic.ERP0003.severity = error

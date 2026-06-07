@@ -1,4 +1,4 @@
-using EmployeePayroll.Module.Business;
+﻿using EmployeePayroll.Module.Business;
 using EmployeePayroll.Module.Data.Models;
 using EmployeePayroll.Module.Data.Providers;
 
@@ -6,14 +6,14 @@ namespace EmployeePayroll.Module
 {
     public class EmployeePayrollModule : IEmployeePayrollModule
     {
-        private readonly IPayrollPeriodReadOnly _periodReadOnly;
-        private readonly IPayrollPeriodReadWrite _periodReadWrite;
-        private readonly IReadEmployeePayroll _payrollReadOnly;
+        private readonly IPayrollPeriodReadOnlyDataProvider _periodReadOnly;
+        private readonly IPayrollPeriodReadWriteDataProvider _periodReadWrite;
+        private readonly IReadEmployeePayrollDataProvider _payrollReadOnly;
 
         public EmployeePayrollModule(
-            IPayrollPeriodReadOnly periodReadOnly,
-            IPayrollPeriodReadWrite periodReadWrite,
-            IReadEmployeePayroll payrollReadOnly)
+            IPayrollPeriodReadOnlyDataProvider periodReadOnly,
+            IPayrollPeriodReadWriteDataProvider periodReadWrite,
+            IReadEmployeePayrollDataProvider payrollReadOnly)
         {
             _periodReadOnly = periodReadOnly;
             _periodReadWrite = periodReadWrite;
@@ -50,3 +50,4 @@ namespace EmployeePayroll.Module
         }
     }
 }
+

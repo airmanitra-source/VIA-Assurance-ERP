@@ -1,4 +1,4 @@
-using Employee.Module.Business.Models;
+﻿using Employee.Module.Business.Models;
 using Employee.Module.Data.Models;
 using Employee.Module.Data.Providers;
 using EmployeeDocuments.Module;
@@ -9,12 +9,12 @@ namespace Employee.Module
     public class EmployeeModule : IEmployeeModule
     {
         private readonly IEmployeeDocumentModule _employeeDocumentModule;
-        private readonly IEmployeeReadWrite _employeeReadWrite;
+        private readonly IEmployeeReadWriteDataProvider _employeeReadWrite;
         private readonly IProjectModule _projectModule;
 
         public EmployeeModule(
             IEmployeeDocumentModule employeeDocumentModule,
-            IEmployeeReadWrite employeeReadWrite,
+            IEmployeeReadWriteDataProvider employeeReadWrite,
             IProjectModule projectModule)
         {
             _employeeDocumentModule = employeeDocumentModule;
@@ -153,3 +153,4 @@ namespace Employee.Module
         }
     }
 }
+

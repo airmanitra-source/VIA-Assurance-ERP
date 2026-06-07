@@ -1,4 +1,4 @@
-using CompanySinisterDocument.Module.Business;
+﻿using CompanySinisterDocument.Module.Business;
 using CompanySinisterDocument.Module.Data.Models;
 using CompanySinisterDocument.Module.Data.Providers;
 
@@ -6,12 +6,12 @@ namespace CompanySinisterDocument.Module
 {
     public class CompanySinisterDocumentModule : ICompanySinisterDocumentModule
     {
-        private readonly ICompanySinisterDocumentReadOnly _documentReadOnly;
-        private readonly ICompanySinisterDocumentReadWrite _documentReadWrite;
+        private readonly ICompanySinisterDocumentReadOnlyDataProvider _documentReadOnly;
+        private readonly ICompanySinisterDocumentReadWriteDataProvider _documentReadWrite;
 
         public CompanySinisterDocumentModule(
-            ICompanySinisterDocumentReadOnly documentReadOnly,
-            ICompanySinisterDocumentReadWrite documentReadWrite)
+            ICompanySinisterDocumentReadOnlyDataProvider documentReadOnly,
+            ICompanySinisterDocumentReadWriteDataProvider documentReadWrite)
         {
             _documentReadOnly = documentReadOnly;
             _documentReadWrite = documentReadWrite;
@@ -150,3 +150,4 @@ namespace CompanySinisterDocument.Module
         }
     }
 }
+

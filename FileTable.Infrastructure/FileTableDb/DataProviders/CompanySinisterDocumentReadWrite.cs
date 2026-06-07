@@ -1,9 +1,9 @@
-using Dapper;
+﻿using Dapper;
 using CompanySinisterDocument.Module.Data.Providers;
 
 namespace FileTable.Infrastructure.FileTableDb.DataProviders
 {
-    public class CompanySinisterDocumentReadWrite : CompanySinisterDocumentReadOnly, ICompanySinisterDocumentReadWrite
+    public class CompanySinisterDocumentReadWrite : CompanySinisterDocumentReadOnly, ICompanySinisterDocumentReadWriteDataProvider
     {
         private readonly FileTableDbContext _dbContext;
 
@@ -78,3 +78,4 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         }
     }
 }
+

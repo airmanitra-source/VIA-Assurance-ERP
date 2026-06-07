@@ -1,10 +1,10 @@
-using Dapper;
+﻿using Dapper;
 using Company.Fleet.Module.Data.Models;
 using Company.Fleet.Module.Data.Providers;
 
 namespace FileTable.Infrastructure.FileTableDb.DataProviders
 {
-    public class EntrepriseFleetReadWrite : EntrepriseFleetReadOnly, IEntrepriseFleetReadWrite
+    public class EntrepriseFleetReadWrite : EntrepriseFleetReadOnly, IEntrepriseFleetReadWriteDataProvider
     {
         private readonly FileTableDbContext _dbContext;
 
@@ -63,3 +63,4 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         }
     }
 }
+

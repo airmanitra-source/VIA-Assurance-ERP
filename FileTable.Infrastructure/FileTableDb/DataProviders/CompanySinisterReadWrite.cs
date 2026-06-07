@@ -1,10 +1,10 @@
-using Dapper;
+﻿using Dapper;
 using Company.Sinister.Module.Data.Models;
 using Company.Sinister.Module.Data.Providers;
 
 namespace FileTable.Infrastructure.FileTableDb.DataProviders
 {
-    public class CompanySinisterReadWrite : CompanySinisterReadOnly, ICompanySinisterReadWrite
+    public class CompanySinisterReadWrite : CompanySinisterReadOnly, ICompanySinisterReadWriteDataProvider
     {
         private readonly FileTableDbContext _dbContext;
 
@@ -51,3 +51,4 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         }
     }
 }
+

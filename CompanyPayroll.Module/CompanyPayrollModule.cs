@@ -1,4 +1,4 @@
-using CompanyPayroll.Module.Business;
+﻿using CompanyPayroll.Module.Business;
 using CompanyPayroll.Module.Data.Models;
 using CompanyPayroll.Module.Data.Providers;
 
@@ -6,12 +6,12 @@ namespace CompanyPayroll.Module
 {
     public class CompanyPayrollModule : ICompanyPayrollModule
     {
-        private readonly ICompanyPayrollSettingsReadOnly _settingsReadOnly;
-        private readonly ICompanyPayrollSettingsReadWrite _settingsReadWrite;
+        private readonly ICompanyPayrollSettingsReadOnlyDataProvider _settingsReadOnly;
+        private readonly ICompanyPayrollSettingsReadWriteDataProvider _settingsReadWrite;
 
         public CompanyPayrollModule(
-            ICompanyPayrollSettingsReadOnly settingsReadOnly,
-            ICompanyPayrollSettingsReadWrite settingsReadWrite)
+            ICompanyPayrollSettingsReadOnlyDataProvider settingsReadOnly,
+            ICompanyPayrollSettingsReadWriteDataProvider settingsReadWrite)
         {
             _settingsReadOnly = settingsReadOnly;
             _settingsReadWrite = settingsReadWrite;
@@ -70,3 +70,4 @@ namespace CompanyPayroll.Module
         }
     }
 }
+

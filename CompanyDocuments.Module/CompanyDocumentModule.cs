@@ -1,4 +1,4 @@
-using Company.Warehouse.Module.Business;
+﻿using Company.Warehouse.Module.Business;
 using Company.Transportation.Module.Business;
 using CompanyDocuments.Module.Business;
 using CompanyDocuments.Module.Data.Models;
@@ -9,12 +9,12 @@ namespace CompanyDocuments.Module
 {
     public class CompanyDocumentModule : ICompanyDocumentModule
     {
-        private readonly ICompanyDocumentReadOnly _companyDocumentReadOnly;
-        private readonly ICompanyDocumentReadWrite _companyDocumentReadWrite;
+        private readonly ICompanyDocumentReadOnlyDataProvider _companyDocumentReadOnly;
+        private readonly ICompanyDocumentReadWriteDataProvider _companyDocumentReadWrite;
         private readonly IPolicyGenerator _policyGenerator;
         private readonly ISignatureService _signatureService;
 
-        public CompanyDocumentModule(ICompanyDocumentReadOnly companyDocumentReadOnly, ICompanyDocumentReadWrite companyDocumentReadWrite, IPolicyGenerator policyGenerator, ISignatureService signatureService)
+        public CompanyDocumentModule(ICompanyDocumentReadOnlyDataProvider companyDocumentReadOnly, ICompanyDocumentReadWriteDataProvider companyDocumentReadWrite, IPolicyGenerator policyGenerator, ISignatureService signatureService)
         {
             _companyDocumentReadOnly = companyDocumentReadOnly;
             _companyDocumentReadWrite = companyDocumentReadWrite;
@@ -52,12 +52,12 @@ namespace CompanyDocuments.Module
 
         public async Task RemoveUnsignedDocumentsForAssetAsync(long entrepriseId, long? fleetId = null, long? warehouseId = null, long? transportationId = null)
         {
-            // Récupérer tous les documents de l'entreprise
+            // RÃ©cupÃ©rer tous les documents de l'entreprise
             var allDocs = await _companyDocumentReadOnly.ReadDocumentsByEntrepriseIdAsync(entrepriseId);
             
-            // Filtrer pour trouver les documents non signés liés à l'actif spécifié
+            // Filtrer pour trouver les documents non signÃ©s liÃ©s Ã  l'actif spÃ©cifiÃ©
             var unsignedDocsToDelete = allDocs.Where(doc => 
-                !doc.IsSigned && // Document non signé
+                !doc.IsSigned && // Document non signÃ©
                 doc.TypeDocument == "Confirmation Police" && // Type confirmation d'assurance
                 (
                     (fleetId.HasValue && doc.EntrepriseFleetID == fleetId.Value) ||
@@ -66,7 +66,7 @@ namespace CompanyDocuments.Module
                 )
             ).ToList();
 
-            // Supprimer chaque document trouvé
+            // Supprimer chaque document trouvÃ©
             foreach (var doc in unsignedDocsToDelete)
             {
                 await _companyDocumentReadWrite.DeleteCompanyDocumentAsync(entrepriseId, doc.StreamId);
@@ -113,14 +113,14 @@ namespace CompanyDocuments.Module
                 InsuredName = companyName,
                 Address = "N/A",
                 VehicleDescription = $"{fleetItem.Make} {fleetItem.Model} ({fleetItem.Year}) {fleetItem.Type}",
-                VIN = !string.IsNullOrEmpty(fleetItem.VIN) ? fleetItem.VIN : "Non renseigné",
-                LicensePlate = !string.IsNullOrEmpty(fleetItem.LicensePlate) ? fleetItem.LicensePlate : "Non renseignée",
+                VIN = !string.IsNullOrEmpty(fleetItem.VIN) ? fleetItem.VIN : "Non renseignÃ©",
+                LicensePlate = !string.IsNullOrEmpty(fleetItem.LicensePlate) ? fleetItem.LicensePlate : "Non renseignÃ©e",
                 VehicleCoverages = new List<CoverageModel>
                 {
-                    // Responsabilité civile obligatoire
+                    // ResponsabilitÃ© civile obligatoire
                     new CoverageModel
                     {
-                        Description = "Responsabilité Civile",
+                        Description = "ResponsabilitÃ© Civile",
                         Deductible = 0,
                         Amount = 10_000_000 // 10 000 000 Ariary
                     },
@@ -157,7 +157,7 @@ namespace CompanyDocuments.Module
                 EndDate = warehouse.InsuranceEndDate ?? DateTime.Now.AddYears(1),
                 InsuredName = companyName,
                 Address = warehouse.Address,
-                VehicleDescription = $"Warehouse: {warehouse.Name} ({warehouse.SizeM2} m²)",
+                VehicleDescription = $"Warehouse: {warehouse.Name} ({warehouse.SizeM2} mÂ²)",
                 VIN = "N/A",
                 Coverages = materials.Where(m => m.WantsInsurance).Select(m =>
                 {
@@ -271,3 +271,4 @@ namespace CompanyDocuments.Module
         }
     }
 }
+

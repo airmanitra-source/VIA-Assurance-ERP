@@ -1,11 +1,11 @@
-using Dapper;
+﻿using Dapper;
 using EmployeeTimesheet.Module.Data.Models;
 using EmployeeTimesheet.Module.Data.Providers;
 using FileTable.Infrastructure.FileTableDb.Entities;
 
 namespace FileTable.Infrastructure.FileTableDb.DataProviders
 {
-    public class EmployeeTimesheetReadWrite : IReadWriteEmployeeTimesheet
+    public class EmployeeTimesheetReadWrite : IReadWriteEmployeeTimesheetDataProvider
     {
         private readonly FileTableDbContext _dbContext;
 
@@ -58,3 +58,4 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         }
     }
 }
+

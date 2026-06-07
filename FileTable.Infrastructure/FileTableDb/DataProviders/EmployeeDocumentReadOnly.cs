@@ -5,7 +5,7 @@ using EmployeeDocuments.Module.Data.Providers;
 
 namespace FileTable.Infrastructure.FileTableDb.DataProviders
 {
-    public class EmployeeDocumentReadOnly : IEmployeeDocumentReadOnly
+    public class EmployeeDocumentReadOnly : IEmployeeDocumentReadOnlyDataProvider
     {
         private readonly FileTableDbContext _dbContext;
 
@@ -160,3 +160,4 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         }
     }
 }
+

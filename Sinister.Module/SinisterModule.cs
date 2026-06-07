@@ -1,4 +1,4 @@
-using Sinister.Module.Business;
+﻿using Sinister.Module.Business;
 using Sinister.Module.Data.Models;
 using Sinister.Module.Data.Providers;
 
@@ -6,10 +6,10 @@ namespace Sinister.Module
 {
     public class SinisterModule : ISinisterModule
     {
-        private readonly ISinisterPolicyReadWrite _policyReadWrite;
-        private readonly ISinisterPolicyReadOnly _policyReadOnly;
+        private readonly ISinisterPolicyReadWriteDataProvider _policyReadWrite;
+        private readonly ISinisterPolicyReadOnlyDataProvider _policyReadOnly;
 
-        public SinisterModule(ISinisterPolicyReadWrite policyReadWrite, ISinisterPolicyReadOnly policyReadOnly)
+        public SinisterModule(ISinisterPolicyReadWriteDataProvider policyReadWrite, ISinisterPolicyReadOnlyDataProvider policyReadOnly)
         {
             _policyReadWrite = policyReadWrite;
             _policyReadOnly = policyReadOnly;
@@ -93,3 +93,4 @@ namespace Sinister.Module
         }
     }
 }
+

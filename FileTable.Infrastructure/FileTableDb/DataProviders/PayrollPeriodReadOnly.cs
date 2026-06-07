@@ -1,11 +1,11 @@
-using Dapper;
+﻿using Dapper;
 using EmployeePayroll.Module.Data.Models;
 using EmployeePayroll.Module.Data.Providers;
 using FileTable.Infrastructure.FileTableDb.Entities;
 
 namespace FileTable.Infrastructure.FileTableDb.DataProviders
 {
-    public class PayrollPeriodReadOnly : IPayrollPeriodReadOnly
+    public class PayrollPeriodReadOnly : IPayrollPeriodReadOnlyDataProvider
     {
         private readonly FileTableDbContext _dbContext;
 
@@ -46,3 +46,4 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         }
     }
 }
+

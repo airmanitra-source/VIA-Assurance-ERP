@@ -6,9 +6,9 @@ namespace Company.Module
 {
     public class CompanyModule : ICompanyModule
     {
-        private readonly IEntrepriseReadOnly _entrepriseReadOnly;
+        private readonly IEntrepriseReadOnlyDataProvider _entrepriseReadOnly;
 
-        public CompanyModule(IEntrepriseReadOnly entrepriseReadOnly)
+        public CompanyModule(IEntrepriseReadOnlyDataProvider entrepriseReadOnly)
         {
             _entrepriseReadOnly = entrepriseReadOnly;
         }
@@ -42,3 +42,4 @@ namespace Company.Module
         }
     }
 }
+

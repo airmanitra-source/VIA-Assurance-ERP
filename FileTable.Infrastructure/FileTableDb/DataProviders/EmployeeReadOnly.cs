@@ -1,11 +1,11 @@
-using Dapper;
+﻿using Dapper;
 using Employee.Module.Data.Models;
 using Employee.Module.Data.Providers;
 using FileTable.Infrastructure.FileTableDb.Entities;
 
 namespace FileTable.Infrastructure.FileTableDb.DataProviders
 {
-    public class EmployeeReadOnly : IEmployeeReadOnly
+    public class EmployeeReadOnly : IEmployeeReadOnlyDataProvider
     {
         private readonly FileTableDbContext _dbContext;
 
@@ -101,3 +101,4 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         }
     }
 }
+

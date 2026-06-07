@@ -1,13 +1,13 @@
-using Project.Module.Business;
+﻿using Project.Module.Business;
 using Project.Module.Data.Providers;
 
 namespace Project.Module
 {
     public class ProjectModule : IProjectModule
     {
-        private readonly IProjectReadOnly _projectReadOnly;
+        private readonly IProjectReadOnlyDataProvider _projectReadOnly;
 
-        public ProjectModule(IProjectReadOnly projectReadOnly)
+        public ProjectModule(IProjectReadOnlyDataProvider projectReadOnly)
         {
             _projectReadOnly = projectReadOnly;
         }
@@ -25,3 +25,4 @@ namespace Project.Module
         }
     }
 }
+

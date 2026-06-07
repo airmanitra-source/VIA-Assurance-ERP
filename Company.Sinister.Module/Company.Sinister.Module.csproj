@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CompanySinisterDocument.Module\CompanySinisterDocument.Module.csproj" />
+    <ProjectReference Include="..\ERP.Analyzers\ERP.Analyzers.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\FileTable.Infrastructure.Abstractions\FileTable.Infrastructure.Abstractions.csproj" />
   </ItemGroup>
 

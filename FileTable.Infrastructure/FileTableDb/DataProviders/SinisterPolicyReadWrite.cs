@@ -1,10 +1,10 @@
-using Dapper;
+﻿using Dapper;
 using Sinister.Module.Data.Models;
 using Sinister.Module.Data.Providers;
 
 namespace FileTable.Infrastructure.FileTableDb.DataProviders
 {
-    public class SinisterPolicyReadWrite : SinisterPolicyReadOnly, ISinisterPolicyReadWrite
+    public class SinisterPolicyReadWrite : SinisterPolicyReadOnly, ISinisterPolicyReadWriteDataProvider
     {
         private readonly FileTableDbContext _dbContext;
 
@@ -61,3 +61,4 @@ namespace FileTable.Infrastructure.FileTableDb.DataProviders
         }
     }
 }
+

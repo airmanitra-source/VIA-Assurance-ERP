@@ -17,6 +17,7 @@
     <ProjectReference Include="..\Company.Fleet.Module\Company.Fleet.Module.csproj" />
     <ProjectReference Include="..\Company.Transportation.Module\Company.Transportation.Module.csproj" />
     <ProjectReference Include="..\Company.Warehouse.Module\Company.Warehouse.Module.csproj" />
+    <ProjectReference Include="..\ERP.Analyzers\ERP.Analyzers.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

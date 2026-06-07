@@ -1,4 +1,4 @@
-using EmployeeTimesheet.Module.Business;
+﻿using EmployeeTimesheet.Module.Business;
 using EmployeeTimesheet.Module.Data.Models;
 using EmployeeTimesheet.Module.Data.Providers;
 
@@ -6,9 +6,9 @@ namespace EmployeeTimesheet.Module
 {
     public class EmployeeTimesheetModule : IEmployeeTimesheetModule
     {
-        private readonly IReadWriteEmployeeTimesheet _timesheetReadWrite;
+        private readonly IReadWriteEmployeeTimesheetDataProvider _timesheetReadWrite;
 
-        public EmployeeTimesheetModule(IReadWriteEmployeeTimesheet timesheetReadWrite)
+        public EmployeeTimesheetModule(IReadWriteEmployeeTimesheetDataProvider timesheetReadWrite)
         {
             _timesheetReadWrite = timesheetReadWrite;
         }
@@ -44,3 +44,4 @@ namespace EmployeeTimesheet.Module
         }
     }
 }
+
