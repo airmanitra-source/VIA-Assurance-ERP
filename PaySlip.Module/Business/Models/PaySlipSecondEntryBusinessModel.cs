@@ -1,6 +1,6 @@
 using PaySlip.Module.Data.Models;
 
-namespace PaySlip.Module.Business
+namespace PaySlip.Module.Business.Models
 {
     public class PaySlipSecondEntryBusinessModel
     {

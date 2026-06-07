@@ -1,7 +1,7 @@
 using CompanyDocuments.Module.Business;
-using Company.Fleet.Module.Business;
 using Company.Warehouse.Module.Business;
 using Company.Transportation.Module.Business;
+using Company.Fleet.Module.Business.Models;
 
 namespace CompanyDocuments.Module
 {

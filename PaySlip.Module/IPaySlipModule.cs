@@ -1,4 +1,4 @@
-using PaySlip.Module.Business;
+using PaySlip.Module.Business.Models;
 
 namespace PaySlip.Module
 {

@@ -1,7 +1,7 @@
 using EmployeeDocuments.Module.Business;
 using Project.Module.Business;
 
-namespace Employee.Module.Business
+namespace Employee.Module.Business.Models
 {
     /// <summary>
     /// Composite business model containing employee with related documents and project assignment

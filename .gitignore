@@ -359,5 +359,12 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 
+# E2E test settings containing secrets (credentials). Do NOT commit.
+ClientApp.E2ETests/.runsettings
+
+# E2E test transient run logs
+ClientApp.E2ETests/app-run.log
+ClientApp.E2ETests/app-run.err.log
+
 # Fody - auto-generated XML schema
 FodyWeavers.xsd

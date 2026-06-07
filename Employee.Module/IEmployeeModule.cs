@@ -1,4 +1,4 @@
-using Employee.Module.Business;
+using Employee.Module.Business.Models;
 
 namespace Employee.Module
 {

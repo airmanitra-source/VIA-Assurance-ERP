@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Company.Fleet.Module.Business;
+using Company.Fleet.Module.Business.Models;
 
 namespace ClientApp.Models
 {

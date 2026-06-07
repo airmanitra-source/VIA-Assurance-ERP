@@ -1,4 +1,4 @@
-namespace Employee.Module.Business
+namespace Employee.Module.Business.Models
 {
     public class EmployeeBusinessModel
     {

@@ -1,12 +1,12 @@
 using ClientApp.Models;
 using Employee.Module;
-using Employee.Module.Business;
+using Employee.Module.Business.Models;
 using EmployeePayroll.Module;
 using EmployeePayroll.Module.Business;
 using EmployeeTimesheet.Module;
 using EmployeeTimesheet.Module.Business;
 using PaySlip.Module;
-using PaySlip.Module.Business;
+using PaySlip.Module.Business.Models;
 
 namespace ClientApp.Controllers
 {

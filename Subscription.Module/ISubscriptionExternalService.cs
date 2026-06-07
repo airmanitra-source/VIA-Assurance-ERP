@@ -1,5 +1,3 @@
-using Subscription.Module.Business;
-
 namespace Subscription.Module
 {
     public interface ISubscriptionExternalService

@@ -1,6 +1,6 @@
 using ClientApp.Models;
 using Employee.Module;
-using Employee.Module.Business;
+using Employee.Module.Business.Models;
 using EmployeeDocuments.Module;
 using PaySlip.Module;
 using Project.Module;

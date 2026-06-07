@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  MODÈLE de configuration des tests E2E.
+
+  Ce fichier est versionné (sans secret). Pour exécuter les tests :
+	1. Copiez-le en ".runsettings" dans le même dossier.
+	2. Renseignez Username / Password.
+	3. Le fichier ".runsettings" est exclu de Git (voir .gitignore racine).
+
+  Alternative sans fichier : variables d'environnement E2E_Username / E2E_Password.
+-->
+<RunSettings>
+
+  <TestRunParameters>
+	<!-- URL de l'application Blazor en cours d'exécution -->
+	<Parameter name="BaseUrl" value="https://localhost:7246" />
+
+	<!-- Identifiants de connexion (À RENSEIGNER après copie en .runsettings) -->
+	<Parameter name="Username" value="" />
+	<Parameter name="Password" value="" />
+
+	<!-- Employé existant ciblé (id visible dans l'URL /add-employee?id=1002) -->
+	<Parameter name="EmployeeId" value="1002" />
+
+	<!-- Type de document sélectionné dans le formulaire (CV, Contrat, Attestation, Autre) -->
+	<Parameter name="DocumentType" value="CV" />
+
+	<!-- Chaîne de connexion SQL Server pour la vérification physique en base. -->
+	<Parameter name="ConnectionString" value="Server=localhost\MSSQLSERVER01;Integrated Security=True;Encrypt=Optional;Database=master;Trusted_Connection=True;TrustServerCertificate=True;" />
+  </TestRunParameters>
+
+	<Playwright>
+	<BrowserName>chromium</BrowserName>
+	<LaunchOptions>
+		<Headless>true</Headless>
+	</LaunchOptions>
+	<ExpectTimeout>10000</ExpectTimeout>
+	</Playwright>
+
+  <NUnit>
+	<NumberOfTestWorkers>1</NumberOfTestWorkers>
+  </NUnit>
+
+</RunSettings>

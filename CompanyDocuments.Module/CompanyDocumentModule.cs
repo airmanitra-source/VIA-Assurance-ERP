@@ -1,9 +1,9 @@
-using Company.Fleet.Module.Business;
 using Company.Warehouse.Module.Business;
 using Company.Transportation.Module.Business;
 using CompanyDocuments.Module.Business;
 using CompanyDocuments.Module.Data.Models;
 using CompanyDocuments.Module.Data.Providers;
+using Company.Fleet.Module.Business.Models;
 
 namespace CompanyDocuments.Module
 {

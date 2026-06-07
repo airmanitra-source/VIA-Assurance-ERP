@@ -1,4 +1,4 @@
-using Employee.Module.Business;
+using Employee.Module.Business.Models;
 using Employee.Module.Data.Models;
 using Employee.Module.Data.Providers;
 using EmployeeDocuments.Module;

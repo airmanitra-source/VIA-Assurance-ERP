@@ -1,6 +1,6 @@
 ﻿using Company.Fleet.Module.Data.Models;
 
-namespace Company.Fleet.Module.Business
+namespace Company.Fleet.Module.Business.Models
 {
     public class EntrepriseFleetBusinessModel
     {

@@ -1,7 +1,7 @@
 using CompanyPayroll.Module.Business;
-using Employee.Module.Business;
+using Employee.Module.Business.Models;
 
-namespace PaySlip.Module.Business
+namespace PaySlip.Module.Business.Models
 {
     /// <summary>
     /// Bulletin de paie complet avec calculs IRSA/CNAPS/OSTIE conformes à la législation malgache

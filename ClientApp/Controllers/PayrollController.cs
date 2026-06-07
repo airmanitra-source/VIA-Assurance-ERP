@@ -5,6 +5,7 @@ using EmployeePayroll.Module;
 using FileTable.Infrastructure.Services;
 using PaySlip.Module;
 using PaySlip.Module.Business;
+using PaySlip.Module.Business.Models;
 
 namespace ClientApp.Controllers
 {

@@ -1,4 +1,4 @@
-using Employee.Module.Business;
+using Employee.Module.Business.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace ClientApp.Models

@@ -1,11 +1,12 @@
 using CompanyPayroll.Module;
 using Employee.Module.Business;
+using Employee.Module.Business.Models;
 using Employee.Module.Data.Providers;
 using EmployeePayroll.Module.Business;
 using EmployeePayroll.Module.Data.Models;
 using EmployeePayroll.Module.Data.Providers;
 using FileTable.Infrastructure.Abstractions;
-using PaySlip.Module.Business;
+using PaySlip.Module.Business.Models;
 using PaySlip.Module.Data.Models;
 using PaySlip.Module.Data.Providers;
 

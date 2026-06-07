@@ -1,6 +1,6 @@
 using ClientApp.Models;
 using Company.Fleet.Module;
-using Company.Fleet.Module.Business;
+using Company.Fleet.Module.Business.Models;
 using CompanyDocuments.Module;
 
 

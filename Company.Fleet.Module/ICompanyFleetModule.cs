@@ -1,4 +1,4 @@
-using Company.Fleet.Module.Business;
+using Company.Fleet.Module.Business.Models;
 
 namespace Company.Fleet.Module
 {
